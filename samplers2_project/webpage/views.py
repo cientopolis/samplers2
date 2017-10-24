@@ -3,8 +3,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
-from webpage.forms import SignUpForm
+from webpage.forms import SignUpForm, ProjectForm
 from django.db import transaction
+from webpage.models import Project
 # from webpage.forms import UserForm
 # from webpage.forms import ProfileForm
 
@@ -35,5 +36,19 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
+
+@login_required
+def projectForm(request):
+    if request.method == 'POST':
+        import pdb; pdb.set_trace()
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            project = form.save(commit=False)
+            project.owner_id = request.user.profile
+            project.save()
+            return redirect('home')
+    else:
+        form = ProjectForm()
+    return render(request, 'projectForm.html', {'form': form})
 
 

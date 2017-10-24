@@ -22,7 +22,7 @@ from webpage import views as webpage_views
 urlpatterns = [
     url(r'^webpage/', include('webpage.urls')),
     url(r'^$', webpage_views.home, name='home'),
-    url(r'^signup/$', webpage_views.signup, name='signup'),
+    url(r'^signup/', webpage_views.signup, name='signup'),
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
     url(r'^admin/', admin.site.urls),
