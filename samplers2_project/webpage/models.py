@@ -21,5 +21,7 @@ def update_user_profile(sender, instance, created, **kwargs):
     instance.profile.save()
 
 class Project(models.Model):
-    owner_id = models.ForeignKey(Profile, on_delete=models.CASCADE) 
+    owner = models.ForeignKey(Profile, on_delete=models.CASCADE) 
     name = models.CharField(max_length=30, blank=True)
+    def __str__(self):
+        return self.name

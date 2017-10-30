@@ -1,22 +1,24 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from webpage.forms import SignUpForm, ProjectForm
 from django.db import transaction
 from webpage.models import Project
-# from webpage.forms import UserForm
-# from webpage.forms import ProfileForm
+from django.shortcuts import get_object_or_404, redirect, render
+
+
 
 
 @login_required
 def home(request):
-    return render(request, 'webpage/home.html')
+    projects_list = Project.objects.filter(owner_id = request.user.profile.id)
+    context = {'projects_list': projects_list}
+    return render(request, 'webpage/home.html', context)
 
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
-
 
 def signup(request):
     if request.method == 'POST':
@@ -35,20 +37,22 @@ def signup(request):
             return redirect('home')
     else:
         form = SignUpForm()
-    return render(request, 'signup.html', {'form': form})
+    return render(request, 'webpage/signup.html', {'form': form})
 
 @login_required
-def projectForm(request):
-    if request.method == 'POST':
-        import pdb; pdb.set_trace()
-        form = ProjectForm(request.POST)
-        if form.is_valid():
-            project = form.save(commit=False)
-            project.owner_id = request.user.profile
-            project.save()
-            return redirect('home')
+def projectForm(request, id=None):
+    if id:
+        project = get_object_or_404(Project, pk=id)
+        if project.owner != request.user.profile:
+            return HttpResponseForbidden()
     else:
-        form = ProjectForm()
-    return render(request, 'projectForm.html', {'form': form})
+        project = Project(owner=request.user.profile)
+    form = ProjectForm(request.POST or None, instance=project)
+    if request.POST and form.is_valid():
+        project = form.save(commit=False)
+        project.owner = request.user.profile
+        project.save()
+        return redirect('home')
+    return render(request, 'webpage/projectForm.html', {'form': form})
 
 

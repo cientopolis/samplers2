@@ -7,7 +7,7 @@ class WebpageExceptionMiddleware(SocialAuthExceptionMiddleware):
         if type(exception) == AuthCanceled:
             return redirect('login')
         if type(exception) == AuthStateForbidden:
-            return redirect('signup')
+            return redirect('/webpage/signup')
 
         else:
             pass

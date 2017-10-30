@@ -4,13 +4,14 @@ from django.shortcuts import render, redirect
 from social_core.exceptions import AuthCanceled, AuthStateForbidden
 #import pdb; pdb.set_trace()
 
+#Ahora no se está usando, ver si se necesita más adelante
 def save_profile(backend, user, response, *args, **kwargs):
     print(response)
     if backend.name == 'facebook':
         profile = user.profile
         if profile is None:
             profile = Profile(user_id=user.id)
-        profile.gender = response.get('name')
+        profile.gender = response.get('gender')
         profile.save()
 
 

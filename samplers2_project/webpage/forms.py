@@ -17,3 +17,4 @@ class ProjectForm(ModelForm):
     class Meta:
         model = Project
         fields = ('name',)
+        exclude = ('owner',)
