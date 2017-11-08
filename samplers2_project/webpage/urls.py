@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^signup/', views.signup, name='signup'),
     url(r'^create-project/', views.projectForm, name='projectForm'),
     url(r'^edit-project/(?P<id>\d+)/$', views.projectForm, name='projectForm'),
+    url(r'^delete-project/(?P<id>\d+)/$', views.deleteProject, name='deleteProject'),
 ]

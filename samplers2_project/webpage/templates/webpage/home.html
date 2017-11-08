@@ -12,13 +12,15 @@
     <tr>
       <th>Id Usuario</th>
       <th>Nombre Proyecto</th>
-      <th>Editar Proyecyo</th>
+      <th>Editar Proyecto</th>
+      <th>Eliminar Proyecto</th>
     </tr>
     {% for project in projects_list %}
        <tr>
          <td>{{ project.owner_id }}</td>
          <td>{{ project.name }}</td>
          <td> <a href="{% url 'webpage:projectForm' project.id %}"> Editar proyecto</a></td>
+         <td> <a href="{% url 'webpage:deleteProject' project.id %}"> Eliminar proyecto</a></td>
        </tr>
     {% endfor %}
   </table>

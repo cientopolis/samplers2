@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from webpage.forms import SignUpForm, ProjectForm
@@ -13,12 +13,24 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 @login_required
 def home(request):
-    projects_list = Project.objects.filter(owner_id = request.user.profile.id)
+    projects_list = Project.objects.filter(owner_id = request.user.profile.id, deleted = False)
     context = {'projects_list': projects_list}
     return render(request, 'webpage/home.html', context)
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+@login_required
+def deleteProject(request, id=None):
+    if id:
+        project = get_object_or_404(Project, pk=id)
+        import pdb; pdb.set_trace()
+        if project.owner != request.user.profile:
+            return HttpResponseForbidden()
+    else:
+        project = Project(owner=request.user.profile)
+    project.deleted = True
+    project.save()
+    return redirect('home')
+        
+        
 
 def signup(request):
     if request.method == 'POST':

@@ -23,5 +23,6 @@ def update_user_profile(sender, instance, created, **kwargs):
 class Project(models.Model):
     owner = models.ForeignKey(Profile, on_delete=models.CASCADE) 
     name = models.CharField(max_length=30, blank=True)
+    deleted = models.BooleanField(default=False)
     def __str__(self):
         return self.name
