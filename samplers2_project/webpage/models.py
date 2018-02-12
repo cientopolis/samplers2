@@ -23,6 +23,67 @@ def update_user_profile(sender, instance, created, **kwargs):
 class Project(models.Model):
     owner = models.ForeignKey(Profile, on_delete=models.CASCADE) 
     name = models.CharField(max_length=30, blank=True)
+    #Description, fecha de la creacion, hitos,worlflow_id
     deleted = models.BooleanField(default=False)
     def __str__(self):
         return self.name
+
+#class Hito
+class Workflow(models.Model):
+    name = models.CharField(max_length=30, blank=True)
+
+class Step(models.Model):
+    step_type = models.CharField(max_length=30, blank=True)
+    next_step = models.ForeignKey('self') 
+
+class DateStep(models.Model):
+    step_id = models.ForeignKey(Step, on_delete=models.CASCADE)
+    text_to_show = models.TextField(max_length=500, blank=True)
+
+class TextStep(models.Model):
+    step_id = models.ForeignKey(Step, on_delete=models.CASCADE)
+    text_to_show = models.TextField(max_length=500, blank=True)
+    sample_test = models.TextField(max_length=500, blank=True)
+    max_length = models.IntegerField()
+    INPUT_TYPE = (
+        ('N', 'number'),
+        ('M', 'text'),
+        ('L', 'decimal'),
+    )
+    inputy_type = models.CharField(max_length=1,choices=INPUT_TYPE)
+    optional = models.BooleanField(default=False)
+
+class InformationStep(models.Model):
+    step_id = models.ForeignKey(Step, on_delete=models.CASCADE)
+    text_to_show = models.TextField(max_length=500, blank=True)
+
+class PhotoStep(models.Model):
+    step_id = models.ForeignKey(Step, on_delete=models.CASCADE)
+    instruct_to_show = models.TextField(max_length=500, blank=True)
+    image_to_overlay = models.TextField(max_length=500, blank=True)
+
+class LocationStep(models.Model):
+    step_id = models.ForeignKey(Step, on_delete=models.CASCADE)
+    text_to_show = models.TextField(max_length=500, blank=True)
+
+class MultipleSelectStep(models.Model):
+    step_id = models.ForeignKey(Step, on_delete=models.CASCADE)
+    text_to_show = models.TextField(max_length=500, blank=True)
+
+class MultipleSelectOption(models.Model):
+    text_to_show = models.TextField(max_length=500, blank=True)
+    step_id = models.ForeignKey(MultipleSelectStep, on_delete=models.CASCADE)
+
+class SelectOneStep(models.Model):
+    step_id = models.ForeignKey(Step, on_delete=models.CASCADE)
+    title = models.TextField(max_length=500, blank=True)
+
+class SelectOneOption(models.Model):
+    text_to_show = models.TextField(max_length=500, blank=True)
+    step_id = models.ForeignKey(SelectOneStep, on_delete=models.CASCADE)
+
+
+
+
+
+
