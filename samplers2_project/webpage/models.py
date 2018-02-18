@@ -34,7 +34,7 @@ class Workflow(models.Model):
 
 class Step(models.Model):
     step_type = models.CharField(max_length=30, blank=True)
-    next_step = models.ForeignKey('self')
+    order_in_workflow = models.IntegerField(null = True)
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
 
 class DateStep(models.Model):
