@@ -21,7 +21,7 @@ def home(request):
 def deleteProject(request, id=None):
     if id:
         project = get_object_or_404(Project, pk=id)
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         if project.owner != request.user.profile:
             return HttpResponseForbidden()
     else:
