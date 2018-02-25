@@ -9,19 +9,19 @@ from webpage.models import Project
 from django.shortcuts import get_object_or_404, redirect, render
 
 
-
-
 @login_required
 def home(request):
-    projects_list = Project.objects.filter(owner_id = request.user.profile.id, deleted = False)
+    projects_list = Project.objects.filter(
+        owner_id=request.user.profile.id, deleted=False)
     context = {'projects_list': projects_list}
     return render(request, 'webpage/home.html', context)
+
 
 @login_required
 def deleteProject(request, id=None):
     if id:
         project = get_object_or_404(Project, pk=id)
-        #import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         if project.owner != request.user.profile:
             return HttpResponseForbidden()
     else:
@@ -29,8 +29,7 @@ def deleteProject(request, id=None):
     project.deleted = True
     project.save()
     return redirect('home')
-        
-        
+
 
 def signup(request):
     if request.method == 'POST':
@@ -51,6 +50,7 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'webpage/signup.html', {'form': form})
 
+
 @login_required
 def projectForm(request, id=None):
     if id:
@@ -66,5 +66,3 @@ def projectForm(request, id=None):
         project.save()
         return redirect('home')
     return render(request, 'webpage/projectForm.html', {'form': form})
-
-

@@ -4,9 +4,11 @@ from django.contrib.auth.models import User
 from webpage.models import Profile, Project
 from django.forms import ModelForm
 
+
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=254)
-    institucion = forms.CharField(label="institucion", max_length=30, required=False, help_text='Opcional')
+    institucion = forms.CharField(
+        label="institucion", max_length=30, required=False, help_text='Opcional')
 
     class Meta:
         model = User

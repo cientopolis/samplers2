@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from social_core.exceptions import AuthCanceled, AuthStateForbidden
 #import pdb; pdb.set_trace()
 
-#Ahora no se está usando, ver si se necesita más adelante
+#Ahora no se está usando(no se configuro en settings.py), ver si se necesita más adelante
 def save_profile(backend, user, response, *args, **kwargs):
     print(response)
     if backend.name == 'facebook':
