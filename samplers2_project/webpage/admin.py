@@ -28,7 +28,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 class WorkflowAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'id_project', 'id_project']
+    list_display = ['id', 'name', 'id_project']
 
     def id_project(sel, instance):
         return instance.project.id
@@ -46,7 +46,7 @@ class OptionToShowAdmin(admin.ModelAdmin):
     list_display = ['id', 'text_to_show', 'id_step', 'order_in_steps']
 
     def id_step(self, instance):
-        return instance.profile.id
+        return instance.step.id
 
 
 admin.site.unregister(User)

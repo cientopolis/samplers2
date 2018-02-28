@@ -1,6 +1,6 @@
 from django.conf.urls import url
-
-from . import views
+from rest_framework.urlpatterns import format_suffix_patterns
+from webpage import views
 
 app_name = 'webpage'
 urlpatterns = [
@@ -10,4 +10,6 @@ urlpatterns = [
     url(r'^create-project/', views.projectForm, name='projectForm'),
     url(r'^edit-project/(?P<id>\d+)/$', views.projectForm, name='projectForm'),
     url(r'^delete-project/(?P<id>\d+)/$', views.deleteProject, name='deleteProject'),
+    url(r'^workflows/$', views.WorkflowList.as_view()),
+    url(r'^workflow/(?P<pk>[0-9]+)$', views.WorkflowDetail.as_view()),
 ]

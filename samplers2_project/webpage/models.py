@@ -1,5 +1,4 @@
 from django.db import models
-from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -42,15 +41,12 @@ class Step(models.Model):
     # identifier = models.IntegerField()
     # next_step = models.IntegerField()
     order_in_workflow = models.IntegerField()
-    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
+    workflow = models.ForeignKey(Workflow, related_name='steps', on_delete=models.CASCADE)
     text_to_show = models.TextField(max_length=500, blank=True)
     #Only for TextStep
     sample_test = models.TextField(max_length=500, blank=True)
     max_length = models.IntegerField(null = True, blank=True)
     optional = models.BooleanField(default=False)
-    #Only for PhotoStep
-    instruct_to_show = models.TextField(max_length=500, blank=True)
-    image_to_overlay = models.TextField(max_length=500, blank=True)
     #Ver si va esto
     #INPUT_TYPE = (
     #   ('N', 'number'),
@@ -58,6 +54,9 @@ class Step(models.Model):
     #   ('L', 'decimal'),
     #)
     #inputy_type = models.CharField(max_length=1,choices=INPUT_TYPE)
+    #Only for PhotoStep
+    instruct_to_show = models.TextField(max_length=500, blank=True)
+    image_to_overlay = models.TextField(max_length=500, blank=True)
     #Ony for SelectOneOptionStep and MultipleOptionStep
     title = models.TextField(max_length=500, blank=True)
     def __str__(self):
@@ -75,5 +74,5 @@ class Step(models.Model):
 
 class OptionToShow(models.Model):
     text_to_show = models.TextField(max_length=500, blank=True)
-    step = models.ForeignKey(Step, on_delete=models.CASCADE)
+    step = models.ForeignKey(Step, related_name = "options_to_show", on_delete=models.CASCADE)
     order_in_steps = models.IntegerField(null = True)
