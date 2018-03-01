@@ -24,7 +24,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ['id', 'id_owner', 'name', 'deleted']
 
     def id_owner(self, instance):
-        return instance.profile.id
+        return instance.owner.id
 
 
 class WorkflowAdmin(admin.ModelAdmin):

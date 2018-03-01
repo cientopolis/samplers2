@@ -36,7 +36,17 @@ class Workflow(models.Model):
         return self.name
 
 class Step(models.Model):
-    step_type = models.CharField(max_length=30, blank=True)
+    STEP_CHOICES = (
+        ("DateStep" ,"DateStep"),
+        ("TextStep" ,"TextStep"),
+        ("InformationStep" , "InformationStep"),
+        ("PhotoStep" , "PhotoStep"),
+        ("LocationStep" , "LocationStep"),
+        ("SelectOneStep" , "SelectOneStep"),
+        ("SelectMultipleStep" , "SelectMultipleStep"),
+        ("TimeStep" , "TimeStep")
+    )
+    step_type = models.CharField(max_length=30, choices = STEP_CHOICES, null = False)
     #Ver si van estos
     # identifier = models.IntegerField()
     # next_step = models.IntegerField()
@@ -62,17 +72,7 @@ class Step(models.Model):
     def __str__(self):
         return str(self.id)
 
-#StepTypes:
-#1)DateStep
-#2)TextStep
-#3)InformationStep
-#4)PhotoStep
-#5)LocationStep
-#6)SelectMultipleStep
-#7)SelectOneStep
-#8)TimeStep
-
 class OptionToShow(models.Model):
     text_to_show = models.TextField(max_length=500, blank=True)
     step = models.ForeignKey(Step, related_name = "options_to_show", on_delete=models.CASCADE)
-    order_in_steps = models.IntegerField(null = True)
+    order_in_steps = models.IntegerField()

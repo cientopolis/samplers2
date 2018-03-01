@@ -80,7 +80,7 @@ class WorkflowList(APIView):
     List all workflow, or create a new snippet.
     """
     def get(self, request, format=None):
-        Workflows = Workflow.objects.all()
+        workflows = workflow.objects.all()
         serializer = WorkflowSerializer(Workflows, many=True)
         return Response(serializer.data)
 
@@ -104,7 +104,15 @@ class WorkflowDetail(APIView):
     def get(self, request, pk, format=None):
         workflow = self.get_object(pk)
         serializer = WorkflowSerializer(workflow)
-        return Response(serializer.data)
+        data = serializer.data
+        index = 1
+        size =  len(data['steps'])
+        for obj in data['steps']:
+            obj["id"] = index
+            if index < size:
+                obj["next_step_id"] = index + 1
+            index = index +1
+        return Response(data)
 
     def put(self, request, pk, format=None):
         workflow = self.get_object(pk)
