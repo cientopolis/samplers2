@@ -1,34 +1,33 @@
 from rest_framework import serializers
-from webpage.models import OptionToShow, Step, Workflow
+from webpage.models import OptionToShow, Step, Workflow, Project
 from webpage.enums import StepType
-#import pdb; pdb.set_trace()
+import pdb
 
 
 class OptionToShowSerializer(serializers.ModelSerializer):
     class Meta:
         model = OptionToShow
-        fields = ('text_to_show','order_in_steps')
+        fields = ('text_to_show',)
 
 
 class StepSerializer (serializers.ModelSerializer):
     def to_representation(self, obj):
         ret = super(StepSerializer, self).to_representation(obj)
         if obj.step_type != StepType.TEXTSTEP.value:
-        	ret.pop('sample_test')
-        	ret.pop('max_length')
-        	ret.pop('optional')
+            ret.pop('sample_test')
+            ret.pop('max_length')
+            ret.pop('optional')
         if obj.step_type != StepType.PHOTOSTEP.value:
-        	ret.pop('image_to_overlay')
-        	ret.pop('instruct_to_show')
+            ret.pop('image_to_overlay')
+            ret.pop('instruct_to_show')
         if (obj.step_type != StepType.SELECTONESTEP.value) & (obj.step_type != StepType.SELECTMULTIPLESTEP.value):
-        	ret.pop('title')
-        	ret.pop('options_to_show')
+            ret.pop('title')
+            ret.pop('options_to_show')
         if obj.step_type == StepType.PHOTOSTEP.value:
-        	ret.pop('text_to_show')
+            ret.pop('text_to_show')
         return ret
-  
-    #options_to_show = OptionToShowSerializer(many=True, read_only=True)
     options_to_show = serializers.SerializerMethodField()
+
     def get_options_to_show(self, instance):
         options_to_show = instance.options_to_show.all().order_by('order_in_steps')
         return OptionToShowSerializer(options_to_show, many=True).data
@@ -39,10 +38,18 @@ class StepSerializer (serializers.ModelSerializer):
                   'instruct_to_show', 'image_to_overlay', 'title', 'options_to_show')
 
 
+class StepSerializerPost (serializers.ModelSerializer):
+    options_to_show = OptionToShowSerializer(many=True, required=False)
+
+    class Meta:
+        model = Step
+        fields = ('step_type', 'text_to_show', 'sample_test', 'max_length', 'optional',
+                  'instruct_to_show', 'image_to_overlay', 'title', 'options_to_show')
+
+
 class WorkflowSerializer(serializers.ModelSerializer):
-    #steps = StepSerializer(many=True, read_only=True)
-    #steps = serializers.StringRelatedField(many=True)
     steps = serializers.SerializerMethodField()
+
     class Meta:
         model = Workflow
         fields = ('name', 'project', 'steps')
@@ -50,3 +57,72 @@ class WorkflowSerializer(serializers.ModelSerializer):
     def get_steps(self, instance):
         steps = instance.steps.all().order_by('order_in_workflow')
         return StepSerializer(steps, many=True).data
+
+
+class WorkflowSerializerPost(serializers.ModelSerializer):
+    steps = StepSerializerPost(many=True)
+
+    class Meta:
+        model = Workflow
+        fields = ('name', 'project', 'steps')
+
+    def create(self, validated_data):
+        steps_data = validated_data.pop('steps')
+        workflow = Workflow.objects.create(**validated_data)
+        order_in_workflow = 1
+        index = 0
+        for step in steps_data:
+            step["order_in_workflow"] = order_in_workflow
+            step_dictionary = steps_data[index]
+            step_type = step_dictionary['step_type']
+            # Si es de estos tipos, saco los options_to_show para desp iterar sobre estos, ya que sino tira error
+            if (step_type == StepType.SELECTONESTEP.value) | (step_type == StepType.SELECTMULTIPLESTEP.value):
+                options_to_show_data = step_dictionary.pop('options_to_show')
+            step_saved = Step.objects.create(
+                workflow=workflow, **step_dictionary)
+            order_in_workflow = order_in_workflow + 1
+            order_in_steps = 1
+            index = index + 1
+            if (step_type == StepType.SELECTONESTEP.value) | (step_type == StepType.SELECTMULTIPLESTEP.value):
+                # Creo los options to show para cada step, si corresponde
+                for options_to_show in options_to_show_data:
+                    options_to_show["order_in_steps"] = order_in_steps
+                    OptionToShow.objects.create(
+                        step=step_saved, **options_to_show)
+                    order_in_steps = order_in_steps + 1
+        return workflow
+
+    def update(self, instance, validated_data):
+        workflow = Workflow.objects.get(id= instance.id)
+        workflow.delete()
+        steps_data = validated_data.pop('steps')
+        workflow = Workflow.objects.create(id=instance.id,**validated_data)
+        order_in_workflow = 1
+        index = 0
+        for step in steps_data:
+            step["order_in_workflow"] = order_in_workflow
+            step_dictionary = steps_data[index]
+            step_type = step_dictionary['step_type']
+            # Si es de estos tipos, saco los options_to_show para desp iterar sobre estos, ya que sino tira error
+            if (step_type == StepType.SELECTONESTEP.value) | (step_type == StepType.SELECTMULTIPLESTEP.value):
+                options_to_show_data = step_dictionary.pop('options_to_show')
+            step_saved = Step.objects.create(
+                workflow=workflow, **step_dictionary)
+            order_in_workflow = order_in_workflow + 1
+            order_in_steps = 1
+            index = index + 1
+            if (step_type == StepType.SELECTONESTEP.value) | (step_type == StepType.SELECTMULTIPLESTEP.value):
+                # Creo los options to show para cada step, si corresponde
+                for options_to_show in options_to_show_data:
+                    options_to_show["order_in_steps"] = order_in_steps
+                    OptionToShow.objects.create(
+                        step=step_saved, **options_to_show)
+                    order_in_steps = order_in_steps + 1
+        return instance
+
+class ProjectSerializer(serializers.ModelSerializer):
+	workflow = serializers.PrimaryKeyRelatedField(read_only=True)
+	class Meta:
+		model = Project
+		fields = ('owner','name','workflow')
+

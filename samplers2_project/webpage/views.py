@@ -8,12 +8,12 @@ from django.db import transaction
 from webpage.models import Project
 from django.shortcuts import get_object_or_404, redirect, render
 from webpage.models import Workflow
-from webpage.serializers import WorkflowSerializer
+from webpage.serializers import WorkflowSerializer, WorkflowSerializerPost, ProjectSerializer
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-#import pdb; pdb.set_trace()
+import pdb
 
 
 @login_required
@@ -77,15 +77,15 @@ def projectForm(request, id=None):
 
 class WorkflowList(APIView):
     """
-    List all workflow, or create a new snippet.
+    List all workflow, or create a new workflow.
     """
     def get(self, request, format=None):
-        workflows = workflow.objects.all()
+        workflows = Workflow.objects.all()
         serializer = WorkflowSerializer(Workflows, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = WorkflowSerializer(data=request.data)
+        serializer = WorkflowSerializerPost(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -116,7 +116,7 @@ class WorkflowDetail(APIView):
 
     def put(self, request, pk, format=None):
         workflow = self.get_object(pk)
-        serializer = WorkflowSerializer(workflow, data=request.data)
+        serializer = WorkflowSerializerPost(workflow, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -126,3 +126,13 @@ class WorkflowDetail(APIView):
         workflow = self.get_object(pk)
         workflow.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ProjectList(APIView):
+    """
+    List all workflow, or create a new workflow.
+    """
+    def get(self, request, format=None):
+        projects = Project.objects.filter(deleted = False)
+        serializer =ProjectSerializer(projects, many=True)
+        return Response(serializer.data)
