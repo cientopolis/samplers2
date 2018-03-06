@@ -56,14 +56,14 @@ class Step(models.Model):
     #Only for TextStep
     sample_test = models.TextField(max_length=500, blank=True)
     max_length = models.IntegerField(null = True, blank=True)
-    optional = models.BooleanField(default=False)
+    optional = models.NullBooleanField(blank=True, null=True,)
     #Ver si va esto
-    #INPUT_TYPE = (
-    #   ('N', 'number'),
-    #   ('M', 'text'),
-    #   ('L', 'decimal'),
-    #)
-    #inputy_type = models.CharField(max_length=1,choices=INPUT_TYPE)
+    INPUT_TYPE = (
+       ('number', 'number'),
+       ('text', 'text'),
+       ('decimal', 'decimal'),
+    )
+    input_type = models.CharField(max_length=1,choices=INPUT_TYPE, blank= True)
     #Only for PhotoStep
     instruct_to_show = models.TextField(max_length=500, blank=True)
     image_to_overlay = models.TextField(max_length=500, blank=True)

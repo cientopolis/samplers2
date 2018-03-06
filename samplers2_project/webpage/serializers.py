@@ -43,7 +43,7 @@ class StepSerializerPost (serializers.ModelSerializer):
 
     class Meta:
         model = Step
-        fields = ('step_type', 'text_to_show', 'sample_test', 'max_length', 'optional',
+        fields = ('step_type', 'text_to_show', 'sample_test', 'max_length', 'input_type', 'optional',
                   'instruct_to_show', 'image_to_overlay', 'title', 'options_to_show')
 
 
