@@ -5,7 +5,7 @@ from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from webpage.forms import SignUpForm, ProjectForm
 from django.db import transaction
-from webpage.models import Project
+from webpage.models import Project, ParticipantsGroup
 from django.shortcuts import get_object_or_404, redirect, render
 from webpage.models import Workflow
 from webpage.serializers import WorkflowSerializer, WorkflowSerializerPost, ProjectSerializer
@@ -19,7 +19,7 @@ import pdb
 @login_required
 def home(request):
     projects_list = Project.objects.filter(
-        owner_id=request.user.profile.id, deleted=False)
+        participants__id=request.user.profile.id, deleted=False)
     context = {'projects_list': projects_list}
     return render(request, 'webpage/home.html', context)
 
@@ -28,8 +28,9 @@ def home(request):
 def deleteProject(request, id=None):
     if id:
         project = get_object_or_404(Project, pk=id)
-        # import pdb; pdb.set_trace()
-        if project.owner != request.user.profile:
+        import pdb; pdb.set_trace()
+                #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
+        if not(project.participants.filter(pk=request.user.profile.id).exists()):
             return HttpResponseForbidden()
     else:
         project = Project(owner=request.user.profile)
@@ -62,15 +63,21 @@ def signup(request):
 def projectForm(request, id=None):
     if id:
         project = get_object_or_404(Project, pk=id)
-        if project.owner != request.user.profile:
+        pdb.set_trace()
+        #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
+        if not(project.participants.filter(pk=request.user.profile.id).exists()):
             return HttpResponseForbidden()
     else:
-        project = Project(owner=request.user.profile)
+        project = Project()
     form = ProjectForm(request.POST or None, instance=project)
     if request.POST and form.is_valid():
         project = form.save(commit=False)
-        project.owner = request.user.profile
         project.save()
+        #Si es una creación y no una edición
+        if id is None:
+            pg = ParticipantsGroup.objects.create(project = project, profile = request.user.profile)
+            pg.is_owner = True
+            pg.save()
         return redirect('home')
     return render(request, 'webpage/projectForm.html', {'form': form})
 
@@ -79,6 +86,7 @@ class WorkflowList(APIView):
     """
     List all workflow, or create a new workflow.
     """
+
     def get(self, request, format=None):
         workflows = Workflow.objects.all()
         serializer = WorkflowSerializer(Workflows, many=True)
@@ -91,10 +99,12 @@ class WorkflowList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class WorkflowDetail(APIView):
     """
     Retrieve, update or delete a workflow instance.
     """
+
     def get_object(self, pk):
         try:
             return Workflow.objects.get(pk=pk)
@@ -106,12 +116,12 @@ class WorkflowDetail(APIView):
         serializer = WorkflowSerializer(workflow)
         data = serializer.data
         index = 1
-        size =  len(data['steps'])
+        size = len(data['steps'])
         for obj in data['steps']:
             obj["id"] = index
             if index < size:
                 obj["next_step_id"] = index + 1
-            index = index +1
+            index = index + 1
         return Response(data)
 
     def put(self, request, pk, format=None):
@@ -132,7 +142,8 @@ class ProjectList(APIView):
     """
     List all workflow, or create a new workflow.
     """
+
     def get(self, request, format=None):
-        projects = Project.objects.filter(deleted = False)
-        serializer =ProjectSerializer(projects, many=True)
+        projects = Project.objects.filter(deleted=False)
+        serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)

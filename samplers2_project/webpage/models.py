@@ -22,12 +22,20 @@ def update_user_profile(sender, instance, created, **kwargs):
     instance.profile.save()
 
 class Project(models.Model):
-    owner = models.ForeignKey(Profile, on_delete=models.CASCADE) 
+    #owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    participants = models.ManyToManyField(Profile, through='ParticipantsGroup') 
     name = models.CharField(max_length=30, blank=True)
     #Description, fecha de la creacion, hitos,worlflow_id
     deleted = models.BooleanField(default=False)
     def __str__(self):
         return self.name
+
+class ParticipantsGroup(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    is_owner = models.BooleanField(default=False)
+
+    
 #class Hito
 class Workflow(models.Model):
     project = models.OneToOneField(Project, related_name= 'workflow', on_delete=models.CASCADE)

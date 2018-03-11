@@ -5,27 +5,36 @@ from webpage.models import Project
 from webpage.models import Workflow
 from webpage.models import Step
 from webpage.models import OptionToShow
+from webpage.models import ParticipantsGroup
 
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ['id', 'username', 'email',
                     'first_name', 'last_name', 'last_login', 'is_staff']
 
+class ParticipantsGroupInline(admin.TabularInline):
+    model = ParticipantsGroup
+    extra = 1
 
 class ProfileAdmin(admin.ModelAdmin):
+    inlines = (ParticipantsGroupInline,)
     list_display = ['id', 'id_user', 'facebook_username',
                     'gmail_username', 'gender', 'bio', 'location', 'institucion']
 
     def id_user(self, instance):
         return instance.user.id
 
+class ParticipantsGroupAdmin(admin.ModelAdmin):
+    list_display = ['profile', 'project', 'is_owner']
+
+
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['id', 'id_owner', 'name', 'deleted']
+    inlines = (ParticipantsGroupInline,)
+    list_display = ['id', 'name', 'deleted']
 
-    def id_owner(self, instance):
-        return instance.owner.id
-
+    #def id_owner(self, instance):
+        #return instance.owner.id
 
 class WorkflowAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'id_project']
@@ -56,3 +65,4 @@ admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Workflow, WorkflowAdmin)
 admin.site.register(Step, StepAdmin)
 admin.site.register(OptionToShow, OptionToShowAdmin)
+admin.site.register(ParticipantsGroup, ParticipantsGroupAdmin)
