@@ -34,7 +34,7 @@ class StepSerializer (serializers.ModelSerializer):
 
     class Meta:
         model = Step
-        fields = ('step_type', 'text_to_show', 'sample_test', 'max_length', 'optional',
+        fields = ('step_type', 'next_step_id', 'text_to_show', 'sample_test', 'max_length', 'optional',
                   'instruct_to_show', 'image_to_overlay', 'title', 'options_to_show')
 
 
@@ -43,8 +43,9 @@ class StepSerializerPost (serializers.ModelSerializer):
 
     class Meta:
         model = Step
-        fields = ('step_type', 'text_to_show', 'sample_test', 'max_length', 'input_type', 'optional',
+        fields = ('step_type', 'next_step_id','text_to_show', 'sample_test', 'max_length', 'input_type', 'optional',
                   'instruct_to_show', 'image_to_overlay', 'title', 'options_to_show')
+        #read_only_fields = ('next_step_id',)
 
 
 class WorkflowSerializer(serializers.ModelSerializer):

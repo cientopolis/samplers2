@@ -57,7 +57,7 @@ class Step(models.Model):
     step_type = models.CharField(max_length=30, choices = STEP_CHOICES, null = False)
     #Ver si van estos
     # identifier = models.IntegerField()
-    # next_step = models.IntegerField()
+    next_step_id = models.IntegerField(null = True, blank=True)
     order_in_workflow = models.IntegerField()
     workflow = models.ForeignKey(Workflow, related_name='steps', on_delete=models.CASCADE)
     text_to_show = models.TextField(max_length=500, blank=True)
@@ -84,3 +84,4 @@ class OptionToShow(models.Model):
     text_to_show = models.TextField(max_length=500, blank=True)
     step = models.ForeignKey(Step, related_name = "options_to_show", on_delete=models.CASCADE)
     order_in_steps = models.IntegerField()
+    

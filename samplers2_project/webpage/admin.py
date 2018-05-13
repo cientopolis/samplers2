@@ -44,7 +44,7 @@ class WorkflowAdmin(admin.ModelAdmin):
 
 
 class StepAdmin(admin.ModelAdmin):
-    list_display = ['id', 'step_type', 'order_in_workflow', 'id_workflow', 'text_to_show',
+    list_display = ['id', 'step_type', 'next_step_id', 'order_in_workflow', 'id_workflow', 'text_to_show',
                     'sample_test', 'max_length', 'input_type', 'optional', 'instruct_to_show', 'image_to_overlay', 'title']
 
     def id_workflow(self, instance):

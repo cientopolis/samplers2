@@ -20,6 +20,10 @@ import pdb
 def home(request):
     projects_list = Project.objects.filter(
         participants__id=request.user.profile.id, deleted=False)
+    for project in projects_list:
+        participant_group = ParticipantsGroup.objects.get(project = project , is_owner = True)
+        #Seteo el usuario creador del proyecto
+        project.owner = participant_group.profile.user
     context = {'projects_list': projects_list}
     return render(request, 'webpage/home.html', context)
 
@@ -29,7 +33,7 @@ def deleteProject(request, id=None):
     if id:
         project = get_object_or_404(Project, pk=id)
         import pdb; pdb.set_trace()
-                #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
+        #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
         if not(project.participants.filter(pk=request.user.profile.id).exists()):
             return HttpResponseForbidden()
     else:
@@ -62,7 +66,6 @@ def signup(request):
 @login_required
 def projectForm(request, id=None):
     if id:
-        project = get_object_or_404(Project, pk=id)
         pdb.set_trace()
         #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
         if not(project.participants.filter(pk=request.user.profile.id).exists()):
@@ -81,6 +84,15 @@ def projectForm(request, id=None):
         return redirect('home')
     return render(request, 'webpage/projectForm.html', {'form': form})
 
+@login_required
+def inviteScientist(request, id=None):
+    if id:
+        pdb.set_trace()
+        #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
+        if not(project.participants.filter(pk=request.user.profile.id).exists()):
+            return HttpResponseForbidden()
+    #else:
+
 
 class WorkflowList(APIView):
     """
@@ -90,14 +102,14 @@ class WorkflowList(APIView):
     def get(self, request, format=None):
         workflows = Workflow.objects.all()
         serializer = WorkflowSerializer(Workflows, many=True)
-        return Response(serializer.data)
+        return Response({"data":serializer.data, "status_code": 200}, status = 200)
 
     def post(self, request, format=None):
         serializer = WorkflowSerializerPost(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"data": serializer.data, "status_code":status.HTTP_201_CREATED}, status=status.HTTP_201_CREATED)
+        return Response({"data":serializer.errors, "status_code": status.HTTP_400_BAD_REQUEST}, status = status.HTTP_400_BAD_REQUEST)
 
 
 class WorkflowDetail(APIView):
@@ -119,23 +131,21 @@ class WorkflowDetail(APIView):
         size = len(data['steps'])
         for obj in data['steps']:
             obj["id"] = index
-            if index < size:
-                obj["next_step_id"] = index + 1
             index = index + 1
-        return Response(data)
+        return Response({"data":data, "status_code": 200}, status= 200)
 
     def put(self, request, pk, format=None):
         workflow = self.get_object(pk)
         serializer = WorkflowSerializerPost(workflow, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"data": serializer.data, "status_code":status.HTTP_201_CREATED}, status = status.HTTP_201_CREATED)
+        return Response({"data":serializer.errors, "status_code": status.HTTP_400_BAD_REQUEST}, status = status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         workflow = self.get_object(pk)
         workflow.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"status_code": status.HTTP_204_NO_CONTENT}, status = status.HTTP_204_NO_CONTENT)
 
 
 class ProjectList(APIView):
@@ -146,4 +156,4 @@ class ProjectList(APIView):
     def get(self, request, format=None):
         projects = Project.objects.filter(deleted=False)
         serializer = ProjectSerializer(projects, many=True)
-        return Response(serializer.data)
+        return Response({"data":serializer.data, "status_code": 200})
