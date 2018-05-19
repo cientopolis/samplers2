@@ -52,7 +52,9 @@ class Step(models.Model):
         ("LocationStep" , "LocationStep"),
         ("SelectOneStep" , "SelectOneStep"),
         ("SelectMultipleStep" , "SelectMultipleStep"),
-        ("TimeStep" , "TimeStep")
+        ("TimeStep" , "TimeStep"),
+        ("RouteStep", "RouteStep"),
+        ("SoundRecordStep", "SoundRecordStep")
     )
     step_type = models.CharField(max_length=30, choices = STEP_CHOICES, null = False)
     #Ver si van estos
@@ -73,10 +75,14 @@ class Step(models.Model):
     )
     input_type = models.CharField(max_length=1,choices=INPUT_TYPE, blank= True)
     #Only for PhotoStep
-    instruct_to_show = models.TextField(max_length=500, blank=True)
-    image_to_overlay = models.TextField(max_length=500, blank=True)
-    #Ony for SelectOneOptionStep and MultipleOptionStep
+    photo_instructions = models.TextField(max_length=500, blank=True)
+    #Only for SelectOneOptionStep and MultipleOptionStep
     title = models.TextField(max_length=500, blank=True)
+    #Only for RouteStep
+    interval = models.BigIntegerField(null = True, blank=True)
+    map_zoom =  models.IntegerField(null = True, blank=True)
+    #Only for SoundRecordStep
+    instructions_to_show = models.TextField(max_length=500, blank=True)
     def __str__(self):
         return str(self.id)
 
@@ -84,4 +90,4 @@ class OptionToShow(models.Model):
     text_to_show = models.TextField(max_length=500, blank=True)
     step = models.ForeignKey(Step, related_name = "options_to_show", on_delete=models.CASCADE)
     order_in_steps = models.IntegerField()
-    
+    next_step_id = models.IntegerField(null = True, blank=True)

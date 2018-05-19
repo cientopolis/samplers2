@@ -7,24 +7,35 @@ import pdb
 class OptionToShowSerializer(serializers.ModelSerializer):
     class Meta:
         model = OptionToShow
-        fields = ('text_to_show',)
+        fields = ('text_to_show','next_step_id')
+        
+    def to_representation(self, obj):
+        ret = super(OptionToShowSerializer, self).to_representation(obj)
+        pdb.set_trace()         
+        if (obj.step.step_type != StepType.SELECTONESTEP.value):
+            ret.pop('next_step_id')
+        return ret
 
 
 class StepSerializer (serializers.ModelSerializer):
     def to_representation(self, obj):
-        ret = super(StepSerializer, self).to_representation(obj)
+        ret = super(StepSerializer, self).to_representation(obj)          
         if obj.step_type != StepType.TEXTSTEP.value:
             ret.pop('sample_test')
             ret.pop('max_length')
             ret.pop('optional')
         if obj.step_type != StepType.PHOTOSTEP.value:
-            ret.pop('image_to_overlay')
-            ret.pop('instruct_to_show')
+            ret.pop('photo_instructions')
         if (obj.step_type != StepType.SELECTONESTEP.value) & (obj.step_type != StepType.SELECTMULTIPLESTEP.value):
             ret.pop('title')
-            ret.pop('options_to_show')
+            ret.pop('options_to_show')  
         if obj.step_type == StepType.PHOTOSTEP.value:
             ret.pop('text_to_show')
+        if obj.step_type == StepType.ROUTESTEP.value:
+            ret.pop('interval')
+            ret.pop('map_zoom')
+        if obj.step_type == StepType.SOUNDRECORDSTEP.value:
+            ret.pop('instructions_to_show')
         return ret
     options_to_show = serializers.SerializerMethodField()
 
@@ -35,7 +46,7 @@ class StepSerializer (serializers.ModelSerializer):
     class Meta:
         model = Step
         fields = ('step_type', 'next_step_id', 'text_to_show', 'sample_test', 'max_length', 'optional',
-                  'instruct_to_show', 'image_to_overlay', 'title', 'options_to_show')
+                  'photo_instructions', 'title', 'options_to_show')
 
 
 class StepSerializerPost (serializers.ModelSerializer):
@@ -44,7 +55,7 @@ class StepSerializerPost (serializers.ModelSerializer):
     class Meta:
         model = Step
         fields = ('step_type', 'next_step_id','text_to_show', 'sample_test', 'max_length', 'input_type', 'optional',
-                  'instruct_to_show', 'image_to_overlay', 'title', 'options_to_show')
+                  'title', 'options_to_show','photo_instructions','interval','map_zoom','instructions_to_show')
         #read_only_fields = ('next_step_id',)
 
 

@@ -9,5 +9,7 @@ class StepType(Enum):
 	SELECTONESTEP = "SelectOneStep"
 	SELECTMULTIPLESTEP = "SelectMultipleStep"
 	TIMESTEP = "TimeStep"
+	ROUTESTEP = "RouteStep"
+	SOUNDRECORDSTEP = "SoundRecordStep"
 
 
