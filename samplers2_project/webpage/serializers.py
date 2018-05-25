@@ -136,5 +136,5 @@ class ProjectSerializer(serializers.ModelSerializer):
 	workflow = serializers.PrimaryKeyRelatedField(read_only=True)
 	class Meta:
 		model = Project
-		fields = ('owner','name','workflow')
+		fields = ('id','name','workflow')
 
