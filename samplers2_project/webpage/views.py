@@ -20,10 +20,6 @@ import pdb
 def home(request):
     projects_list = Project.objects.filter(
         participants__id=request.user.profile.id, deleted=False)
-    for project in projects_list:
-        participant_group = ParticipantsGroup.objects.get(project = project , is_owner = True)
-        #Seteo el usuario creador del proyecto
-        project.owner = participant_group.profile.user
     context = {'projects_list': projects_list}
     return render(request, 'webpage/home.html', context)
 
@@ -64,30 +60,36 @@ def signup(request):
 
 
 @login_required
-def projectForm(request, id=None):
+def createProject(request, id=None):
+    project = Project()
+    form = ProjectForm(request.POST or None, instance=project)
+    if form.is_valid():
+        project = form.save(commit=False)
+        project.owner = request.user.profile.user.username
+        project.save()
+        pg = ParticipantsGroup.objects.create(project = project, profile = request.user.profile)
+        pg.is_owner = True
+        pg.save()
+        return redirect('home')
+    return render(request, 'webpage/projectForm.html', {'form': form})
+
+@login_required
+def editProject(request, id=None):
     if id:
-        pdb.set_trace()
+        project = get_object_or_404(Project, pk=id)
         #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
         if not(project.participants.filter(pk=request.user.profile.id).exists()):
             return HttpResponseForbidden()
-    else:
-        project = Project()
     form = ProjectForm(request.POST or None, instance=project)
-    if request.POST and form.is_valid():
-        project = form.save(commit=False)
-        project.save()
-        #Si es una creación y no una edición
-        if id is None:
-            pg = ParticipantsGroup.objects.create(project = project, profile = request.user.profile)
-            pg.is_owner = True
-            pg.save()
+    if form.is_valid():
+        project = form.save()
         return redirect('home')
     return render(request, 'webpage/projectForm.html', {'form': form})
 
 @login_required
 def inviteScientist(request, id=None):
     if id:
-        pdb.set_trace()
+        project = get_object_or_404(Project, pk=id)
         #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
         if not(project.participants.filter(pk=request.user.profile.id).exists()):
             return HttpResponseForbidden()

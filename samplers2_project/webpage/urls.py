@@ -7,8 +7,8 @@ urlpatterns = [
    # ex: /webpage/
     url(r'^$', views.home, name='home'),
     url(r'^signup/', views.signup, name='signup'),
-    url(r'^create-project/', views.projectForm, name='projectForm'),
-    url(r'^edit-project/(?P<id>\d+)/$', views.projectForm, name='projectForm'),
+    url(r'^create-project/', views.createProject, name='createProject'),
+    url(r'^edit-project/(?P<id>\d+)/$', views.editProject, name='editProject'),
     url(r'^delete-project/(?P<id>\d+)/$', views.deleteProject, name='deleteProject'),
     url(r'^invite-scientist/(?P<id>\d+)/$', views.inviteScientist, name='inviteScientist'),
     url(r'^workflow/$', views.WorkflowList.as_view()),

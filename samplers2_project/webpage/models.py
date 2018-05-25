@@ -22,9 +22,10 @@ def update_user_profile(sender, instance, created, **kwargs):
     instance.profile.save()
 
 class Project(models.Model):
-    #owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    owner = models.TextField(max_length=100, blank=True)
     participants = models.ManyToManyField(Profile, through='ParticipantsGroup') 
     name = models.CharField(max_length=30, blank=True)
+    description = models.TextField(max_length=500, blank=True)
     #Description, fecha de la creacion, hitos,worlflow_id
     deleted = models.BooleanField(default=False)
     def __str__(self):

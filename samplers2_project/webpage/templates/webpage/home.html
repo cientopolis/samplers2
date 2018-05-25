@@ -18,9 +18,9 @@
     </tr>
     {% for project in projects_list %}
        <tr>
-         <td>{{ project.owner.username }}</td>
+         <td>{{ project.owner }}</td>
          <td>{{ project.name }}</td>
-         <td> <a href="{% url 'webpage:projectForm' project.id %}"> Editar proyecto</a></td>
+         <td> <a href="{% url 'webpage:editProject' project.id %}"> Editar proyecto</a></td>
          <td> <a href="{% url 'webpage:deleteProject' project.id %}"> Eliminar proyecto</a></td>
          <td> <a href="{% url 'webpage:inviteScientist' project.id %}"> Invitar Científico</a></td>
        </tr>
@@ -31,6 +31,6 @@
   <p>No tiene proyectos</p>
 {% endif %}
 
-  <a href="{% url 'webpage:projectForm' %}"> Crear proyecto</a>
+  <a href="{% url 'webpage:createProject' %}"> Crear proyecto</a>
 
 {% endblock %}

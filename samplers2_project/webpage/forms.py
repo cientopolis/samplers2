@@ -18,5 +18,5 @@ class SignUpForm(UserCreationForm):
 class ProjectForm(ModelForm):
     class Meta:
         model = Project
-        fields = ('name',)
+        fields = ('name','description')
         exclude = ('owner',)

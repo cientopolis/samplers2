@@ -36,7 +36,6 @@ class StepSerializer (serializers.ModelSerializer):
         if obj.step_type == StepType.PHOTOSTEP.value:
             ret.pop('text_to_show')
         if obj.step_type != StepType.ROUTESTEP.value:
-            pdb.set_trace()
             ret.pop('interval')
             ret.pop('map_zoom')
         if obj.step_type != StepType.SOUNDRECORDSTEP.value:
@@ -134,8 +133,8 @@ class WorkflowSerializerPost(serializers.ModelSerializer):
         return instance
 
 class ProjectSerializer(serializers.ModelSerializer):
-	workflow = serializers.PrimaryKeyRelatedField(read_only=True)
+	#workflow = serializers.PrimaryKeyRelatedField(read_only=True)
 	class Meta:
 		model = Project
-		fields = ('id','name','workflow')
+		fields = ('id','name','owner')
 
