@@ -10,14 +10,18 @@ class OptionToShowSerializer(serializers.ModelSerializer):
         fields = ('text_to_show','next_step_id')
         
     def to_representation(self, obj):
-        ret = super(OptionToShowSerializer, self).to_representation(obj)
-        pdb.set_trace()         
+        ret = super(OptionToShowSerializer, self).to_representation(obj)         
         if (obj.step.step_type != StepType.SELECTONESTEP.value):
             ret.pop('next_step_id')
         return ret
 
 
 class StepSerializer (serializers.ModelSerializer):
+    class Meta:
+        model = Step
+        fields = ('step_type', 'next_step_id', 'text_to_show', 'sample_test', 'max_length', 'optional',
+                  'photo_instructions', 'title', 'options_to_show','photo_instructions','interval','map_zoom','instructions_to_show')
+
     def to_representation(self, obj):
         ret = super(StepSerializer, self).to_representation(obj)          
         if obj.step_type != StepType.TEXTSTEP.value:
@@ -31,10 +35,11 @@ class StepSerializer (serializers.ModelSerializer):
             ret.pop('options_to_show')  
         if obj.step_type == StepType.PHOTOSTEP.value:
             ret.pop('text_to_show')
-        if obj.step_type == StepType.ROUTESTEP.value:
+        if obj.step_type != StepType.ROUTESTEP.value:
+            pdb.set_trace()
             ret.pop('interval')
             ret.pop('map_zoom')
-        if obj.step_type == StepType.SOUNDRECORDSTEP.value:
+        if obj.step_type != StepType.SOUNDRECORDSTEP.value:
             ret.pop('instructions_to_show')
         return ret
     options_to_show = serializers.SerializerMethodField()
@@ -43,10 +48,6 @@ class StepSerializer (serializers.ModelSerializer):
         options_to_show = instance.options_to_show.all().order_by('order_in_steps')
         return OptionToShowSerializer(options_to_show, many=True).data
 
-    class Meta:
-        model = Step
-        fields = ('step_type', 'next_step_id', 'text_to_show', 'sample_test', 'max_length', 'optional',
-                  'photo_instructions', 'title', 'options_to_show')
 
 
 class StepSerializerPost (serializers.ModelSerializer):
