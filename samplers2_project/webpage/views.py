@@ -8,7 +8,7 @@ from django.db import transaction
 from webpage.models import Project, ParticipantsGroup
 from django.shortcuts import get_object_or_404, redirect, render
 from webpage.models import Workflow
-from webpage.serializers import WorkflowSerializer, WorkflowSerializerPost, ProjectSerializer
+from webpage.serializers import *
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -115,10 +115,7 @@ class WorkflowList(APIView):
 
 
 class WorkflowDetail(APIView):
-    """
-    Retrieve, update or delete a workflow instance.
-    """
-
+    
     def get_object(self, pk):
         try:
             return Workflow.objects.get(pk=pk)
@@ -151,11 +148,22 @@ class WorkflowDetail(APIView):
 
 
 class ProjectList(APIView):
-    """
-    List all workflow, or create a new workflow.
-    """
 
     def get(self, request, format=None):
         projects = Project.objects.filter(deleted=False)
         serializer = ProjectSerializer(projects, many=True)
         return Response({"data":serializer.data, "status_code": 200})
+
+class ProjectDetail(APIView):
+
+    def get_object(self, pk):
+        try:
+            return Project.objects.get(pk=pk)
+        except Project.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        project = self.get_object(pk)
+        serializer = ProjectDetailSerializer(project)
+        data = serializer.data
+        return Response({"data":data, "status_code": 200}, status= 200)

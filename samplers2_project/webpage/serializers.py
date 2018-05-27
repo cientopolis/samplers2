@@ -133,8 +133,12 @@ class WorkflowSerializerPost(serializers.ModelSerializer):
         return instance
 
 class ProjectSerializer(serializers.ModelSerializer):
-	#workflow = serializers.PrimaryKeyRelatedField(read_only=True)
 	class Meta:
 		model = Project
 		fields = ('id','name','owner')
 
+class ProjectDetailSerializer(serializers.ModelSerializer):
+    workflow = serializers.PrimaryKeyRelatedField(read_only=True)
+    class Meta:
+        model = Project
+        fields = ('name','description','workflow')
