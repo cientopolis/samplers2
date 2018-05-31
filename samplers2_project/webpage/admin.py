@@ -31,7 +31,7 @@ class ParticipantsGroupAdmin(admin.ModelAdmin):
 
 class ProjectAdmin(admin.ModelAdmin):
     inlines = (ParticipantsGroupInline,)
-    list_display = ['id', 'name', 'description','owner','deleted']
+    list_display = ['id', 'name', 'description','owner','deleted','created_date']
 
     #def id_owner(self, instance):
         #return instance.owner.id

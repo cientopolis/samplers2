@@ -139,6 +139,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class ProjectDetailSerializer(serializers.ModelSerializer):
     workflow = serializers.PrimaryKeyRelatedField(read_only=True)
+    created_date = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = Project
-        fields = ('name','description','workflow')
+        fields = ('name','description','workflow','created_date')

@@ -12,6 +12,7 @@
     <tr>
       <th>Creador Proyecto</th>
       <th>Nombre Proyecto</th>
+      <th>Fecha de Creacion:</th>
       <th>Editar Proyecto</th>
       <th>Eliminar Proyecto</th>
       <th>Invitar Científico</th>
@@ -20,6 +21,7 @@
        <tr>
          <td>{{ project.owner }}</td>
          <td>{{ project.name }}</td>
+         <td>{{ project.created_date | date:"d-m-y" }}</td>
          <td> <a href="{% url 'webpage:editProject' project.id %}"> Editar proyecto</a></td>
          <td> <a href="{% url 'webpage:deleteProject' project.id %}"> Eliminar proyecto</a></td>
          <td> <a href="{% url 'webpage:inviteScientist' project.id %}"> Invitar Científico</a></td>

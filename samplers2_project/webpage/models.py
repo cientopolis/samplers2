@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.forms import ModelForm
+from django.utils import timezone
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -28,8 +29,14 @@ class Project(models.Model):
     description = models.TextField(max_length=500, blank=True)
     #Description, fecha de la creacion, hitos,worlflow_id
     deleted = models.BooleanField(default=False)
+    created_date = models.DateTimeField(editable=False)
     def __str__(self):
         return self.name
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.created_date = timezone.now()
+        return super(Project, self).save(*args, **kwargs)
 
 class ParticipantsGroup(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
