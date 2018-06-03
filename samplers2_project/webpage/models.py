@@ -72,7 +72,7 @@ class Step(models.Model):
     workflow = models.ForeignKey(Workflow, related_name='steps', on_delete=models.CASCADE)
     text_to_show = models.TextField(max_length=500, blank=True)
     #Only for TextStep
-    sample_test = models.TextField(max_length=500, blank=True)
+    sample_text = models.TextField(max_length=500, blank=True)
     max_length = models.IntegerField(null = True, blank=True)
     optional = models.NullBooleanField(blank=True, null=True,)
     #Ver si va esto
@@ -82,15 +82,8 @@ class Step(models.Model):
        ('decimal', 'decimal'),
     )
     input_type = models.CharField(max_length=1,choices=INPUT_TYPE, blank= True)
-    #Only for PhotoStep
-    photo_instructions = models.TextField(max_length=500, blank=True)
     #Only for SelectOneOptionStep and MultipleOptionStep
     title = models.TextField(max_length=500, blank=True)
-    #Only for RouteStep
-    interval = models.BigIntegerField(null = True, blank=True)
-    map_zoom =  models.IntegerField(null = True, blank=True)
-    #Only for SoundRecordStep
-    instructions_to_show = models.TextField(max_length=500, blank=True)
     def __str__(self):
         return str(self.id)
 

@@ -127,10 +127,16 @@ class WorkflowDetail(APIView):
         serializer = WorkflowSerializer(workflow)
         data = serializer.data
         index = 1
-        size = len(data['steps'])
         for obj in data['steps']:
             obj["id"] = index
             index = index + 1
+            pdb.set_trace()
+            if (obj['step_type'] == StepType.SELECTONESTEP.value) | (obj['step_type'] == StepType.SELECTMULTIPLESTEP.value):
+                id = 1
+                pdb.set_trace()
+                for option in obj['options_to_show']:
+                    option["id"] = id
+                    id = id + 1
         return Response({"data":data, "status_code": 200}, status= 200)
 
     def put(self, request, pk, format=None):

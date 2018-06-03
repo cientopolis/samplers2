@@ -20,3 +20,6 @@ class ProjectForm(ModelForm):
         model = Project
         fields = ('name','description')
         exclude = ('owner',)
+
+class InviteScientistForm(forms.Form):
+    email = forms.EmailField(required=True)
