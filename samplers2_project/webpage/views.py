@@ -130,10 +130,8 @@ class WorkflowDetail(APIView):
         for obj in data['steps']:
             obj["id"] = index
             index = index + 1
-            pdb.set_trace()
             if (obj['step_type'] == StepType.SELECTONESTEP.value) | (obj['step_type'] == StepType.SELECTMULTIPLESTEP.value):
                 id = 1
-                pdb.set_trace()
                 for option in obj['options_to_show']:
                     option["id"] = id
                     id = id + 1
