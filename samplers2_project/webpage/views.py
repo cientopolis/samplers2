@@ -98,7 +98,6 @@ def inviteScientist(request, id=None):
             if form.is_valid():
                 email = form.cleaned_data.get('email')
                 user = User.objects.get(email = email)
-                pdb.set_trace()
                 if ParticipantsGroup.objects.filter(project=project,profile = user.profile).exists():
                     messages.error(request, "Este cientifico ya forma parte de este proyecto")
                 else:

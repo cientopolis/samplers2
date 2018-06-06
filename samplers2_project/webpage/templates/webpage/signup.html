@@ -4,6 +4,11 @@
   <h2>Sign up</h2>
   <form method="post">
     {% csrf_token %}
+    <p>
+    {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+    </p>
     {% for field in form %}
       <p>
         {{ field.label_tag }}<br>

@@ -4,7 +4,11 @@
   <h2>Homepage</h2>
   <p>Hello {{ user.username }}!</p><br>
   <a href="{% url 'logout'%}">Logout</a><br>
-
+  <p>
+    {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+  </p>
   <a href="{% url 'social:begin' 'facebook' %}">Asocciate Account with Facebook</a><br> 
   <a href="{% url 'social:begin' 'google-oauth2' %}"> Asocciate Account with Gmail</a><br>
 {% if projects_list %}

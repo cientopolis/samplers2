@@ -2,7 +2,7 @@ from .models import Profile
 from webpage.forms import SignUpForm
 from django.shortcuts import render, redirect
 from social_core.exceptions import AuthCanceled, AuthStateForbidden
-#import pdb; pdb.set_trace()
+import pdb 
 
 #Ahora no se está usando(no se configuro en settings.py), ver si se necesita más adelante
 def save_profile(backend, user, response, *args, **kwargs):

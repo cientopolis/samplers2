@@ -92,6 +92,19 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'YLe6rkRAgvBme1qnWSd4UF_0'
 SOCIAL_AUTH_FACEBOOK_KEY = '1984997278418339'
 SOCIAL_AUTH_FACEBOOK_SECRET = 'a6b97cd6848c84e142c1d88ff99e9a5b'
 
+# Facebook Settings
+
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id, name, email, age_range',
+}
+
+# Google Settings
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
+      # 'access_type': 'offline',
+      # 'approval_prompt': 'force',
+}
 
 
 LOGIN_URL = 'login'
