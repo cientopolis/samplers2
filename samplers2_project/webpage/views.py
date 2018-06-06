@@ -3,9 +3,9 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
-from webpage.forms import SignUpForm, ProjectForm
+from webpage.forms import SignUpForm, ProjectForm, InviteScientistForm
 from django.db import transaction
-from webpage.models import Project, ParticipantsGroup
+from webpage.models import Project, ParticipantsGroup, User
 from django.shortcuts import get_object_or_404, redirect, render
 from webpage.models import Workflow
 from webpage.serializers import *
@@ -13,6 +13,7 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib import messages 
 import pdb
 
 
@@ -28,7 +29,6 @@ def home(request):
 def deleteProject(request, id=None):
     if id:
         project = get_object_or_404(Project, pk=id)
-        import pdb; pdb.set_trace()
         #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
         if not(project.participants.filter(pk=request.user.profile.id).exists()):
             return HttpResponseForbidden()
@@ -88,12 +88,26 @@ def editProject(request, id=None):
 
 @login_required
 def inviteScientist(request, id=None):
-    if id:
-        project = get_object_or_404(Project, pk=id)
-        #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
-        if not(project.participants.filter(pk=request.user.profile.id).exists()):
-            return HttpResponseForbidden()
-    #else:
+    if request.method == 'POST':
+        if id:
+            project = get_object_or_404(Project, pk=id)
+            #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
+            if not(project.participants.filter(pk=request.user.profile.id).exists()):
+                return HttpResponseForbidden()
+            form = InviteScientistForm(request.POST)
+            if form.is_valid():
+                email = form.cleaned_data.get('email')
+                user = User.objects.get(email = email)
+                pdb.set_trace()
+                if ParticipantsGroup.objects.filter(project=project,profile = user.profile).exists():
+                    messages.error(request, "Este cientifico ya forma parte de este proyecto")
+                else:
+                    pg = ParticipantsGroup.objects.create(project = project, profile = user.profile)
+                    pg.save()
+                    return redirect('home')
+    else:
+        form = InviteScientistForm()
+    return render(request, 'webpage/inviteScientistForm.html', {'form': form})
 
 
 class WorkflowList(APIView):

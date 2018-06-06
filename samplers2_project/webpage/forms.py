@@ -3,7 +3,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from webpage.models import Profile, Project
 from django.forms import ModelForm
-
+from webpage.models import User
+from django.core.exceptions import ObjectDoesNotExist
+import pdb
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=254)
@@ -23,3 +25,11 @@ class ProjectForm(ModelForm):
 
 class InviteScientistForm(forms.Form):
     email = forms.EmailField(required=True)
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        try:
+            user = User.objects.get(email = email)
+        except ObjectDoesNotExist:
+            raise forms.ValidationError("No existe un usuario con ese email")
+        return email

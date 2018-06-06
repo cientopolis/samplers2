@@ -24,7 +24,12 @@
          <td>{{ project.created_date | date:"d-m-y" }}</td>
          <td> <a href="{% url 'webpage:editProject' project.id %}"> Editar proyecto</a></td>
          <td> <a href="{% url 'webpage:deleteProject' project.id %}"> Eliminar proyecto</a></td>
-         <td> <a href="{% url 'webpage:inviteScientist' project.id %}"> Invitar Científico</a></td>
+         <td> {% if user.username == project.owner %}
+          <a href="{% url 'webpage:inviteScientist' project.id %}"> Invitar Científico</a>
+              {% else %}
+              -
+              {% endif %}
+        </td>
        </tr>
     {% endfor %}
   </table>
