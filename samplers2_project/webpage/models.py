@@ -92,3 +92,6 @@ class OptionToShow(models.Model):
     step = models.ForeignKey(Step, related_name = "options_to_show", on_delete=models.CASCADE)
     order_in_steps = models.IntegerField()
     next_step_id = models.IntegerField(null = True, blank=True)
+
+#class WorkflowResult(models.Model):
+    

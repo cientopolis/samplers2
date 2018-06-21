@@ -72,27 +72,7 @@ class WorkflowSerializerPost(serializers.ModelSerializer):
     def create(self, validated_data):
         steps_data = validated_data.pop('steps')
         workflow = Workflow.objects.create(**validated_data)
-        order_in_workflow = 1
-        index = 0
-        for step in steps_data:
-            step["order_in_workflow"] = order_in_workflow
-            step_dictionary = steps_data[index]
-            step_type = step_dictionary['step_type']
-            # Si es de estos tipos, saco los options_to_show para desp iterar sobre estos, ya que sino tira error
-            if (step_type == StepType.SELECTONESTEP.value) | (step_type == StepType.SELECTMULTIPLESTEP.value):
-                options_to_show_data = step_dictionary.pop('options_to_show')
-            step_saved = Step.objects.create(
-                workflow=workflow, **step_dictionary)
-            order_in_workflow = order_in_workflow + 1
-            order_in_steps = 1
-            index = index + 1
-            if (step_type == StepType.SELECTONESTEP.value) | (step_type == StepType.SELECTMULTIPLESTEP.value):
-                # Creo los options to show para cada step, si corresponde
-                for options_to_show in options_to_show_data:
-                    options_to_show["order_in_steps"] = order_in_steps
-                    OptionToShow.objects.create(
-                        step=step_saved, **options_to_show)
-                    order_in_steps = order_in_steps + 1
+        createWorkflowWithSteps(steps_data, workflow)
         return workflow
 
     def update(self, instance, validated_data):
@@ -100,28 +80,26 @@ class WorkflowSerializerPost(serializers.ModelSerializer):
         workflow.delete()
         steps_data = validated_data.pop('steps')
         workflow = Workflow.objects.create(id=instance.id,**validated_data)
-        order_in_workflow = 1
-        index = 0
-        for step in steps_data:
-            step["order_in_workflow"] = order_in_workflow
-            step_dictionary = steps_data[index]
+        createWorkflowWithSteps(steps_data, workflow)
+        return instance
+
+def createWorkflowWithSteps(steps, workflow):
+        for index, step in enumerate(steps):
+            step["order_in_workflow"] = index + 1
+            step_dictionary = steps[index]
             step_type = step_dictionary['step_type']
-            # Si es de estos tipos, saco los options_to_show para desp iterar sobre estos, ya que sino tira error
+            # Si es de estos tipos, saco los options_to_show para desp iterar sobre estos
             if (step_type == StepType.SELECTONESTEP.value) | (step_type == StepType.SELECTMULTIPLESTEP.value):
                 options_to_show_data = step_dictionary.pop('options_to_show')
             step_saved = Step.objects.create(
                 workflow=workflow, **step_dictionary)
-            order_in_workflow = order_in_workflow + 1
-            order_in_steps = 1
-            index = index + 1
             if (step_type == StepType.SELECTONESTEP.value) | (step_type == StepType.SELECTMULTIPLESTEP.value):
                 # Creo los options to show para cada step, si corresponde
-                for options_to_show in options_to_show_data:
-                    options_to_show["order_in_steps"] = order_in_steps
+                for idx, options_to_show in enumerate(options_to_show_data, start =1):
+                    options_to_show["order_in_steps"] = idx
                     OptionToShow.objects.create(
                         step=step_saved, **options_to_show)
-                    order_in_steps = order_in_steps + 1
-        return instance
+        return workflow
 
 class ProjectSerializer(serializers.ModelSerializer):
 	class Meta:

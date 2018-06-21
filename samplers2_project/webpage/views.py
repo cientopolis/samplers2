@@ -14,7 +14,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib import messages 
+import zipfile
 import pdb
+from django.conf import settings
+import os
+from json import JSONDecoder
+from functools import partial
 
 
 @login_required
@@ -139,15 +144,11 @@ class WorkflowDetail(APIView):
         workflow = self.get_object(pk)
         serializer = WorkflowSerializer(workflow)
         data = serializer.data
-        index = 1
-        for obj in data['steps']:
+        for index, obj in enumerate(data['steps'],start=1):
             obj["id"] = index
-            index = index + 1
             if (obj['step_type'] == StepType.SELECTONESTEP.value) | (obj['step_type'] == StepType.SELECTMULTIPLESTEP.value):
-                id = 1
-                for option in obj['options_to_show']:
-                    option["id"] = id
-                    id = id + 1
+                for idx, option in enumerate(obj['options_to_show'],start =1):
+                    option["id"] = idx
         return Response({"data":data, "status_code": 200}, status= 200)
 
     def put(self, request, pk, format=None):
@@ -184,3 +185,39 @@ class ProjectDetail(APIView):
         serializer = ProjectDetailSerializer(project)
         data = serializer.data
         return Response({"data":data, "status_code": 200}, status= 200)
+
+
+class WorkflowResult(APIView):
+    """
+    List all workflow, or create a new workflow.
+    """
+    def post(self, request, pk, format=None):
+        content = request.FILES['sample']
+        unzipped = zipfile.ZipFile(content)
+        unzipped.extractall("tmp")
+        list = unzipped.namelist()
+        for file in list:
+            filecontent = unzipped.read(file)
+            pdb.set_trace()
+
+#class Prueba(APIView):
+    #def get(self, request, format=None):
+        #file = open(os.path.join(settings.PROJECT_ROOT, 'sample_1529373823048.json'))
+        #for data in json_parse(file):
+            #pdb.set_trace()
+
+
+def json_parse(fileobj, decoder=JSONDecoder(), buffersize=2048):
+    buffer = ''
+    for chunk in iter(partial(fileobj.read, buffersize), ''):
+        pdb.set_trace()
+        buffer += chunk
+        while buffer:
+            try:
+                result, index = decoder.raw_decode(buffer)
+                yield result
+                buffer = buffer[index:]
+            except ValueError:
+                # Not enough data to decode, read more
+                break
+
