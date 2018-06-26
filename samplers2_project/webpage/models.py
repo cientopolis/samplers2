@@ -74,7 +74,7 @@ class Step(models.Model):
     #Only for TextStep
     sample_text = models.TextField(max_length=500, blank=True)
     max_length = models.IntegerField(null = True, blank=True)
-    optional = models.NullBooleanField(blank=True, null=True,)
+    optional = models.NullBooleanField(blank=True, null=True)
     #Ver si va esto
     INPUT_TYPE = (
        ('number', 'number'),
@@ -93,5 +93,52 @@ class OptionToShow(models.Model):
     order_in_steps = models.IntegerField()
     next_step_id = models.IntegerField(null = True, blank=True)
 
-#class WorkflowResult(models.Model):
-    
+class WorkflowResult(models.Model):
+    workflow = models.OneToOneField(Workflow, on_delete=models.CASCADE)
+    start_date_time = models.DateTimeField(blank=True, null=True)
+    end_date_time = models.DateTimeField(blank=True, null=True)
+    sent = models.NullBooleanField(blank=True, null=True)
+
+class TextStepResult(models.Model):
+    workflow_result = models.OneToOneField(WorkflowResult, on_delete=models.CASCADE)
+    step_id = models.IntegerField(null = True, blank=True)
+    inserted_text = models.TextField(max_length=500, blank=True)
+
+class DateStepResult(models.Model):
+    workflow_result = models.OneToOneField(WorkflowResult, on_delete=models.CASCADE)
+    step_id = models.IntegerField(null = True, blank=True)
+    selected_time = models.DateTimeField()
+
+class ResourceStepResult(models.Model):
+    workflow_result = models.OneToOneField(WorkflowResult, on_delete=models.CASCADE)
+    step_id = models.IntegerField(null = True, blank=True)
+    TYPE_CHOICES = (
+        ("PhotoStepResult" , "PhotoStepResult"),
+        ("SoundRecordStepResult" , "SoundRecordStepResult"),
+        
+    )
+    type = models.CharField(max_length=30, choices = TYPE_CHOICES, null = False)
+    resource_path = models.TextField(max_length=500, blank=True)
+
+class SelectStepResult(models.Model):
+    workflow_result = models.OneToOneField(WorkflowResult, on_delete=models.CASCADE)
+    step_id = models.IntegerField(null = True, blank=True)
+    TYPE_CHOICES = (
+        ("SelectOneStepResult" , "SelectOneStepResult"),
+        ("SelectMultipleStepResult" , "SelectMultipleStepResult"),
+        
+    )
+    select_type = models.CharField(max_length=30, choices = TYPE_CHOICES, null = False)
+
+class OptionToShowResult(models.Model):
+    select_step_result = models.OneToOneField(SelectStepResult, on_delete=models.CASCADE)
+    text_to_show = models.TextField(max_length=500, blank=True)
+    option_id = models.IntegerField(null = True, blank=True)
+    next_step_id = models.IntegerField(null = True, blank=True)
+
+class LocationStepResult(models.Model):
+    workflow_result = models.OneToOneField(WorkflowResult, on_delete=models.CASCADE)
+    step_id = models.IntegerField(null = True, blank=True)
+    latitude = models.BigIntegerField(null = True, blank=True)
+    longitude = models.BigIntegerField(null = True, blank=True)
+

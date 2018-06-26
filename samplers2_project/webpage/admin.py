@@ -1,11 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
-from webpage.models import Profile
-from webpage.models import Project
-from webpage.models import Workflow
-from webpage.models import Step
-from webpage.models import OptionToShow
-from webpage.models import ParticipantsGroup
+from webpage.models import *
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -57,6 +52,17 @@ class OptionToShowAdmin(admin.ModelAdmin):
     def id_step(self, instance):
         return instance.step.id
 
+class WorkflowResultAdmin(admin.ModelAdmin):
+    list_display = ['id', 'id_workflow', 'start_date_time', 'end_date_time', 'sent']
+
+    def id_workflow(self, instance):
+        return instance.workflow.id
+
+class TextStepResultAdmin(admin.ModelAdmin):
+    list_display = ['id', 'id_workflow_result', 'step_id', 'inserted_text']
+
+    def id_workflow_result(self, instance):
+        return instance.workflow_result.id
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
@@ -66,3 +72,5 @@ admin.site.register(Workflow, WorkflowAdmin)
 admin.site.register(Step, StepAdmin)
 admin.site.register(OptionToShow, OptionToShowAdmin)
 admin.site.register(ParticipantsGroup, ParticipantsGroupAdmin)
+admin.site.register(WorkflowResult, WorkflowResultAdmin)
+admin.site.register(TextStepResult, TextStepResultAdmin)

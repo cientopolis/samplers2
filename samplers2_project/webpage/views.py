@@ -5,9 +5,9 @@ from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from webpage.forms import SignUpForm, ProjectForm, InviteScientistForm
 from django.db import transaction
-from webpage.models import Project, ParticipantsGroup, User
 from django.shortcuts import get_object_or_404, redirect, render
-from webpage.models import Workflow
+from webpage.models import *
+from webpage.models import WorkflowResult as WorkflowResultModel
 from webpage.serializers import *
 from django.http import Http404
 from rest_framework.views import APIView
@@ -20,6 +20,7 @@ from django.conf import settings
 import os
 from json import JSONDecoder
 from functools import partial
+from webpage.enums import StepType
 
 
 @login_required
@@ -200,17 +201,33 @@ class WorkflowResult(APIView):
             filecontent = unzipped.read(file)
             pdb.set_trace()
 
-#class Prueba(APIView):
-    #def get(self, request, format=None):
-        #file = open(os.path.join(settings.PROJECT_ROOT, 'sample_1529373823048.json'))
-        #for data in json_parse(file):
-            #pdb.set_trace()
-
+class Prueba(APIView):
+    def get(self, request, format=None):
+        workflow = Workflow.objects.get(id=33)
+        workflow_result = WorkflowResultModel()
+        file = open(os.path.join(settings.PROJECT_ROOT, 'sample_1529373823048.json'))
+        for data in json_parse(file):
+            #sdt = data['startDateTime']
+            #edt = data['endDateTime']
+            #workflow_result.start_date_time = sdt
+            #workflow_result.end_date_time = edt
+            pdb.set_trace()
+            workflow_result.workflow = workflow
+            workflow_result.sent = data['sent']
+            workflow_result.save()
+            steps = data['steps']
+            for step in steps: 
+                if step['type'] == StepType.TEXTSTEP.value:
+                    textStepResult = TextStepResult()
+                    textStepResult.step_id = step['stepId']
+                    textStepResult.inserted_text = step['insertedText']
+                    textStepResult.workflow_result = workflow_result
+                    textStepResult.save()
+                    
 
 def json_parse(fileobj, decoder=JSONDecoder(), buffersize=2048):
     buffer = ''
     for chunk in iter(partial(fileobj.read, buffersize), ''):
-        pdb.set_trace()
         buffer += chunk
         while buffer:
             try:

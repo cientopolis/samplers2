@@ -88,17 +88,17 @@ def createWorkflowWithSteps(steps, workflow):
             step["order_in_workflow"] = index + 1
             step_dictionary = steps[index]
             step_type = step_dictionary['step_type']
+            options_to_show_data = []
             # Si es de estos tipos, saco los options_to_show para desp iterar sobre estos
             if (step_type == StepType.SELECTONESTEP.value) | (step_type == StepType.SELECTMULTIPLESTEP.value):
                 options_to_show_data = step_dictionary.pop('options_to_show')
             step_saved = Step.objects.create(
                 workflow=workflow, **step_dictionary)
-            if (step_type == StepType.SELECTONESTEP.value) | (step_type == StepType.SELECTMULTIPLESTEP.value):
                 # Creo los options to show para cada step, si corresponde
-                for idx, options_to_show in enumerate(options_to_show_data, start =1):
-                    options_to_show["order_in_steps"] = idx
-                    OptionToShow.objects.create(
-                        step=step_saved, **options_to_show)
+            for idx, options_to_show in enumerate(options_to_show_data, start =1):
+                options_to_show["order_in_steps"] = idx
+                OptionToShow.objects.create(
+                    step=step_saved, **options_to_show)
         return workflow
 
 class ProjectSerializer(serializers.ModelSerializer):
