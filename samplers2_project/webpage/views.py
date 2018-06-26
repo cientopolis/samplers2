@@ -21,6 +21,7 @@ import os
 from json import JSONDecoder
 from functools import partial
 from webpage.enums import StepType
+import dateutil.parser
 
 
 @login_required
@@ -206,14 +207,11 @@ class Prueba(APIView):
         workflow = Workflow.objects.get(id=33)
         workflow_result = WorkflowResultModel()
         file = open(os.path.join(settings.PROJECT_ROOT, 'sample_1529373823048.json'))
-        for data in json_parse(file):
-            #sdt = data['startDateTime']
-            #edt = data['endDateTime']
-            #workflow_result.start_date_time = sdt
-            #workflow_result.end_date_time = edt
-            pdb.set_trace()
+        for data in json_parse(file): 
             workflow_result.workflow = workflow
             workflow_result.sent = data['sent']
+            workflow_result.start_date_time = dateutil.parser.parse(data['startDateTime'])
+            workflow_result.end_date_time = dateutil.parser.parse(data['endDateTime'])
             workflow_result.save()
             steps = data['steps']
             for step in steps: 

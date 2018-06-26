@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from webpage.models import *
+import pdb
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -53,10 +54,20 @@ class OptionToShowAdmin(admin.ModelAdmin):
         return instance.step.id
 
 class WorkflowResultAdmin(admin.ModelAdmin):
-    list_display = ['id', 'id_workflow', 'start_date_time', 'end_date_time', 'sent']
+    list_display = ['id', 'id_workflow', 'id_start_date_time', 'id_end_date_time', 'sent']
+
+    def id_start_date_time(self, instance):
+        return instance.start_date_time.strftime("%d %b %Y %H:%M:%S")
+    id_start_date_time.admin_order_field = 'start_date_time'
+    id_start_date_time.short_description = 'Start Date Time'
 
     def id_workflow(self, instance):
         return instance.workflow.id
+
+    def id_end_date_time(self, instance):
+        return instance.end_date_time.strftime("%d %b %Y %H:%M:%S")
+    id_end_date_time.admin_order_field = 'end_date_time'
+    id_end_date_time.short_description = 'End Date Time'
 
 class TextStepResultAdmin(admin.ModelAdmin):
     list_display = ['id', 'id_workflow_result', 'step_id', 'inserted_text']
