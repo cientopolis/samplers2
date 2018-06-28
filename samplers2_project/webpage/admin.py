@@ -75,6 +75,12 @@ class TextStepResultAdmin(admin.ModelAdmin):
     def id_workflow_result(self, instance):
         return instance.workflow_result.id
 
+class LocationStepResultAdmin(admin.ModelAdmin):
+    list_display = ['id', 'id_workflow_result', 'step_id', 'latitude', 'longitude']
+
+    def id_workflow_result(self, instance):
+        return instance.workflow_result.id
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Project, ProjectAdmin)
@@ -85,3 +91,5 @@ admin.site.register(OptionToShow, OptionToShowAdmin)
 admin.site.register(ParticipantsGroup, ParticipantsGroupAdmin)
 admin.site.register(WorkflowResult, WorkflowResultAdmin)
 admin.site.register(TextStepResult, TextStepResultAdmin)
+admin.site.register(LocationStepResult, LocationStepResultAdmin)
+

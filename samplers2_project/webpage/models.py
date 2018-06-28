@@ -139,6 +139,6 @@ class OptionToShowResult(models.Model):
 class LocationStepResult(models.Model):
     workflow_result = models.OneToOneField(WorkflowResult, on_delete=models.CASCADE)
     step_id = models.IntegerField(null = True, blank=True)
-    latitude = models.BigIntegerField(null = True, blank=True)
-    longitude = models.BigIntegerField(null = True, blank=True)
+    latitude = models.DecimalField(max_digits=10, decimal_places=7)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7)
 

@@ -22,6 +22,7 @@ from json import JSONDecoder
 from functools import partial
 from webpage.enums import StepType
 import dateutil.parser
+import json
 
 
 @login_required
@@ -206,33 +207,35 @@ class Prueba(APIView):
     def get(self, request, format=None):
         workflow = Workflow.objects.get(id=33)
         workflow_result = WorkflowResultModel()
-        file = open(os.path.join(settings.PROJECT_ROOT, 'sample_1529373823048.json'))
-        for data in json_parse(file): 
-            workflow_result.workflow = workflow
-            workflow_result.sent = data['sent']
-            workflow_result.start_date_time = dateutil.parser.parse(data['startDateTime'])
-            workflow_result.end_date_time = dateutil.parser.parse(data['endDateTime'])
-            workflow_result.save()
-            steps = data['steps']
-            for step in steps: 
-                if step['type'] == StepType.TEXTSTEP.value:
-                    textStepResult = TextStepResult()
-                    textStepResult.step_id = step['stepId']
-                    textStepResult.inserted_text = step['insertedText']
-                    textStepResult.workflow_result = workflow_result
-                    textStepResult.save()
-                    
-
-def json_parse(fileobj, decoder=JSONDecoder(), buffersize=2048):
-    buffer = ''
-    for chunk in iter(partial(fileobj.read, buffersize), ''):
-        buffer += chunk
-        while buffer:
-            try:
-                result, index = decoder.raw_decode(buffer)
-                yield result
-                buffer = buffer[index:]
-            except ValueError:
-                # Not enough data to decode, read more
-                break
+        #file2 = open(os.path.join(settings.PROJECT_ROOT, 'sample_1529373823048.json'))
+        zip_file = os.path.join(settings.PROJECT_ROOT, 'sample.zip')
+        unzipped = zipfile.ZipFile(zip_file)
+        list_name = unzipped.namelist()
+        for file in list_name:
+            if "json" in file:
+                json_file = unzipped.read(file)
+                
+        data = json.loads(json_file)
+        workflow_result.workflow = workflow
+        workflow_result.sent = data['sent']
+        workflow_result.start_date_time = dateutil.parser.parse(data['startDateTime'])
+        workflow_result.end_date_time = dateutil.parser.parse(data['endDateTime'])
+        workflow_result.save()
+        steps = data['steps']
+        for step in steps: 
+            if step['type'] == StepType.TEXTSTEP.value:
+                textStepResult = TextStepResult()
+                textStepResult.workflow_result = workflow_result
+                textStepResult.step_id = step['stepId']
+                textStepResult.inserted_text = step['insertedText']
+                textStepResult.save()
+            if step['type'] == StepType.LOCATIONSTEP.value:
+                location_step_result = LocationStepResult()
+                location_step_result.workflow_result = workflow_result
+                location_step_result.step_id = step['stepId']
+                pdb.set_trace()
+                location_step_result.latitude = step['latitude']
+                location_step_result.longitude = step['longitude']
+                pdb.set_trace()
+                location_step_result.save()                    
 
