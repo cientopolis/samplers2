@@ -233,9 +233,32 @@ class Prueba(APIView):
                 location_step_result = LocationStepResult()
                 location_step_result.workflow_result = workflow_result
                 location_step_result.step_id = step['stepId']
-                pdb.set_trace()
                 location_step_result.latitude = step['latitude']
                 location_step_result.longitude = step['longitude']
-                pdb.set_trace()
-                location_step_result.save()                    
-
+                location_step_result.save()
+            if step['type'] == StepType.SELECTMULTIPLESTEP.value:
+                multiple_step_result = SelectStepResult()
+                multiple_step_result.workflow_result = workflow_result
+                multiple_step_result.step_id = step['stepId']
+                multiple_step_result.type = "SelectMultipleStepResult"
+                multiple_step_result.save()
+                options = step['selectedOptions']
+                for option in options:
+                    option_result = OptionToShowResult()
+                    option_result.select_step_result = multiple_step_result
+                    option_result.option_id = option['id']
+                    option_result.text_to_show = option['textToShow']
+                    option_result.save()
+            if step['type'] == StepType.SELECTONESTEP.value:
+                one_step_result = SelectStepResult()
+                one_step_result.workflow_result = workflow_result
+                one_step_result.step_id = step['stepId']
+                one_step_result.type = "SelectOneStepResult"
+                one_step_result.save()
+                option = step['selectedOption']
+                option_result = OptionToShowResult()
+                option_result.select_step_result = one_step_result
+                option_result.option_id = option['id']
+                option_result.text_to_show = option['textToShow']
+                option_result.next_step_id = option['nextStepId']
+                option_result.save()
