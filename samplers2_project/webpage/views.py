@@ -23,6 +23,7 @@ from functools import partial
 from webpage.enums import StepType
 import dateutil.parser
 import json
+from django.core.files import File
 
 
 @login_required
@@ -199,16 +200,16 @@ class WorkflowResult(APIView):
         unzipped = zipfile.ZipFile(content)
         unzipped.extractall("tmp")
         list = unzipped.namelist()
+        pdb.set_trace()
         for file in list:
             filecontent = unzipped.read(file)
-            pdb.set_trace()
 
 class Prueba(APIView):
     def get(self, request, format=None):
         workflow = Workflow.objects.get(id=33)
         workflow_result = WorkflowResultModel()
         #file2 = open(os.path.join(settings.PROJECT_ROOT, 'sample_1529373823048.json'))
-        zip_file = os.path.join(settings.PROJECT_ROOT, 'sample.zip')
+        zip_file = os.path.join(settings.PROJECT_ROOT, 'sample2.zip')
         unzipped = zipfile.ZipFile(zip_file)
         list_name = unzipped.namelist()
         for file in list_name:
@@ -223,20 +224,21 @@ class Prueba(APIView):
         workflow_result.save()
         steps = data['steps']
         for step in steps: 
-            if step['type'] == StepType.TEXTSTEP.value:
+            step_type = step['type']
+            if  step_type == StepType.TEXTSTEP.value:
                 textStepResult = TextStepResult()
                 textStepResult.workflow_result = workflow_result
                 textStepResult.step_id = step['stepId']
                 textStepResult.inserted_text = step['insertedText']
                 textStepResult.save()
-            if step['type'] == StepType.LOCATIONSTEP.value:
+            if step_type == StepType.LOCATIONSTEP.value:
                 location_step_result = LocationStepResult()
                 location_step_result.workflow_result = workflow_result
                 location_step_result.step_id = step['stepId']
                 location_step_result.latitude = step['latitude']
                 location_step_result.longitude = step['longitude']
                 location_step_result.save()
-            if step['type'] == StepType.SELECTMULTIPLESTEP.value:
+            if step_type == StepType.SELECTMULTIPLESTEP.value:
                 multiple_step_result = SelectStepResult()
                 multiple_step_result.workflow_result = workflow_result
                 multiple_step_result.step_id = step['stepId']
@@ -249,7 +251,7 @@ class Prueba(APIView):
                     option_result.option_id = option['id']
                     option_result.text_to_show = option['textToShow']
                     option_result.save()
-            if step['type'] == StepType.SELECTONESTEP.value:
+            if step_type == StepType.SELECTONESTEP.value:
                 one_step_result = SelectStepResult()
                 one_step_result.workflow_result = workflow_result
                 one_step_result.step_id = step['stepId']
@@ -262,3 +264,33 @@ class Prueba(APIView):
                 option_result.text_to_show = option['textToShow']
                 option_result.next_step_id = option['nextStepId']
                 option_result.save()
+            if step_type == StepType.SOUNDRECORDSTEP.value:
+                record_step_result = SoundRecordStepResult()
+                record_step_result.workflow_result = workflow_result
+                record_step_result.step_id = step['stepId']
+                file_name = step['soundFileName']
+                for file in list_name:
+                    if file_name in file:
+                        record_file_path = unzipped.extract(file)
+                record_file = open(record_file_path,'rb')
+                record_step_result.file = File(record_file)
+                os.remove(file_name)
+                record_step_result.save()
+            if step_type == StepType.PHOTOSTEP.value:
+                photo_step_result = PhotoStepResult()
+                photo_step_result.workflow_result = workflow_result
+                photo_step_result.step_id = step['stepId']
+                file_name = step['imageFileName']
+                for file in list_name:
+                    if file_name in file:
+                        photo_file_path = unzipped.extract(file)
+                photo_file = open(photo_file_path,'rb')
+                photo_step_result.file = File(photo_file)
+                os.remove(file_name)
+                photo_step_result.save()
+            if step_type == StepType.TIMESTEP.value:
+                time_step_result = TimeStepResult()
+                time_step_result.workflow_result = workflow_result
+                time_step_result.step_id = step['stepId']
+                time_step_result.selected_time = dateutil.parser.parse(step['selected_time'])
+                time_step_result.save()

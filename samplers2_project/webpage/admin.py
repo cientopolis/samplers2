@@ -93,6 +93,29 @@ class OptionToShowResultAdmin(admin.ModelAdmin):
     def id_select_step_result(self, instance):
         return instance.select_step_result.id
 
+class SoundRecordStepResultAdmin(admin.ModelAdmin):
+    list_display = ['id','id_workflow_result', 'step_id','file']
+
+    def id_workflow_result(self, instance):
+        return instance.workflow_result.id
+
+class PhotoStepResultAdmin(admin.ModelAdmin):
+    list_display = ['id','id_workflow_result', 'step_id','file']
+
+    def id_workflow_result(self, instance):
+        return instance.workflow_result.id
+
+class TimeStepResultAdmin(admin.ModelAdmin):
+    list_display = ['id', 'id_workflow_result', 'id_selected_time']
+
+    def id_workflow_result(self, instance):
+        return instance.workflow_result.id
+
+    def id_selected_time(self, instance):
+        return instance.selected_time.strftime("%d %b %Y %H:%M:%S")
+    id_selected_time.admin_order_field = 'selected_date_time'
+    id_selected_time.short_description = 'Selected Date Time'
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Project, ProjectAdmin)
@@ -106,3 +129,6 @@ admin.site.register(TextStepResult, TextStepResultAdmin)
 admin.site.register(LocationStepResult, LocationStepResultAdmin)
 admin.site.register(SelectStepResult, SelectStepResultAdmin)
 admin.site.register(OptionToShowResult, OptionToShowResultAdmin)
+admin.site.register(SoundRecordStepResult, SoundRecordStepResultAdmin)
+admin.site.register(PhotoStepResult, PhotoStepResultAdmin)
+admin.site.register(TimeStepResult, TimeStepResultAdmin)

@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.forms import ModelForm
 from django.utils import timezone
+import pdb
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -104,21 +105,25 @@ class TextStepResult(models.Model):
     step_id = models.IntegerField(null = True, blank=True)
     inserted_text = models.TextField(max_length=500, blank=True)
 
-class DateStepResult(models.Model):
+class TimeStepResult(models.Model):
     workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE)
     step_id = models.IntegerField(null = True, blank=True)
     selected_time = models.DateTimeField()
 
-class ResourceStepResult(models.Model):
+def workflow_result_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/workflow_result_<id>/<filename>
+    name = filename.split("/")[-1]
+    return 'workflow_result_{0}/{1}'.format(instance.workflow_result.id, name)
+
+class SoundRecordStepResult(models.Model):
     workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE)
     step_id = models.IntegerField(null = True, blank=True)
-    TYPE_CHOICES = (
-        ("PhotoStepResult" , "PhotoStepResult"),
-        ("SoundRecordStepResult" , "SoundRecordStepResult"),
-        
-    )
-    type = models.CharField(max_length=30, choices = TYPE_CHOICES, null = False)
-    resource_path = models.TextField(max_length=500, blank=True)
+    file = models.FileField(blank=False, null=False, upload_to=workflow_result_directory_path)
+
+class PhotoStepResult(models.Model):
+    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE)
+    step_id = models.IntegerField(null = True, blank=True)
+    file = models.ImageField(blank=False, null=False, upload_to=workflow_result_directory_path)
 
 class SelectStepResult(models.Model):
     workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE)
