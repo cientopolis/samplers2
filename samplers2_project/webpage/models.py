@@ -147,3 +147,26 @@ class LocationStepResult(models.Model):
     latitude = models.DecimalField(max_digits=10, decimal_places=7)
     longitude = models.DecimalField(max_digits=10, decimal_places=7)
 
+class RouteStepResult(models.Model):
+    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE)
+    step_id = models.IntegerField(null = True, blank=True)
+
+class RouteInformationResult(models.Model):
+    route_step_result = models.ForeignKey(RouteStepResult, on_delete=models.CASCADE)
+    accuracy = models.DecimalField(max_digits=10, decimal_places=4)
+    altitude = models.DecimalField(max_digits=10, decimal_places=4)
+    bearing = models.DecimalField(max_digits=10, decimal_places=4)
+    elapsed_realtime_nanos = models.BigIntegerField()
+    fields_mask = models.IntegerField()
+    latitude = models.DecimalField(max_digits=10, decimal_places=7)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7)
+    provider = models.TextField(max_length=500)
+    speed = models.IntegerField()
+    time = models.DateTimeField()
+    #Empieza el objeto mExtras, ver si moderlarlo todo aca
+    flags = models.IntegerField(null = True, blank=True)
+    #Empieza el objeto parcelledData dentro de mExtras, ver si modelarlo aca
+    native_ptr = models.BigIntegerField(null = True, blank=True)
+    native_size = models.IntegerField(null = True, blank=True)
+    owns_native_parcel_object = models.NullBooleanField(blank=True, null=True)
+

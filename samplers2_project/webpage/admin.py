@@ -116,6 +116,19 @@ class TimeStepResultAdmin(admin.ModelAdmin):
     id_selected_time.admin_order_field = 'selected_date_time'
     id_selected_time.short_description = 'Selected Date Time'
 
+class RouteStepResultAdmin(admin.ModelAdmin):
+    list_display = ['id','id_workflow_result', 'step_id']
+
+    def id_workflow_result(self, instance):
+        return instance.workflow_result.id
+
+class RouteInformationResultAdmin(admin.ModelAdmin):
+    list_display = ['id','id_route_step_result', 'accuracy','altitude','bearing','elapsed_realtime_nanos','fields_mask','latitude','longitude','provider','speed','time','flags','native_ptr','native_size','owns_native_parcel_object']
+
+    def id_route_step_result(self, instance):
+        return instance.route_step_result.id
+
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Project, ProjectAdmin)
@@ -132,3 +145,6 @@ admin.site.register(OptionToShowResult, OptionToShowResultAdmin)
 admin.site.register(SoundRecordStepResult, SoundRecordStepResultAdmin)
 admin.site.register(PhotoStepResult, PhotoStepResultAdmin)
 admin.site.register(TimeStepResult, TimeStepResultAdmin)
+admin.site.register(RouteStepResult, RouteStepResultAdmin)
+admin.site.register(RouteInformationResult, RouteInformationResultAdmin)
+

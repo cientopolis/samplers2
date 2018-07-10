@@ -24,6 +24,7 @@ from webpage.enums import StepType
 import dateutil.parser
 import json
 from django.core.files import File
+import datetime
 
 
 @login_required
@@ -209,7 +210,7 @@ class Prueba(APIView):
         workflow = Workflow.objects.get(id=33)
         workflow_result = WorkflowResultModel()
         #file2 = open(os.path.join(settings.PROJECT_ROOT, 'sample_1529373823048.json'))
-        zip_file = os.path.join(settings.PROJECT_ROOT, 'sample2.zip')
+        zip_file = os.path.join(settings.PROJECT_ROOT, 'sample.zip')
         unzipped = zipfile.ZipFile(zip_file)
         list_name = unzipped.namelist()
         for file in list_name:
@@ -294,3 +295,40 @@ class Prueba(APIView):
                 time_step_result.step_id = step['stepId']
                 time_step_result.selected_time = dateutil.parser.parse(step['selected_time'])
                 time_step_result.save()
+            if step_type == StepType.ROUTESTEP.value:
+                route_step_result = RouteStepResult()
+                route_step_result.workflow_result = workflow_result
+                route_step_result.step_id = step['stepId']
+                route_step_result.save()
+                routes = step['route']
+                for route in routes:
+                    route_information_result = RouteInformationResult()
+                    route_information_result.route_step_result = route_step_result
+                    route_information_result.accuracy = route['mAccuracy']
+                    route_information_result.altitude = route['mAltitude']
+                    route_information_result.bearing = route['mBearing']
+                    route_information_result.elapsed_realtime_nanos = route['mElapsedRealtimeNanos']
+                    route_information_result.latitude = route['mLatitude']
+                    route_information_result.longitude = route['mLongitude']
+                    route_information_result.provider = route['mProvider']
+                    route_information_result.speed = route['mSpeed']
+                    route_information_result.fields_mask = route['mFieldsMask']
+                    route_information_result.time = datetime.datetime.fromtimestamp(route['mTime'] / 1e3)
+                    #Si tiene extras
+                    extra = route['mExtras']
+                    if not extra is None:
+                        route_information_result.flags = extra['mFlags']
+                        #Si tiene parcelledData
+                        parcelledData = extra['mParcelledData']
+                        if not parcelledData is None:
+                            route_information_result.native_ptr = parcelledData['mNativePtr']
+                            route_information_result.native_size = parcelledData['mNativeSize']
+                            route_information_result.owns_native_parcel_object = parcelledData['mOwnsNativeParcelObject']
+                    route_information_result.save()
+
+
+
+
+             
+
+                   
