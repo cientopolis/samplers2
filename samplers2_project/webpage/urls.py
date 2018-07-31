@@ -17,5 +17,6 @@ urlpatterns = [
     url(r'^project/(?P<pk>[0-9]+)$', views.ProjectDetail.as_view()),
     url(r'^workflow/(?P<pk>[0-9]+)/result', views.WorkflowResult.as_view()),
     url(r'^prueba/$', views.Prueba.as_view()),
+    url(r'^login/$', views.Login.as_view()),
 
 ]

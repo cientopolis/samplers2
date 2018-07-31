@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from webpage.models import OptionToShow, Step, Workflow, Project
 from webpage.enums import StepType
+from social_django.models import UserSocialAuth
+from rest_framework import serializers
 import pdb
 
 
@@ -112,3 +114,11 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('name','description','workflow','created_date')
+
+class UserSocialAuthSerializer(serializers.ModelSerializer):
+    extra_data = serializers.JSONField()
+    class Meta:
+        model = UserSocialAuth
+        fields = ('provider','uid','extra_data')
+
+
