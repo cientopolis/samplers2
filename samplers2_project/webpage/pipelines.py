@@ -6,7 +6,7 @@ import pdb
 
 #Ahora no se está usando(no se configuro en settings.py), ver si se necesita más adelante
 def save_profile(backend, user, response, *args, **kwargs):
-    print(response)
+    pdb.set_trace()
     if backend.name == 'facebook':
         profile = user.profile
         if profile is None:
@@ -17,6 +17,7 @@ def save_profile(backend, user, response, *args, **kwargs):
 
 def user_must_exists(strategy, user=None, *args, **kwargs):
     request = strategy.request
+    pdb.set_trace()
     if user is None:
         raise  AuthStateForbidden(request, 'Authenticate Exception!')
     

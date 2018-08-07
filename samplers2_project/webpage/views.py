@@ -338,23 +338,36 @@ class Login(APIView):
         status_code = 200
         obj = {}
         obj["msg"] = "User exists"
+        obj["exists"] = True
         try:
             user_social = UserSocialAuth.objects.get(uid=user_id)
+            user_information = {}
+            user_information["username"] = user_social.user.username
+            user_information["email"] = user_social.user.email
+            obj["user_information"] = user_information
         except UserSocialAuth.DoesNotExist:  
             status_code = 404
             obj["msg"] = "User not exists"
-        return Response({"data":obj, "status_code": status_code}, status= 404)
+            obj["exists"] = False
+            obj["redirect_url"] = "http://localhost:8000/login/"
+        return Response({"data":obj, "status_code": status_code}, status= status_code)
 
+    '''
     def post(self, request, format=None):
         serializer = UserSocialAuthSerializer(data=request.data)
         if serializer.is_valid():
-            user_social = serializer.validated_data
+            new_user = User()
+            username = serializer.validated_data['extra_data']['username']
+            email = serializer.validated_data['extra_data']['email']
+            new_user.username = username
+            new_user.email = email
+            new_user.save() 
             pdb.set_trace()
-            serializer.validated_data['user_id'] = 1
+            serializer.validated_data['user_id'] = new_user.id
             serializer.save()
             return Response({"data": serializer.data, "status_code":status.HTTP_201_CREATED}, status=status.HTTP_201_CREATED)
         return Response({"data":serializer.errors, "status_code": status.HTTP_400_BAD_REQUEST}, status = status.HTTP_400_BAD_REQUEST)
+    '''
 
              
 
-                   

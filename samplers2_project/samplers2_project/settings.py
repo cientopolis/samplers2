@@ -99,17 +99,23 @@ SOCIAL_AUTH_FACEBOOK_SECRET = 'a6b97cd6848c84e142c1d88ff99e9a5b'
 
 # Facebook Settings
 
+SOCIAL_AUTH_USER_FIELDS = ['username','email']
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = ['first_name', 'last_name','username','email']
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-    'fields': 'id, name, email, age_range',
+'fields': 'id,name,email',
 }
 
 # Google Settings
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name','username']
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
       # 'access_type': 'offline',
       # 'approval_prompt': 'force',
 }
+
+SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email','extra_data']
 
 
 LOGIN_URL = 'login'
