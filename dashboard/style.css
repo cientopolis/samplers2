@@ -1,0 +1,78 @@
+
+
+span {
+    color: white;
+}
+
+img{
+    margin-bottom: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+.contenedor img {
+    height: 100%;
+    width: 100%;
+    padding: 2%; 
+}
+
+.header {
+    background-color: rgb(66,139,202);
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.title {
+    margin-bottom: 30px;
+}
+
+.position-container{
+    padding-top: 10px;
+    padding-left: 10px;
+    background-color: rgb(255,255,255);
+}
+
+.modal-header{
+    background-color: rgb(66,139,202);
+    color: white;
+}
+
+.image {
+    padding-top: 10px;
+    background-color: rgb(235,235,235);
+}
+
+.contenedor {
+    height: 160px;
+    border: 1px solid #aaaaaa;
+    margin-bottom: 20px; 
+}
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    -webkit-animation-name: fadeIn; /* Fade in the background */
+    -webkit-animation-duration: 0.4s;
+    animation-name: fadeIn;
+    animation-duration: 0.4s
+}
+
+/* Modal Content */
+.modal-content {
+    margin: 0 auto;
+    background-color: #fefefe;
+    width: 80%;
+    -webkit-animation-name: slideIn;
+    -webkit-animation-duration: 0.4s;
+    animation-name: slideIn;
+    animation-duration: 0.4s
+}

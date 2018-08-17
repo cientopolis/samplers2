@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<!-- saved from url=(0075)http://visjs.org/examples/network/layout/hierarchicalLayoutUserdefined.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Dashboard</title>
+
+    <style type="text/css">
+    body {
+        font: 10pt sans;
+    }
+
+    #mynetwork {
+        width: 600px;
+        height: 600px;
+        border: 1px solid lightgray;
+    }
+</style>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<link rel="stylesheet" href="./style.css">
+
+
+<script type="text/javascript">
+    var nodes = null;
+    var edges = null;
+    var network = null;
+    var container = null;
+    var data = null;
+    var options = null;
+
+    function destroy() {
+        if (network !== null) {
+            network.destroy();
+            network = null;
+        }
+    }
+
+    function draw() {
+        destroy();
+        nodes = [];
+        edges = [];
+        var connectionCount = [];
+        
+
+
+
+            // create a network
+            container = document.getElementById('mynetwork');
+            data = {
+                nodes: nodes,
+                edges: edges
+            };
+
+            options = {
+                edges: {
+                    smooth: {
+                        type: 'cubicBezier',
+                        forceDirection: 'vertical',
+                        roundness: 0.4
+                    }
+                },
+                interaction: {hover: true},
+                layout: {
+                    hierarchical: {
+                        direction: "UD"
+                    }
+                },
+                physics:false
+            };
+            network = new vis.Network(container, data, options);
+            fillNodesCombo();
+
+            // add event listeners
+            network.on('hoverNode', function (params) {
+                alert(params);
+                //openModal(params.nodes[0]);
+            });
+            network.on('hoverEdge', function (params) {
+                alert(params);
+                //openModal(params.nodes[0]);
+            });
+            network.on('blurNode', function (params) {
+                alert("Fuera del nodo");
+            });
+            network.on('blurEdge', function (params) {
+                alert("Fuera del vertice");
+                //openModal(params.nodes[0]);
+            });
+        }
+
+    </script>
+    
+</head>
+
+<body onload="draw();">
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div style="overflow-y: auto;" class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>Modal Informacion a mostrar</h2>
+            </div>
+            <div class="modal-body">
+                <h3>Ingrese el texto a mostrar</h3>
+                <hr>
+                <input class="col-sm-12 form-control" type="text" name="text_to_show">
+
+            </div>
+            <div class="modal-footer" style="margin-top: 30px;">
+                <button type="button" id="close_btn" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+
+    </div>
+    <div id="myModal2" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>Modal seleccion multiple</h2>
+            </div>
+            <div class="modal-body">
+                <h3>Ingrese el texto a mostrar</h3>
+                <hr>
+                <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                <hr>
+                <div class="option_container">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <h4>Respuestas posibles</h4>
+                        </div>
+                        <div class="col-sm-4">
+                            <h4>Seleccione el step destino</h4>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                        </div>
+                        <div class="col-sm-4">
+                            <select class="col-sm-12 form-control">
+                                <option value="volvo">1 - Step 1</option>
+                                <option value="saab">2 - Step 2</option>
+                                <option value="mercedes">3 - Step 3</option>
+                                <option value="audi">4 - Step 4</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                        </div>
+                        <div class="col-sm-4">
+                            <select class="col-sm-12 form-control">
+                                <option value="volvo">1 - Step 1</option>
+                                <option value="saab">2 - Step 2</option>
+                                <option value="mercedes">3 - Step 3</option>
+                                <option value="audi">4 - Step 4</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                        </div>
+                        <div class="col-sm-4">
+                            <select class="col-sm-12 form-control">
+                                <option value="volvo">1 - Step 1</option>
+                                <option value="saab">2 - Step 2</option>
+                                <option value="mercedes">3 - Step 3</option>
+                                <option value="audi">4 - Step 4</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+
+
+                </div>
+                <p onclick="addOption()">Agregar una opcion mas...</p>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="close_btn2" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- The Modal -->
+    <div id="myModal3" class="modal">
+
+        <!-- Modal content -->
+        <div style="overflow-y: auto;" class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>Modal Text step</h2>
+            </div>
+            <div class="modal-body">
+                <h3>Ingrese el texto a mostrar</h3>
+                <hr>
+                <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                <h3>Ingrese el texto a mostrar</h3>
+                <hr>
+                <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                <h3>Ingrese el texto de muestra</h3>
+                <hr>
+                <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                <h3>Ingrese el largo maximo del texto</h3>
+                <hr>
+                <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                <h3>Ingrese el tipo de dato</h3>
+                <hr>
+                <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                <h3>Ingrese si es opcional</h3>
+                <hr>
+                <input class="col-sm-12 form-control" type="text" name="text_to_show">
+
+
+            </div>
+            <div class="modal-footer" style="margin-top: 30px;">
+                <button type="button" id="close_btn3" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <div id="myModal4" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>Modal seleccion multiple</h2>
+            </div>
+            <div class="modal-body">
+                <h3>Ingrese el texto a mostrar</h3>
+                <hr>
+                <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                <hr>
+                <div class="option_container2">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4>Respuestas posibles</h4>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <input class="col-sm-12 form-control" type="text" name="text_to_show">
+                        </div>
+                    </div>
+                    <hr>
+
+
+                </div>
+                <p onclick="addOption2()">Agregar una opcion mas...</p>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="close_btn4" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div id="mynetwork"><div class="vis-network" tabindex="900" style="position: relative; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;"><canvas width="1200" height="1200" style="position: relative; touch-action: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;"></canvas></div></div>
+    <div class="row">
+        <div class="col-sm-2">
+            <p>Agregar nodo hijo de: </p> 
+        </div>
+        <div class="col-sm-3 ">
+            <select class="col-sm-12 form-control" id="father">
+
+
+            </select>
+        </div>
+        <div class="col-sm-3 ">
+            <select class="col-sm-12 form-control" id="step-type">
+                <option value="1">Seleccion</option>
+                <option value="2">Geoposicionamiento</option>
+                <option value="3">Foto</option>
+                <option value="4">Informacion</option>
+                <option value="5">Pregunta</option>
+                <option value="6">Audio</option>
+                <option value="7">Hora</option>
+                <option value="8">Fecha</option>
+                <option value="9">Seleccion multiple</option>
+                <option value="10">Texto</option>
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <button class="form-control"  onclick="addNode()">Agregar</button>
+        </div>
+
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-2">
+            <p>Borrar nodo: </p> 
+        </div>
+        <div class="col-sm-3 ">
+            <select class="col-sm-12 form-control" id="delete-node">
+
+
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <button class="form-control" onclick="deleteNode(document.getElementById('delete-node').value)">Borrar</button>
+        </div>
+        
+    </div>
+
+    
+
+    <script language="JavaScript">
+
+
+    </script>
+
+
+</body>
+<script>
+
+// Get the modal
+var modal = document.getElementById('myModal');
+var modal2 = document.getElementById('myModal2');
+var modal3 = document.getElementById('myModal3');
+var modal4 = document.getElementById('myModal4');
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+var span2 = document.getElementsByClassName("close")[1];
+var span3 = document.getElementsByClassName("close")[2];
+var span4 = document.getElementsByClassName("close")[3];
+
+var button_close = document.getElementById("close_btn");
+var button_close2 = document.getElementById("close_btn2");
+var button_close3 = document.getElementById("close_btn3");
+var button_close4 = document.getElementById("close_btn4");
+
+var node_father = document.getElementById('father');
+var node_delete = document.getElementById('delete-node');
+var new_node_type = document.getElementById('step-type');
+
+function addOption() {
+    $( ".option_container" ).append('<div class="row"> <div class="col-sm-8"><input class="col-sm-12 form-control" type="text" name="text_to_show"></div><div class="col-sm-4"><select class="col-sm-12 form-control"><option value="volvo">1 - Step 1</option><option value="saab">2 - Step 2</option><option value="mercedes">3 - Step 3</option><option value="audi">4 - Step 4</option></select></div></div><hr>');
+}
+
+function addOption2() {
+    $( ".option_container2" ).append('<div class="row"><div class="col-sm-8"><input class="col-sm-12 form-control" type="text" name="text_to_show"></div></div><hr>');
+}
+
+function hasSon(node) {
+    var hasSon = false;
+    for(index in edges) {
+        if(edges[index].from == node) {
+            hasSon = true;
+        }
+    }
+    return hasSon;
+}
+
+function addNode() {
+    if(nodes.length == 0){
+        nodes.push({id: 0 , shape: 'circularImage', image: new_node_type[new_node_type.selectedIndex].value+'.png', label: String(0)});
+        nodes[0]["level"] = 0;
+        
+    } else {
+        if((nodes[node_father[node_father.selectedIndex].value].image == "1.png") || !hasSon(nodes[node_father[node_father.selectedIndex].value].id)){
+            nodes.push({id: nodes.length , shape: 'circularImage', image: new_node_type[new_node_type.selectedIndex].value+'.png', label: String(nodes.length)});
+            nodes[nodes.length - 1]["level"] = (nodes[node_father[node_father.selectedIndex].value].level)+1;
+            edges.push({from: nodes[node_father[node_father.selectedIndex].value].id, to: nodes[nodes.length - 1].id});
+        //TODO add modal y si el padre es decision agregar la seleccion en el modal
+    } else {
+        alert('No se puede agregar un hijo al nodo seleccionado');
+    }
+}
+reDraw();
+
+
+
+}
+
+function reDraw() {
+    network = new vis.Network(container, data, options);
+    network.on('hoverNode', function (params) {
+        alert("Arriba del nodo");
+    });
+    network.on('hoverEdge', function (params) {
+        alert("Arriba del vertice");
+                //openModal(params.nodes[0]);
+            });
+    network.on('blurNode', function (params) {
+        alert("Fuera del nodo");
+    });
+    network.on('blurEdge', function (params) {
+        alert("Fuera del vertice");
+                //openModal(params.nodes[0]);
+            });
+    fillNodesCombo();
+}
+
+function deleteNode(node) {
+    if (canDeleteNode(nodes[node].id)) {
+        var index = nodes.indexOf(nodes[node]);
+        if (index > -1) {
+          deleteEdge(nodes[node].id);
+          nodes.splice(index, 1);
+          //TODO delete modal
+      }
+      
+      reDraw();
+  } else {
+    alert("Para borrar un nodo no debe tener hijos");
+}
+
+}
+
+function deleteEdge(to) {
+    var indice = -1;
+    for(index in edges) {
+        if(edges[index].to == to) {
+            indice = edges.indexOf(edges[index]);
+        }
+    }
+    if (indice > -1) {
+      edges.splice(index, 1);
+
+  }
+}
+
+function canDeleteNode(node) { 
+    var canDelete = true;
+    if(hasSon(node)){
+        canDelete = false;
+    }
+
+    return canDelete;
+}
+
+
+function fillNodesCombo(){
+
+    var select = document.getElementById("father");
+    var selectDelete = document.getElementById("delete-node");
+    select.options.length = 0;
+    selectDelete.options.length = 0;
+    for(index in nodes) {
+        selectDelete.options[select.options.length] = new Option("Nodo "+nodes[index].id, index);
+        select.options[select.options.length] = new Option("Nodo "+nodes[index].id, nodes[index].id);
+        
+    }
+}
+
+function openModal(child_id) {
+    switch(nodes[child_id].image) {
+        case "1.png":
+        modal2.style.display = "block";
+        break;
+        case "2.png":
+        modal.style.display = "block";
+        break;
+        case "3.png":
+        modal.style.display = "block";
+        break;
+        case "4.png":
+        modal.style.display = "block";
+        break;
+        case "5.png":
+        modal.style.display = "block";
+        break;
+        case "6.png":
+        modal.style.display = "block";
+        break;
+        case "7.png":
+        modal.style.display = "block";
+        break;
+        case "8.png":
+        modal.style.display = "block";
+        break;
+        case "9.png":
+        modal4.style.display = "block";
+        break;
+        case "10.png":
+        modal3.style.display = "block";
+        break;
+        
+        default:
+        modal.style.display = "block";
+        break;
+    }
+
+}
+
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+
+}
+// When the user clicks on <span> (x), close the modal
+span2.onclick = function() {
+
+    modal2.style.display = "none";
+}
+
+span3.onclick = function() {
+
+    modal3.style.display = "none";
+}
+span4.onclick = function() {
+
+    modal4.style.display = "none";
+}
+
+button_close.onclick = function() {
+    modal.style.display = "none";
+
+}
+
+button_close2.onclick = function() {
+
+    modal2.style.display = "none";
+}
+
+button_close3.onclick = function() {
+
+    modal3.style.display = "none";
+}
+
+button_close4.onclick = function() {
+
+    modal4.style.display = "none";
+}
+
+</script>
+</html>
