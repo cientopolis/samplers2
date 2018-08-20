@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Dashboard</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<link rel="stylesheet" href="./style.css">
+
+	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="./model.js"></script>
+</head>
+
+<body>
+
+	<img class="col-sm-5 " src="./1.png" id="drag1" onclick="addStep()" alt="Responsive image">
+
+	
+
+</body>
+<script type="text/javascript">
+	var spect = {
+		name: '',
+		icon: ''
+	}
+
+	var steps = [];
+
+	var nodesTypes = [];
+
+
+	var ntGps = new NodeType('GPS','gps.png',spect);
+
+	nodesTypes.push(ntGps);
+	spect.name = 'CAMARATEXT';
+	var ntCamara = new NodeType('CAMARA','camara.png',spect);	
+	nodesTypes.push(ntCamara);
+
+	var wf = new Workflow(steps,nodesTypes);
+
+
+	function addStep() {
+		var s = new Simple(ntCamara,1);
+		console.log(s.canAddChildStep());
+		wf.addStep(s);
+		var gpsStep = new Simple(ntGps,2);
+		s.addChildStep(gpsStep);
+		wf.addStep(gpsStep);
+		console.log(s.canAddChildStep());
+		console.log(wf.getStepByNodeId(2));
+		s.deleteChildStep();
+		wf.deleteStep(2);
+		console.log(s.canAddChildStep());
+		console.log(wf.getStepByNodeId(2));
+	}
+
+
+</script>
+
+
+
+</html>
