@@ -26,6 +26,7 @@ import json
 from django.core.files import File
 import datetime
 from social_django.models import UserSocialAuth
+from django.core.urlresolvers import reverse
 
 
 @login_required
@@ -199,8 +200,15 @@ class WorkflowResult(APIView):
     """
     def post(self, request, pk, format=None):
         content = request.FILES['sample']
+        query_params = dict()
+        raw_qs = request.META.get('QUERY_STRING', '')
+        if raw_qs:
+            for line in raw_qs.split("&"):
+                key,arg = line.split("=")
+                query_params[key] = arg
+        user_id = query_params['userId']
         unzipped = zipfile.ZipFile(content)
-        unzipped.extractall('result')
+        #unzipped.extractall('result')
         list_name = unzipped.namelist()
         for file in list_name:
             if "json" in file:
@@ -208,10 +216,14 @@ class WorkflowResult(APIView):
         data = json.loads(json_file)
         workflow = Workflow.objects.get(id=pk)
         workflow_result = WorkflowResultModel()
+        if not user_id is None:
+            user = Profile.objects.get(pk=user_id)
+            workflow_result.profile = user
         workflow_result.workflow = workflow
         workflow_result.sent = data['sent']
         workflow_result.start_date_time = dateutil.parser.parse(data['startDateTime'])
         workflow_result.end_date_time = dateutil.parser.parse(data['endDateTime'])
+        pdb.set_trace()
         workflow_result.save()
         steps = data['steps']
         for step in steps: 

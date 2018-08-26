@@ -95,6 +95,7 @@ class OptionToShow(models.Model):
     next_step_id = models.IntegerField(null = True, blank=True)
 
 class WorkflowResult(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null = True)
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
     start_date_time = models.DateTimeField(blank=True, null=True)
     end_date_time = models.DateTimeField(blank=True, null=True)
