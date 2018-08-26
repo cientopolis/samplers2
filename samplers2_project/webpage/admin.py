@@ -54,7 +54,7 @@ class OptionToShowAdmin(admin.ModelAdmin):
         return instance.step.id
 
 class WorkflowResultAdmin(admin.ModelAdmin):
-    list_display = ['id', 'id_workflow', 'id_start_date_time', 'id_end_date_time', 'sent']
+    list_display = ['id', 'id_workflow', 'id_start_date_time', 'id_end_date_time', 'sent','id_profile']
 
     def id_start_date_time(self, instance):
         return instance.start_date_time.strftime("%d %b %Y %H:%M:%S")
@@ -63,6 +63,10 @@ class WorkflowResultAdmin(admin.ModelAdmin):
 
     def id_workflow(self, instance):
         return instance.workflow.id
+
+    def id_profile(self, instance):
+        if instance.profile is not None:
+            return instance.profile.id
 
     def id_end_date_time(self, instance):
         return instance.end_date_time.strftime("%d %b %Y %H:%M:%S")

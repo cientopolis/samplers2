@@ -208,7 +208,7 @@ class WorkflowResult(APIView):
                 query_params[key] = arg
         user_id = query_params['userId']
         unzipped = zipfile.ZipFile(content)
-        #unzipped.extractall('result')
+        unzipped.extractall('result')
         list_name = unzipped.namelist()
         for file in list_name:
             if "json" in file:
@@ -216,7 +216,9 @@ class WorkflowResult(APIView):
         data = json.loads(json_file)
         workflow = Workflow.objects.get(id=pk)
         workflow_result = WorkflowResultModel()
-        if not user_id is None:
+        pdb.set_trace()
+        if (user_id is not None) & (user_id != ""):
+            pdb.set_trace()
             user = Profile.objects.get(pk=user_id)
             workflow_result.profile = user
         workflow_result.workflow = workflow
