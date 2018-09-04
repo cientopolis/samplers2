@@ -4,59 +4,654 @@
 <head>
 	<meta charset="utf-8">
 	<title>Dashboard</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-	<link rel="stylesheet" href="./style.css">
+	<style type="text/css">
+	body {
+		font: 10pt sans;
+	}
 
-	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-	<script src="./model.js"></script>
+	#mynetwork {
+
+		height: 600px;
+		border: 1px solid lightgray;
+	}
+
+
+	.icon-bar {
+		display: none;
+		width: 90px;
+		background-color: #555;
+	}
+
+	.icon-bar i {
+		display: block;
+		
+		text-align: center;
+		padding: 16px;
+		transition: all 0.3s ease;
+		color: white;
+		font-size: 36px;
+	}
+
+	.icon-bar i:hover {
+		background-color: #000;
+	}
+
+
+
+</style>
+<link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<link rel="stylesheet" href="./style.css">
+<script src="./model.js"></script>
 </head>
 
-<body>
+<body onload="initialice();">
+	<!-- The Modal -->
+	<div id="myModal" class="modal">
 
-	<img class="col-sm-5 " src="./1.png" id="drag1" onclick="addStep()" alt="Responsive image">
+		<!-- Modal content -->
+		<div style="overflow-y: auto;" class="modal-content">
+			<div class="modal-header">
+				<span class="close">&times;</span>
+				<h2>Configuracion del paso</h2>
+			</div>
+			<div class="modal-body">
+				<h3>Ingrese el tipo de paso</h3>
+				<hr>
+				<select class="col-sm-12 form-control" id="step-type">
+					<option value="2">Geoposicionamiento</option>
+					<option value="3">Foto</option>
+					<option value="4">Informacion</option>
+					<option value="5">Pregunta</option>
+					<option value="6">Audio</option>
+					<option value="7">Hora</option>
+					<option value="8">Fecha</option>
+					<option value="9">Seleccion multiple</option>
+					<option value="10">Texto</option>
+				</select>
+
+			</div>
+			<div class="modal-footer" style="margin-top: 30px;">
+				<button type="button" id="close_btn" class="btn btn-default" onclick="closeModal()" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" onclick="goToSpects()">Guardar y avanzar</button>
+			</div>
+		</div>
+
+	</div>
+
+
+
+	<div id="spectModal" class="modal">
+
+		<!-- Modal content -->
+		<div style="overflow-y: auto;" class="modal-content">
+			<div class="modal-header">
+				<span class="close">&times;</span>
+				<h2>Configuracion especifica del paso</h2>
+			</div>
+			<div class="modal-body">
+				<h3>Ingrese el tipo de paso</h3>
+				<div id="spectContainer" class="row">
+					
+
+				</div>
+				<!-- aca va el contenido -->
+
+			</div>
+			<div class="modal-footer" style="margin-top: 30px;">
+				<button type="button" id="close_btn" class="btn btn-default" onclick="openModal()" data-dismiss="modal">Volver</button>
+				<button type="button" id="close_btn" class="btn btn-default" onclick="closeModal()" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" onclick="setTypeConfiguration()">Guardar</button>
+			</div>
+		</div>
+
+	</div>
+
+
+
+	<div class="row">
+		<div class="col-sm-8">
+
+			<div id="mynetwork"><div class="vis-network" tabindex="900" style="position: relative; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;"><canvas width="1200" height="1200" style="position: relative; touch-action: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;"></canvas></div></div>
+
+
+
+		</div>
+		<div class="col-sm-4">
+			<div class="icon-bar" id="icon-bar">
+				<i class="fa fa-plus" onclick="addStep()"></i> 
+				<i class="fa fa-deviantart" onclick="setFatherStep()"></i> 
+				<i class="fa fa-sitemap" onclick="setMultipleStep()"></i> 
+				<i class="fa fa-bullseye"onclick="openModal()"></i>
+				<i class="fa fa-trash" onclick="deleteStep()"></i>
+			</div>
+			
+			<div class="icon-bar" id="icon-bar-edge">
+				<i class="fa fa-trash" onclick="deleteEdge()"></i>
+			</div>
+		</div>
+
+	</div>
+	<div class="row">
+		<div class="col-sm-12">
+			<p id="selectedStep"> </p>
+		</div>
+	</div>
+
+	
+
+
+
 
 	
 
 </body>
 <script type="text/javascript">
-	var spect = {
-		name: '',
-		icon: ''
-	}
 
-	var steps = [];
+	var spect;
+	var steps;
+	var nodesTypes;
+	var wf;
+	var clickedStep;
+	var clickedEdge;
+	var fatherStep;
 
-	var nodesTypes = [];
+	var nodes = null;
+	var edges = null;
+	var network = null;
+	var container = null;
+	var data = null;
+	var options = null;
+
+	var modal = document.getElementById('myModal');
+	var spectModal = document.getElementById('spectModal');
+	var new_node_type = document.getElementById('step-type');
+	var spectContainer = document.getElementById('spectContainer');
+
+	
+
+	function initialice() {
+		spect = {
+			name: '',
+			icon: ''
+		}
+		steps = [];
+		nodesTypes = [];
+		ntSelect = new NodeType('SELECT','select.png',spect);
+		ntGps = new NodeType('GPS','gps.png',spect);
+		ntCamara = new NodeType('CAMARA','camara.png',spect);
+		ntInfo = new NodeType('INFO','info.png',spect);
+		ntQuestion = new NodeType('QUESTION','question.png',spect);
+		ntHour = new NodeType('HOUR','hour.png',spect);	
+		ntDate = new NodeType('DATE','date.png',spect);
+		ntMultpleSeleccion = new NodeType('MULTIPLE','multipleSelection.png',spect);
+		
+		ntText = new NodeType('TEXT','text.png',spect);	
+		ntVoice = new NodeType('VOICE','voice.png',spect);	
+
+		nodesTypes.push(ntSelect);
+		nodesTypes.push(ntGps);
+		nodesTypes.push(ntCamara);
+		nodesTypes.push(ntInfo);
+		nodesTypes.push(ntQuestion);
+		nodesTypes.push(ntHour);
+		nodesTypes.push(ntDate);
+		nodesTypes.push(ntMultpleSeleccion);
+		nodesTypes.push(ntText);
+		nodesTypes.push(ntVoice);
+		
 
 
-	var ntGps = new NodeType('GPS','gps.png',spect);
-
-	nodesTypes.push(ntGps);
-	spect.name = 'CAMARATEXT';
-	var ntCamara = new NodeType('CAMARA','camara.png',spect);	
-	nodesTypes.push(ntCamara);
-
-	var wf = new Workflow(steps,nodesTypes);
-
-
-	function addStep() {
-		var s = new Simple(ntCamara,1);
-		console.log(s.canAddChildStep());
+		wf = new Workflow(steps,nodesTypes);
+		var s = new Simple(ntInfo,0,0);
 		wf.addStep(s);
-		var gpsStep = new Simple(ntGps,2);
-		s.addChildStep(gpsStep);
-		wf.addStep(gpsStep);
-		console.log(s.canAddChildStep());
-		console.log(wf.getStepByNodeId(2));
-		s.deleteChildStep();
-		wf.deleteStep(2);
-		console.log(s.canAddChildStep());
-		console.log(wf.getStepByNodeId(2));
+		draw();
+	}
+
+	function getTypeNodeId(type){
+		switch(type) {
+			case "SELECT":
+
+			return "1";
+			break;
+
+			case "GPS":
+
+			return "2";
+			break;
+
+			case "CAMARA":
+
+			return "3";
+			break;
+
+			case "INFO":
+
+			return "4";
+			break;
+
+			case "QUESTION":
+
+			return "5";
+			break;
+
+			case "VOICE":
+
+			return "6";
+			break;
+
+			case "HOUR":
+
+			return "7";
+			break;
+
+			case "DATE":
+
+			return "8";
+			break;
+
+			case "MULTIPLE":
+
+			return "9";
+			break;
+
+			case "TEXT":
+
+			return "10";
+			break;
+
+			default:
+
+			return "4";
+			break;
+		}
+	}
+
+	function getTypeNodeById(id){
+		switch(id) {
+			case "1":
+
+			return ntSelect;
+			break;
+
+			case "2":
+
+			return ntGps;
+			break;
+
+			case "3":
+
+			return ntCamara;
+			break;
+
+			case "4":
+
+			return ntInfo;
+			break;
+
+			case "5":
+
+			return ntQuestion;
+			break;
+
+			case "6":
+
+			return ntVoice;
+			break;
+
+			case "7":
+
+			return ntHour;
+			break;
+
+			case "8":
+
+			return ntDate;
+			break;
+
+			case "9":
+
+			return ntMultpleSeleccion;
+			break;
+
+			case "10":
+
+			return ntText;
+			break;
+
+			default:
+
+			return ntInfo;
+			break;
+		}
+	}
+
+	function setFatherStep(){
+		fatherStep = clickedStep;
+	}
+
+	function setMultipleStep(){
+		if (clickedStep.canAddChildStep()){
+				//TODO: chequear que id ponerle
+
+				var multipleStep = new Multiple(ntSelect,(Math.floor((Math.random() * 1000) )), clickedStep.level+1);
+				clickedStep.addChildStep(multipleStep);
+				wf.addStep(multipleStep);
+			} else {
+				alert("No puede agregar otro hijo");
+			}
+
+			draw();
+		}
+
+		function deleteStep() {
+
+			if (wf.steps.length > 1){
+				var fatherStep = wf.getFatherStepByNodeId(clickedStep.id);
+				if(fatherStep){
+					fatherStep.next = clickedStep.id.next;
+					fatherStep.deleteChildStep();
+				//Si tiene hijo
+				if(clickedStep.next){
+					
+					fatherStep.addChildStep(wf.getStepByNodeId(clickedStep.next.id));
+					
+				} 
+				wf.deleteStep(clickedStep.id);
+				nodeClicked(clickedStep.id);
+
+			} else {
+			//Es el primero
+			wf.deleteStep(clickedStep.id);
+		} 
+	} else {
+		alert("No puede borrar todos los nodos");
+	}
+
+	draw();
+
+
+}
+
+function closeModal() {
+	modal.style.display = "none";
+	spectModal.style.display = "none";
+	draw();
+
+}
+
+function openModal() {
+	//Set selected value
+	modal.style.display = "block";
+	spectModal.style.display = "none";
+	new_node_type.value = getTypeNodeId(clickedStep.getNodeType().name);
+}
+
+function goToSpects(type) {
+	//ShowSpects
+	var newType = getTypeNodeById(new_node_type.value);
+	clickedStep.setNodeType(newType);
+	spectContainer.innerHTML = ""
+	if (newType == ntText){
+		spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show"><h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show"><h3>Ingrese el texto de muestra</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show"><h3>Ingrese el largo maximo del texto</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show"><h3>Ingrese el tipo de dato</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show"><h3>Ingrese si es opcional</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show">';
+	} else {
+		if(newType == ntMultpleSeleccion){
+			spectContainer.innerHTML = 'MultipleSelect';
+		} else {
+			spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show">';
+		} 
+	}
+	modal.style.display = "none";
+	spectModal.style.display = "block";
+
+}
+
+function setTypeConfiguration(spects) {
+	//TODO: guardar las spects
+	modal.style.display = "none";
+	spectModal.style.display = "none";
+	draw();
+}
+
+
+function addStep() {
+
+	if (clickedStep.canAddChildStep()){
+				//TODO: chequear que id ponerle
+				var infoStep = new Simple(ntInfo,(Math.floor((Math.random() * 1000) )), clickedStep.level+1);
+				clickedStep.addChildStep(infoStep);
+				wf.addStep(infoStep);
+			} else {
+				alert("No puede agregar otro hijo");
+			}
+
+			draw();
+
+
+		}
+		function addStepWithFather(childStep) {
+
+			if (childStep.canAddChildStep()){
+				childStep.addChildStep(fatherStep);
+
+			} else {
+				alert("No puede agregar otro hijo");
+			}
+
+			draw();
+			fatherStep = null;
+			clickedStep = null;
+			document.getElementById("icon-bar").style.display = "none";
+			document.getElementById("selectedStep").innerHTML = "";
+
+		}
+
+
+
+
+		function destroy() {
+			if (network !== null) {
+				network.destroy();
+				network = null;
+			}
+		}
+
+		function transformData() {
+			nodes = [];
+			edges = [];
+			var steps = wf.steps;
+			for (i = 0; i < steps.length; i++) { 
+				var step = steps[i];
+				var fs = wf.getFatherStepByNodeId(step.id);
+				var level;
+
+				if (fs) {
+					console.log(fs.level);
+					level = fs.getLevelToChild(); 
+					step.level =level;
+				} else {
+					level = 0; 
+					step.level = 0; 
+				}
+				
+				step.getNodesToRender(fs, level);
+				
+
+			}
+		//Son 2 for porque si no cuando quiero agregar l relacion el hijo no existe
+		for (i = 0; i < steps.length; i++) { 
+			var step = steps[i];
+			var fatherStep = wf.getFatherStepByNodeId(step.id);
+			if (fatherStep) {
+
+				step.getEdgesToRender(fatherStep.getIdToChild(step));
+			}
+			
+
+		}
+
+	}
+
+	function getEdgeById(edgeId){
+		for (i = 0; i < edges.length; i++) { 
+			var currentEdge = edges[i];
+			if (edgeId == currentEdge.id){
+				return currentEdge;
+			}
+		}
+	}
+
+	function getNodeById(nodeId){
+		for (i = 0; i < nodes.length; i++) { 
+			var currentNode = nodes[i];
+			if (nodeId == currentNode.id){
+				return currentNode;
+			}
+		}
 	}
 
 
-</script>
+
+	function deleteEdge(){
 
 
 
-</html>
+		var step = wf.getStepByNodeId(clickedEdge.from);
+		edgeClicked(clickedEdge.id);
+		step.deleteChildStep();
+		draw();
+	}
+
+	function nodeClicked(node){
+		if(fatherStep){
+			clickedStep = wf.getStepByNodeId(node);
+			//para evitar ciclos
+			if(fatherStep.id != clickedStep.id){
+				addStepWithFather(clickedStep);
+			}
+		} else {
+			fatherStep = null;
+			if(clickedEdge){
+				edgeClicked(clickedEdge.id);
+			}
+
+			if(clickedStep){
+				if(clickedStep.id == node){
+					document.getElementById("icon-bar").style.display = "none";
+					document.getElementById("selectedStep").innerHTML = "";
+
+					clickedStep = null;
+
+				} else {
+					document.getElementById("icon-bar").style.display = "block";
+					clickedStep = wf.getStepByNodeId(node);
+
+					document.getElementById("selectedStep").innerHTML = "Seleccionado: "+node;
+				}
+
+			} else {
+				document.getElementById("icon-bar").style.display = "block";
+				document.getElementById("selectedStep").innerHTML = "Seleccionado: "+node;
+				clickedStep = wf.getStepByNodeId(node);
+
+			}
+		}
+		
+
+		
+		
+
+
+	}
+
+	function edgeClicked(edgeId){
+		
+		
+		if(clickedStep){
+			//Desselecciono el nodo seleccionado
+			nodeClicked(clickedStep.id);
+		}
+		if (clickedEdge){
+
+			if(clickedEdge.id == edgeId){
+				document.getElementById("icon-bar-edge").style.display = "none";
+				document.getElementById("selectedStep").innerHTML = "";
+				clickedEdge = null;
+
+			} else {
+				document.getElementById("icon-bar-edge").style.display = "block";
+				clickedEdge = getEdgeById(edgeId);;
+				document.getElementById("selectedStep").innerHTML = "Seleccionado: "+JSON.stringify(clickedEdge);
+			}
+			
+		} else {
+			document.getElementById("icon-bar-edge").style.display = "block";
+			clickedEdge = getEdgeById(edgeId);;
+			document.getElementById("selectedStep").innerHTML = "Seleccionado: "+JSON.stringify(clickedEdge);
+		}
+
+		
+		
+
+
+	}
+
+
+	function draw() {
+		destroy();
+		transformData();
+
+            // create a network
+            container = document.getElementById('mynetwork');
+            data = {
+            	nodes: nodes,
+            	edges: edges
+            };
+
+            options = {
+            	edges: {
+            		smooth: {
+            			type: 'cubicBezier',
+            			forceDirection: 'vertical',
+            			roundness: 0.4
+            		}
+            	},
+            	layout: {
+            		hierarchical: {
+            			direction: "UD"
+            		}
+            	},
+            	physics:false
+            };
+
+
+            network = new vis.Network(container, data, options);
+            // add event listeners
+            network.on('click', function (params) {
+            	
+            	if (params.edges.length > 0 && params.nodes.length == 0){
+            		edgeClicked(params.edges)
+
+            	}
+            	//Click in node
+            	if (params.nodes.length > 0 ){
+            		nodeClicked(params.nodes);
+            	} 
+            	
+
+            });
+
+        }
+
+
+
+    </script>
+
+
+
+    </html>
