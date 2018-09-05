@@ -486,11 +486,8 @@ function addStep() {
 		//Son 2 for porque si no cuando quiero agregar l relacion el hijo no existe
 		for (i = 0; i < steps.length; i++) { 
 			var step = steps[i];
-			var fatherStep = wf.getFatherStepByNodeId(step.id);
-			if (fatherStep) {
+			step.getEdgesToRender();
 
-				step.getEdgesToRender(fatherStep.getIdToChild(step));
-			}
 			
 
 		}

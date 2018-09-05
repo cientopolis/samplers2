@@ -133,14 +133,13 @@ class Multiple extends Step {
 	getLevelToChild(fatherId) {
 		return this.level + 2;
 	}
-	getEdgesToRender(fatherId) {
-		edges.push({from: fatherId , to: this.id});
+	getEdgesToRender() {
 		if (this.options){
 			for (var i = 0; i < this.options.length; i++) {
 				if(this.options[i]){
-				
 					var optionId = this.options[i].id;
 					edges.push({from: this.id , to: optionId})
+					edges.push({from: optionId , to: this.options[i].getNext().id})
 				}
 			}
 		}
@@ -197,8 +196,11 @@ class Simple extends Step {
 	getNext(){
 		return this.next;
 	}
-	getEdgesToRender(fatherId) {
-		edges.push({from: fatherId , to: this.id});
+	getEdgesToRender() {
+		if (this.getChild()){
+			edges.push({from: this.id , to: this.getChild().id});
+		}
+		
 	}
 	getNodesToRender(father, level) {
 		nodes.push({id: this.id , shape: 'circularImage','level' : level , image:this.getNodeType().icon, label: String(this.id)});
