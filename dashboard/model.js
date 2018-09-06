@@ -20,16 +20,14 @@ class Workflow {
 			if(step.getChild()){
 				var options = step.getChild();
 				if(options.length){
-					console.log('length: '+options.length);
 
 					for (var j = 0; j < options.length; j++) {
 						var option = options[j];
-						console.log('option: '+option);
 						if(option){
-						if (option.getNext().id == nodeId){
-							return steps[i];
+							if (option.getNext().id == nodeId){
+								return steps[i];
+							}
 						}
-					}
 					}
 
 				} else {
@@ -121,15 +119,29 @@ class Multiple extends Step {
 		if (this.options){
 			for (var i = 0; i < this.options.length; i++) {
 				if(this.options[i]){
-					console.log('this.options[i].getNext().id; ' + this.options[i].getNext().id + ' step.id: '+step.id);
 					if (this.options[i].getNext().id == step.id){
 						return this.options[i].id;
 					}
-			
+
 				}
 			}
 		}
 	}
+
+	deleteChildStep(clickedStep) {
+		for (var i = 0; i < this.options.length; i++) {
+			var option = this.options[i];
+			if(option){
+				if(option.getNext().id == clickedStep.id){
+					var index = this.options.indexOf(option);
+					if (index > -1) {
+						this.options.splice(index, 1);
+					}
+				}
+			}
+		}
+	}
+
 	getLevelToChild(fatherId) {
 		return this.level + 2;
 	}
@@ -143,7 +155,7 @@ class Multiple extends Step {
 				}
 			}
 		}
-}
+	}
 	getNodesToRender(father, level) {
 		nodes.push({id: this.id , shape: 'circularImage', image:this.getNodeType().icon, 'level' : level  , label: String(this.id)});
 		if (this.options){
@@ -151,11 +163,11 @@ class Multiple extends Step {
 				//Ver que id ponerle
 				if(this.options[i]){
 					var optionId = this.options[i].id;
-			nodes.push({id: optionId, shape: 'circularImage', 'image':'option.png', 'level' : level+1  , label: String("option: " +optionId)});
+					nodes.push({id: optionId, shape: 'circularImage', 'image':'option.png', 'level' : level+1  , label: String("option: " +optionId)});
 				}
 
-			
-		}
+
+			}
 		}
 		
 	}

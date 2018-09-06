@@ -134,6 +134,9 @@
 			<div class="icon-bar" id="icon-bar-edge">
 				<i class="fa fa-trash" onclick="deleteEdge()"></i>
 			</div>
+			<div class="icon-bar" id="icon-bar-option">
+				<i class="fa fa-bullseye" onclick="deleteEdge()"></i>
+			</div>
 		</div>
 
 	</div>
@@ -355,16 +358,14 @@
 				var fatherStep = wf.getFatherStepByNodeId(clickedStep.id);
 				if(fatherStep){
 					fatherStep.next = clickedStep.id.next;
-					fatherStep.deleteChildStep();
+					fatherStep.deleteChildStep(clickedStep);
 				//Si tiene hijo
 				if(clickedStep.next){
 					
 					fatherStep.addChildStep(wf.getStepByNodeId(clickedStep.next.id));
-					
 				} 
 				wf.deleteStep(clickedStep.id);
 				nodeClicked(clickedStep.id);
-
 			} else {
 			//Es el primero
 			wf.deleteStep(clickedStep.id);
@@ -471,7 +472,6 @@ function addStep() {
 				var level;
 
 				if (fs) {
-					console.log(fs.level);
 					level = fs.getLevelToChild(); 
 					step.level =level;
 				} else {
@@ -525,8 +525,9 @@ function addStep() {
 	}
 
 	function nodeClicked(node){
-		if(fatherStep){
-			clickedStep = wf.getStepByNodeId(node);
+		if(wf.getStepByNodeId(node)){
+			if(fatherStep){
+				clickedStep = wf.getStepByNodeId(node);
 			//para evitar ciclos
 			if(fatherStep.id != clickedStep.id){
 				addStepWithFather(clickedStep);
@@ -540,12 +541,14 @@ function addStep() {
 			if(clickedStep){
 				if(clickedStep.id == node){
 					document.getElementById("icon-bar").style.display = "none";
+					document.getElementById("icon-bar-option").style.display = "none";
 					document.getElementById("selectedStep").innerHTML = "";
 
 					clickedStep = null;
 
 				} else {
 					document.getElementById("icon-bar").style.display = "block";
+					document.getElementById("icon-bar-option").style.display = "none";
 					clickedStep = wf.getStepByNodeId(node);
 
 					document.getElementById("selectedStep").innerHTML = "Seleccionado: "+node;
@@ -553,6 +556,7 @@ function addStep() {
 
 			} else {
 				document.getElementById("icon-bar").style.display = "block";
+				document.getElementById("icon-bar-option").style.display = "none";
 				document.getElementById("selectedStep").innerHTML = "Seleccionado: "+node;
 				clickedStep = wf.getStepByNodeId(node);
 
@@ -560,48 +564,76 @@ function addStep() {
 		}
 		
 
-		
-		
+	} else {
+		if(clickedEdge){
+			edgeClicked(clickedEdge.id);
+		}
+		if (clickedStep){
+			document.getElementById("icon-bar").style.display = "none";
+			document.getElementById("selectedStep").innerHTML = "";
 
+			clickedStep = null;
+		}
+		document.getElementById("icon-bar-option").style.display = "block";
+					document.getElementById("selectedStep").innerHTML = "Option selected";
 
 	}
 
-	function edgeClicked(edgeId){
-		
+
+
+}
+
+function isAnOption(edge){
+	return (!wf.getStepByNodeId(edge.from)) || (!wf.getStepByNodeId(edge.to));
+
+}
+
+function edgeClicked(edgeId){
+		//Si el from o el to es una option, no hago nada
+		var isOption = isAnOption(getEdgeById(edgeId));
 		
 		if(clickedStep){
 			//Desselecciono el nodo seleccionado
 			nodeClicked(clickedStep.id);
 		}
-		if (clickedEdge){
+		if(isOption){
+					document.getElementById("icon-bar-edge").style.display = "none";
+					document.getElementById("selectedStep").innerHTML = "";
+					document.getElementById("icon-bar-option").style.display = "none";
+					clickedEdge = null;
+		} else {
+			if (clickedEdge){
 
-			if(clickedEdge.id == edgeId){
-				document.getElementById("icon-bar-edge").style.display = "none";
-				document.getElementById("selectedStep").innerHTML = "";
-				clickedEdge = null;
+				if(clickedEdge.id == edgeId){
+					document.getElementById("icon-bar-edge").style.display = "none";
+					document.getElementById("selectedStep").innerHTML = "";
+					document.getElementById("icon-bar-option").style.display = "none";
+					clickedEdge = null;
+
+				} else {
+					document.getElementById("icon-bar-edge").style.display = "block";
+					document.getElementById("icon-bar-option").style.display = "none";
+					clickedEdge = getEdgeById(edgeId);
+					document.getElementById("selectedStep").innerHTML = "Seleccionado: "+JSON.stringify(clickedEdge);
+				}
 
 			} else {
 				document.getElementById("icon-bar-edge").style.display = "block";
 				clickedEdge = getEdgeById(edgeId);;
 				document.getElementById("selectedStep").innerHTML = "Seleccionado: "+JSON.stringify(clickedEdge);
 			}
-			
-		} else {
-			document.getElementById("icon-bar-edge").style.display = "block";
-			clickedEdge = getEdgeById(edgeId);;
-			document.getElementById("selectedStep").innerHTML = "Seleccionado: "+JSON.stringify(clickedEdge);
 		}
 
-		
-		
 
 
-	}
 
 
-	function draw() {
-		destroy();
-		transformData();
+		}
+
+
+		function draw() {
+			destroy();
+			transformData();
 
             // create a network
             container = document.getElementById('mynetwork');
