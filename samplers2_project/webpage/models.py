@@ -96,20 +96,25 @@ class OptionToShow(models.Model):
 
 class WorkflowResult(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null = True)
-    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
+    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE,related_name = "workflow_results")
     start_date_time = models.DateTimeField(blank=True, null=True)
     end_date_time = models.DateTimeField(blank=True, null=True)
     sent = models.NullBooleanField(blank=True, null=True)
 
 class TextStepResult(models.Model):
-    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE)
+    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE,related_name = "text_step_results")
     step_id = models.IntegerField(null = True, blank=True)
     inserted_text = models.TextField(max_length=500, blank=True)
 
 class TimeStepResult(models.Model):
-    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE)
+    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE,related_name = "time_step_results")
     step_id = models.IntegerField(null = True, blank=True)
     selected_time = models.DateTimeField()
+
+class DateStepResult(models.Model):
+    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE,related_name = "date_step_results")
+    step_id = models.IntegerField(null = True, blank=True)
+    selected_date = models.DateTimeField()
 
 def workflow_result_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/workflow_result_<id>/<filename>
@@ -117,17 +122,17 @@ def workflow_result_directory_path(instance, filename):
     return 'workflow_result_{0}/{1}'.format(instance.workflow_result.id, name)
 
 class SoundRecordStepResult(models.Model):
-    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE)
+    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE,related_name = "sound_step_results")
     step_id = models.IntegerField(null = True, blank=True)
     file = models.FileField(blank=False, null=False, upload_to=workflow_result_directory_path)
 
 class PhotoStepResult(models.Model):
-    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE)
+    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE,related_name = "photo_step_results")
     step_id = models.IntegerField(null = True, blank=True)
     file = models.ImageField(blank=False, null=False, upload_to=workflow_result_directory_path)
 
 class SelectStepResult(models.Model):
-    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE)
+    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE,related_name = "select_step_results")
     step_id = models.IntegerField(null = True, blank=True)
     TYPE_CHOICES = (
         ("SelectOneStepResult" , "SelectOneStepResult"),
@@ -137,23 +142,23 @@ class SelectStepResult(models.Model):
     type = models.CharField(max_length=30, choices = TYPE_CHOICES, null = False)
 
 class OptionToShowResult(models.Model):
-    select_step_result = models.ForeignKey(SelectStepResult, on_delete=models.CASCADE)
+    select_step_result = models.ForeignKey(SelectStepResult, on_delete=models.CASCADE,related_name = "options_results")
     text_to_show = models.TextField(max_length=500, blank=True)
     option_id = models.IntegerField(null = True, blank=True)
     next_step_id = models.IntegerField(null = True, blank=True)
 
 class LocationStepResult(models.Model):
-    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE)
+    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE,related_name = "location_step_results")
     step_id = models.IntegerField(null = True, blank=True)
     latitude = models.DecimalField(max_digits=10, decimal_places=7)
     longitude = models.DecimalField(max_digits=10, decimal_places=7)
 
 class RouteStepResult(models.Model):
-    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE)
+    workflow_result = models.ForeignKey(WorkflowResult, on_delete=models.CASCADE,related_name = "route_step_results")
     step_id = models.IntegerField(null = True, blank=True)
 
 class RouteInformationResult(models.Model):
-    route_step_result = models.ForeignKey(RouteStepResult, on_delete=models.CASCADE)
+    route_step_result = models.ForeignKey(RouteStepResult, on_delete=models.CASCADE,related_name = "route_information_results")
     accuracy = models.DecimalField(max_digits=10, decimal_places=4)
     altitude = models.DecimalField(max_digits=10, decimal_places=4)
     bearing = models.DecimalField(max_digits=10, decimal_places=4)

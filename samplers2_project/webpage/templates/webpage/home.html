@@ -20,6 +20,7 @@
       <th>Editar Proyecto</th>
       <th>Eliminar Proyecto</th>
       <th>Invitar Científico</th>
+      <th>Ver Resultados</th>
     </tr>
     {% for project in projects_list %}
        <tr>
@@ -30,6 +31,12 @@
          <td> <a href="{% url 'webpage:deleteProject' project.id %}"> Eliminar proyecto</a></td>
          <td> {% if user.username == project.owner %}
           <a href="{% url 'webpage:inviteScientist' project.id %}"> Invitar Científico</a>
+              {% else %}
+              -
+              {% endif %}
+        </td>
+        <td> {% if project.workflow %}
+          <a href="{% url 'webpage:showResults' project.workflow.id %}"> Ver Resultados</a>
               {% else %}
               -
               {% endif %}

@@ -27,6 +27,7 @@ from django.core.files import File
 import datetime
 from social_django.models import UserSocialAuth
 from django.core.urlresolvers import reverse
+from itertools import chain
 
 
 @login_required
@@ -120,6 +121,104 @@ def inviteScientist(request, id=None):
         form = InviteScientistForm()
     return render(request, 'webpage/inviteScientistForm.html', {'form': form})
 
+@login_required
+def showResults(request, id=None):
+    if id:
+        workflow = Workflow.objects.get(id=id)
+    steps_information = getStepsInformation(workflow)
+    wf_results = []
+    for wf in workflow.workflow_results.all():
+        wf_result = {}
+        wf_result["start_time"] = wf.start_date_time.strftime("%d-%m-%Y")
+        wf_result["end_time"] = wf.end_date_time.strftime("%d-%m-%Y")
+        wf_result["id"] = wf.id
+        for step_information in steps_information:
+            step_id = step_information['step_id'] 
+            if step_information['step_type'] == StepType.TEXTSTEP.value:
+                text_step_results = wf.text_step_results.all()
+                if text_step_results:
+                    text_step_result = text_step_results.filter(step_id=step_id).first()
+                    if text_step_result:
+                        wf_result[step_id] = text_step_result.inserted_text
+            if step_information['step_type'] == StepType.TIMESTEP.value:
+                time_step_results = wf.time_step_results.all()
+                if time_step_results:
+                    time_step_result = time_step_results.get(step_id=step_id)
+                    if time_step_result:
+                        wf_result[step_id] = time_step_result.selected_time.strftime("%H:%M:%S")
+            if step_information['step_type'] == StepType.DATESTEP.value:
+                date_step_results = wf.date_step_results.all()
+                if date_step_results: 
+                    date_step_result = date_step_results.filter(step_id=step_id).first()
+                    if date_step_result:
+                        wf_result[step_id] = date_step_result.selected_date.strftime("%d-%m-%Y")
+            if step_information['step_type'] == StepType.LOCATIONSTEP.value:
+                location_step_results = wf.location_step_results.all()
+                if location_step_results:
+                    location_step_result = location_step_results.filter(step_id=step_id).first()
+                    if location_step_result:
+                        result_location_object = {}
+                        result_location_object['latitude'] = str(location_step_result.latitude)
+                        result_location_object['longitude'] = str(location_step_result.longitude)
+                        wf_result[step_id] = result_location_object
+            if step_information['step_type'] == StepType.PHOTOSTEP.value:
+                photo_step_results = wf.photo_step_results.all()
+                if photo_step_results:
+                    photo_step_result = photo_step_results.filter(step_id=step_id).first()
+                    if photo_step_result:
+                        wf_result[step_id] = photo_step_result.file
+            if step_information['step_type'] == StepType.SOUNDRECORDSTEP.value:
+                sound_step_results = wf.sound_step_results.all()
+                if sound_step_results:
+                    sound_step_result = sound_step_results.get(step_id=step_id)
+                    if sound_step_result:
+                        wf_result[step_id] = sound_step_result.file
+            if step_information['step_type'] == StepType.SELECTONESTEP.value:
+                one_step_results = wf.select_step_results.all().filter(type="SelectOneStepResult")
+                if one_step_results:
+                    one_step_result = one_step_results.filter(step_id=step_id).first()
+                    if one_step_result:
+                        result_options = []
+                        option_results = one_step_result.options_results.all()
+                        for option_result in option_results:
+                            result_options.append(option_result.text_to_show)
+                        wf_result[step_id] = ', '.join(result_options)
+            if step_information['step_type'] == StepType.SELECTMULTIPLESTEP.value:
+                multiple_step_results = wf.select_step_results.all().filter(type="SelectMultipleStepResult")
+                if multiple_step_results:
+                    multiple_step_result = multiple_step_results.filter(step_id=step_id).first()
+                    if multiple_step_result:
+                        result_options = []
+                        option_results = multiple_step_result.options_results.all()
+                        for option_result in option_results:
+                            result_options.append(option_result.text_to_show)
+                        wf_result[step_id] = ', '.join(result_options)
+            '''
+            Ver que hacer con el Route Step
+            if step_information['step_type'] == StepType.ROUTESTEP.value:
+                route_step_results = wf.route_step_results.all()
+                if route_step_results:
+                    route_step_result = route_step_results.filter(step_id=step_id).first()
+                    if route_step_result:
+                        information_route_results = route_step_result.route_information_result.first()
+                        result_route_object = {}
+                        
+                        wf_result[step_id] = result_location_object
+            '''
+        wf_results.append(wf_result)
+    ctx = { 'steps_information': steps_information, 'wf_results' : wf_results}
+    return render(request, 'webpage/showWorkflowResults.html', ctx)
+
+def getStepsInformation(workflow):
+    result = []
+    for step in workflow.steps.all():
+        step_information = {}
+        #Elimino el information step
+        if step.step_type != StepType.INFORMATIONSTEP.value:
+            step_information['step_type'] = step.step_type
+            step_information['step_id'] = step.order_in_workflow
+            result.append(step_information)
+    return result
 
 class WorkflowList(APIView):
     """
@@ -199,6 +298,7 @@ class WorkflowResult(APIView):
     List all workflow, or create a new workflow.
     """
     def post(self, request, pk, format=None):
+        pdb.set_trace()
         content = request.FILES['sample']
         query_params = dict()
         raw_qs = request.META.get('QUERY_STRING', '')
@@ -216,16 +316,13 @@ class WorkflowResult(APIView):
         data = json.loads(json_file)
         workflow = Workflow.objects.get(id=pk)
         workflow_result = WorkflowResultModel()
-        pdb.set_trace()
         if (user_id is not None) & (user_id != ""):
-            pdb.set_trace()
             user = Profile.objects.get(pk=user_id)
             workflow_result.profile = user
         workflow_result.workflow = workflow
         workflow_result.sent = data['sent']
         workflow_result.start_date_time = dateutil.parser.parse(data['startDateTime'])
         workflow_result.end_date_time = dateutil.parser.parse(data['endDateTime'])
-        pdb.set_trace()
         workflow_result.save()
         steps = data['steps']
         for step in steps: 
@@ -299,6 +396,12 @@ class WorkflowResult(APIView):
                 time_step_result.step_id = step['stepId']
                 time_step_result.selected_time = dateutil.parser.parse(step['selected_time'])
                 time_step_result.save()
+            if step_type == StepType.DATESTEP.value:
+                date_step_result = DateStepResult()
+                date_step_result.workflow_result = workflow_result
+                date_step_result.step_id = step['stepId']
+                date_step_result.selected_date = dateutil.parser.parse(step['selected_time'])
+                date_step_result.save()
             if step_type == StepType.ROUTESTEP.value:
                 route_step_result = RouteStepResult()
                 route_step_result.workflow_result = workflow_result
@@ -335,15 +438,129 @@ class WorkflowResult(APIView):
 
 class Prueba(APIView):
     def get(self, request, format=None):
-        user_social = UserSocialAuth()
-        user = User()
-        user.username = "prueba"
-        user.save()
-        pdb.set_trace()
-        user_social.provider = "prueba"
-        user_social.id = 1234
-        user_social.user_id = user.id
-        user_social.save()
+        zip_file = os.path.join(settings.PROJECT_ROOT, 'sample2 |.zip')
+        unzipped = zipfile.ZipFile(zip_file)
+        unzipped.extractall('result')
+        list_name = unzipped.namelist()
+        for file in list_name:
+            if "json" in file:
+                json_file = unzipped.read(file)
+        data = json.loads(json_file)
+        workflow = Workflow.objects.get(id=1)
+        workflow_result = WorkflowResultModel()
+        workflow_result.workflow = workflow
+        workflow_result.sent = data['sent']
+        workflow_result.start_date_time = dateutil.parser.parse(data['startDateTime'])
+        workflow_result.end_date_time = dateutil.parser.parse(data['endDateTime'])
+        workflow_result.save()
+        steps = data['steps']
+        for step in steps: 
+            step_type = step['type']
+            if  step_type == StepType.TEXTSTEP.value:
+                textStepResult = TextStepResult()
+                textStepResult.workflow_result = workflow_result
+                textStepResult.step_id = step['stepId']
+                textStepResult.inserted_text = step['insertedText']
+                textStepResult.save()
+            if step_type == StepType.LOCATIONSTEP.value:
+                location_step_result = LocationStepResult()
+                location_step_result.workflow_result = workflow_result
+                location_step_result.step_id = step['stepId']
+                location_step_result.latitude = step['latitude']
+                location_step_result.longitude = step['longitude']
+                location_step_result.save()
+            if step_type == StepType.SELECTMULTIPLESTEP.value:
+                multiple_step_result = SelectStepResult()
+                multiple_step_result.workflow_result = workflow_result
+                multiple_step_result.step_id = step['stepId']
+                multiple_step_result.type = "SelectMultipleStepResult"
+                multiple_step_result.save()
+                options = step['selectedOptions']
+                for option in options:
+                    option_result = OptionToShowResult()
+                    option_result.select_step_result = multiple_step_result
+                    option_result.option_id = option['id']
+                    option_result.text_to_show = option['textToShow']
+                    option_result.save()
+            if step_type == StepType.SELECTONESTEP.value:
+                one_step_result = SelectStepResult()
+                one_step_result.workflow_result = workflow_result
+                one_step_result.step_id = step['stepId']
+                one_step_result.type = "SelectOneStepResult"
+                one_step_result.save()
+                option = step['selectedOption']
+                option_result = OptionToShowResult()
+                option_result.select_step_result = one_step_result
+                option_result.option_id = option['id']
+                option_result.text_to_show = option['textToShow']
+                option_result.next_step_id = option['nextStepId']
+                option_result.save()
+            if step_type == StepType.SOUNDRECORDSTEP.value:
+                record_step_result = SoundRecordStepResult()
+                record_step_result.workflow_result = workflow_result
+                record_step_result.step_id = step['stepId']
+                file_name = step['soundFileName']
+                for file in list_name:
+                    if file_name in file:
+                        record_file_path = unzipped.extract(file)
+                record_file = open(record_file_path,'rb')
+                record_step_result.file = File(record_file)
+                os.remove(file_name)
+                record_step_result.save()
+            if step_type == StepType.PHOTOSTEP.value:
+                photo_step_result = PhotoStepResult()
+                photo_step_result.workflow_result = workflow_result
+                photo_step_result.step_id = step['stepId']
+                file_name = step['imageFileName']
+                for file in list_name:
+                    if file_name in file:
+                        photo_file_path = unzipped.extract(file)
+                photo_file = open(photo_file_path,'rb')
+                photo_step_result.file = File(photo_file)
+                os.remove(file_name)
+                photo_step_result.save()
+            if step_type == StepType.TIMESTEP.value:
+                time_step_result = TimeStepResult()
+                time_step_result.workflow_result = workflow_result
+                time_step_result.step_id = step['stepId']
+                time_step_result.selected_time = dateutil.parser.parse(step['selected_time'])
+                time_step_result.save()
+            if step_type == StepType.DATESTEP.value:
+                date_step_result = DateStepResult()
+                date_step_result.workflow_result = workflow_result
+                date_step_result.step_id = step['stepId']
+                date_step_result.selected_date = dateutil.parser.parse(step['selected_date'])
+                date_step_result.save()
+            if step_type == StepType.ROUTESTEP.value:
+                route_step_result = RouteStepResult()
+                route_step_result.workflow_result = workflow_result
+                route_step_result.step_id = step['stepId']
+                route_step_result.save()
+                routes = step['route']
+                for route in routes:
+                    route_information_result = RouteInformationResult()
+                    route_information_result.route_step_result = route_step_result
+                    route_information_result.accuracy = route['mAccuracy']
+                    route_information_result.altitude = route['mAltitude']
+                    route_information_result.bearing = route['mBearing']
+                    route_information_result.elapsed_realtime_nanos = route['mElapsedRealtimeNanos']
+                    route_information_result.latitude = route['mLatitude']
+                    route_information_result.longitude = route['mLongitude']
+                    route_information_result.provider = route['mProvider']
+                    route_information_result.speed = route['mSpeed']
+                    route_information_result.fields_mask = route['mFieldsMask']
+                    route_information_result.time = datetime.datetime.fromtimestamp(route['mTime'] / 1e3)
+                    #Si tiene extras
+                    extra = route['mExtras']
+                    if not extra is None:
+                        route_information_result.flags = extra['mFlags']
+                        #Si tiene parcelledData
+                        parcelledData = extra['mParcelledData']
+                        if not parcelledData is None:
+                            route_information_result.native_ptr = parcelledData['mNativePtr']
+                            route_information_result.native_size = parcelledData['mNativeSize']
+                            route_information_result.owns_native_parcel_object = parcelledData['mOwnsNativeParcelObject']
+                    route_information_result.save() 
 
 class Login(APIView):
     def get(self, request, format=None):

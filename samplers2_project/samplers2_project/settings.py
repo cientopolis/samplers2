@@ -60,6 +60,7 @@ MIDDLEWARE_CLASSES = [
     'webpage.middleware.WebpageExceptionMiddleware',
 ]
 
+
 ROOT_URLCONF = 'samplers2_project.urls'
 
 TEMPLATES = [
