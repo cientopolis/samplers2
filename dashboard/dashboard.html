@@ -64,6 +64,7 @@
 				<h3>Ingrese el tipo de paso</h3>
 				<hr>
 				<select class="col-sm-12 form-control" id="step-type">
+					<option value="1" disabled>Seleccion</option>
 					<option value="2">Geoposicionamiento</option>
 					<option value="3">Foto</option>
 					<option value="4">Informacion</option>
@@ -112,6 +113,31 @@
 
 	</div>
 
+	<div id="optionModal" class="modal">
+
+		<!-- Modal content -->
+		<div style="overflow-y: auto;" class="modal-content">
+			<div class="modal-header">
+				<span class="close">&times;</span>
+				<h2>Configuracion opcion</h2>
+			</div>
+			<div class="modal-body">
+				<h3>Ingrese la respuesta</h3>
+				<div id="optionContainer" class="row">
+					<input class="col-sm-12 form-control" type="text" id="option_text" value="" name="option_text">
+
+				</div>
+				<!-- aca va el contenido -->
+
+			</div>
+			<div class="modal-footer" style="margin-top: 30px;">
+				<button type="button" id="close_btn" class="btn btn-default" onclick="closeOptionModal()" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" onclick="setOptionConfiguration()">Guardar</button>
+			</div>
+		</div>
+
+	</div>
+
 
 
 	<div class="row">
@@ -135,7 +161,7 @@
 				<i class="fa fa-trash" onclick="deleteEdge()"></i>
 			</div>
 			<div class="icon-bar" id="icon-bar-option">
-				<i class="fa fa-bullseye" onclick="deleteEdge()"></i>
+				<i class="fa fa-bullseye" onclick="openOptionModel()"></i>
 			</div>
 		</div>
 
@@ -161,6 +187,7 @@
 	var nodesTypes;
 	var wf;
 	var clickedStep;
+	var clickedOption;
 	var clickedEdge;
 	var fatherStep;
 
@@ -172,16 +199,18 @@
 	var options = null;
 
 	var modal = document.getElementById('myModal');
+	var optionModal = document.getElementById('optionModal');
 	var spectModal = document.getElementById('spectModal');
 	var new_node_type = document.getElementById('step-type');
 	var spectContainer = document.getElementById('spectContainer');
 
 	
 
+	
+
 	function initialice() {
 		spect = {
-			name: '',
-			icon: ''
+			text_to_show: ''
 		}
 		steps = [];
 		nodesTypes = [];
@@ -275,6 +304,65 @@
 		}
 	}
 
+	function getNewNodeType(name){
+		switch(name) {
+			case "SELECT":
+
+			return new NodeType('SELECT','select.png','');
+			break;
+
+			case "GPS":
+
+			return new NodeType('GPS','gps.png',spect);
+			break;
+
+			case "CAMARA":
+
+			return new NodeType('CAMARA','camara.png',spect);
+			break;
+
+			case "INFO":
+
+			return new NodeType('INFO','info.png','');
+			break;
+
+			case "QUESTION":
+
+			return new NodeType('QUESTION','question.png','');
+			break;
+
+			case "VOICE":
+
+			return new NodeType('VOICE','voice.png','');	
+			break;
+
+			case "HOUR":
+
+			return new NodeType('HOUR','hour.png','');
+			break;
+
+			case "DATE":
+
+			return new NodeType('DATE','date.png','');
+			break;
+
+			case "MULTIPLE":
+
+			return new NodeType('MULTIPLE','multipleSelection.png','');
+			break;
+
+			case "TEXT":
+
+			return new NodeType('TEXT','text.png','');
+			break;
+
+			default:
+
+			return new NodeType('INFO','info.png','');
+			break;
+		}
+	}
+
 	function getTypeNodeById(id){
 		switch(id) {
 			case "1":
@@ -355,56 +443,110 @@
 		function deleteStep() {
 
 			if (wf.steps.length > 1){
-				var fatherStep = wf.getFatherStepByNodeId(clickedStep.id);
-				if(fatherStep){
-					fatherStep.next = clickedStep.id.next;
-					fatherStep.deleteChildStep(clickedStep);
+
+				var fathersStep = wf.getFathersStepByNodeId(clickedStep.id);
+				
+				if(fathersStep.length > 0){
+					for (var i = 0; i < fathersStep.length; i++) {
+						
+						fathersStep[i].next = clickedStep.id.next;
+						fathersStep[i].deleteChildStep(clickedStep);
 				//Si tiene hijo
 				if(clickedStep.next){
 					
-					fatherStep.addChildStep(wf.getStepByNodeId(clickedStep.next.id));
-				} 
+					fathersStep[i].addChildStep(wf.getStepByNodeId(clickedStep.next.id));
+				}
+			}
+
 				wf.deleteStep(clickedStep.id);
-				nodeClicked(clickedStep.id);
+
 			} else {
-			//Es el primero
-			wf.deleteStep(clickedStep.id);
-		} 
-	} else {
-		alert("No puede borrar todos los nodos");
+				//Es el primero
+				wf.deleteStep(clickedStep.id);
+			} 
+			document.getElementById("icon-bar").style.display = "none";
+			document.getElementById("icon-bar-option").style.display = "none";
+			document.getElementById("selectedStep").innerHTML = "";
+
+			clickedStep = null;
+		} else {
+			alert("No puede borrar todos los nodos");
+		}
+
+		draw();
+
+
 	}
 
-	draw();
+	function closeModal() {
+		modal.style.display = "none";
+		spectModal.style.display = "none";
+		draw();
 
+	}
 
-}
+	function setOptionConfiguration() {
+		optionModal.style.display = "none";
+		var optionTextInput = document.getElementById('option_text');
+		clickedOption.text = optionTextInput.value;
 
-function closeModal() {
-	modal.style.display = "none";
-	spectModal.style.display = "none";
-	draw();
+	}
 
-}
+	function closeOptionModal() {
+		optionModal.style.display = "none";
 
-function openModal() {
+	}
+
+	function openModal() {
 	//Set selected value
 	modal.style.display = "block";
 	spectModal.style.display = "none";
 	new_node_type.value = getTypeNodeId(clickedStep.getNodeType().name);
+	if (clickedStep.getNodeType().name == "SELECT"){
+		new_node_type.disabled = true;
+	}
+	
 }
 
 function goToSpects(type) {
-	//ShowSpects
-	var newType = getTypeNodeById(new_node_type.value);
-	clickedStep.setNodeType(newType);
+	var newType = getNewNodeType(getTypeNodeById(new_node_type.value).name);
+	if(newType.name != clickedStep.nodeType.name){
+		clickedStep.setNodeType(newType);
+	}
 	spectContainer.innerHTML = ""
-	if (newType == ntText){
-		spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show"><h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show"><h3>Ingrese el texto de muestra</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show"><h3>Ingrese el largo maximo del texto</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show"><h3>Ingrese el tipo de dato</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show"><h3>Ingrese si es opcional</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show">';
+	if (ntText.name == newType.name){
+		var text = (clickedStep.nodeType.spect.text_to_show) ? clickedStep.nodeType.spect.text_to_show : "";
+		var example_text = (clickedStep.nodeType.spect.example_text) ? clickedStep.nodeType.spect.example_text : "";
+		var long_text = (clickedStep.nodeType.spect.long_text) ? clickedStep.nodeType.spect.long_text : "";
+		clickedStep.nodeType.spect.data_type;
+
+
+		spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" value="'+text+'" name="text_to_show" id="text_to_show"><h3>Ingrese el texto de muestra</h3><hr><input class="col-sm-12 form-control" type="text" id="example_text" value="'+example_text+'"  name="example_text"><h3>Ingrese el largo maximo del texto</h3><hr><input class="col-sm-12 form-control" type="number" min="1" id="long_text" value="'+long_text+'"  name="long_text"><h3>Ingrese el tipo de dato</h3><hr><select class="col-sm-12 form-control" name="data_type" id="data_type"><option value="text">Texto</option><option value="other">Otro</option><option value="number">Numerico</option></select><h3>Ingrese si es opcional</h3><hr><select class="col-sm-12 form-control" name="optional" id="optional"><option value="true">Si</option><option value="false">No</option></select>';
+		if (clickedStep.nodeType.spect.data_type){
+			document.getElementById('data_type').value = clickedStep.nodeType.spect.data_type;
+		}
+		if (clickedStep.nodeType.spect.optional){
+			document.getElementById('optional').value = clickedStep.nodeType.spect.optional;
+		}
+		
+		
 	} else {
-		if(newType == ntMultpleSeleccion){
-			spectContainer.innerHTML = 'MultipleSelect';
+		if(ntMultpleSeleccion.name == newType.name){
+			var text = (clickedStep.nodeType.spect.text_to_show) ? clickedStep.nodeType.spect.text_to_show : "";
+
+
+			var options = ""; 
+			if(clickedStep.nodeType.spect.options){
+				for (var i = 0; i < clickedStep.nodeType.spect.options.length ; i++) {
+					options = options + '<hr><div class="row"> <div class="col-sm-8"><input class="col-sm-12 form-control" value="'+clickedStep.nodeType.spect.options[i]+'" type="text" name="option_text"></div><div class="col-sm-4"></div></div>';
+				}
+				
+			} 
+
+			spectContainer.innerHTML = '<div><h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show" value="'+text+'" id="text_to_show"></div><div class="option_container"><h3>Opciones</h3>'+options+'</div><p onclick="addOption()">Click aqui para agregar una opcion ...</p>';
 		} else {
-			spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show">';
+			var text = (clickedStep.nodeType.spect.text_to_show) ? clickedStep.nodeType.spect.text_to_show : "";
+			spectContainer.innerHTML = '<h3>Ingrese el as a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" id="text_to_show" value="'+text+'" name="text_to_show">';
 		} 
 	}
 	modal.style.display = "none";
@@ -412,8 +554,36 @@ function goToSpects(type) {
 
 }
 
+function getSpectFromModal(nodeType){
+	if (ntText.name == nodeType.name){
+		var modal_text_to_show = document.getElementById('text_to_show');
+		var modal_example_text = document.getElementById('example_text');
+		var modal_long_text = document.getElementById('long_text');
+		var modal_data_type = document.getElementById('data_type');
+		var modal_optional = document.getElementById('optional');
+		return { "text_to_show": modal_text_to_show.value, "example_text": modal_example_text.value, "long_text": modal_long_text.value, "data_type": modal_data_type.value, "optional": modal_optional.value};
+
+	} else {
+		if (ntMultpleSeleccion.name == nodeType.name){
+			var modal_text_to_show = document.getElementById('text_to_show');
+			var modal_options = document.getElementsByName('option_text');
+			var options = [];
+			for (var i = 0; i < modal_options.length -1; i++) {
+				options.push(modal_options[i].value);
+			}
+
+			return { "text_to_show": modal_text_to_show.value,"options":options };
+		} else {
+			var modal_text_to_show = document.getElementById('text_to_show');
+			return { "text_to_show": modal_text_to_show.value};
+		}
+	}
+}
+
 function setTypeConfiguration(spects) {
-	//TODO: guardar las spects
+	
+	clickedStep.nodeType.spect = getSpectFromModal(clickedStep.nodeType);
+	console.log(getSpectFromModal(clickedStep.nodeType));
 	modal.style.display = "none";
 	spectModal.style.display = "none";
 	draw();
@@ -424,7 +594,7 @@ function addStep() {
 
 	if (clickedStep.canAddChildStep()){
 				//TODO: chequear que id ponerle
-				var infoStep = new Simple(ntInfo,(Math.floor((Math.random() * 1000) )), clickedStep.level+1);
+				var infoStep = new Simple(new NodeType('INFO','info.png',spect),(Math.floor((Math.random() * 100000) )), clickedStep.level+1);
 				clickedStep.addChildStep(infoStep);
 				wf.addStep(infoStep);
 			} else {
@@ -494,6 +664,10 @@ function addStep() {
 
 	}
 
+	function addOption() {
+		$( ".option_container" ).append('<hr><div class="row"> <div class="col-sm-8"><input class="col-sm-12 form-control" type="text" name="option_text"></div><div class="col-sm-4"></div></div>');
+	}
+
 	function getEdgeById(edgeId){
 		for (i = 0; i < edges.length; i++) { 
 			var currentEdge = edges[i];
@@ -512,11 +686,21 @@ function addStep() {
 		}
 	}
 
+	function openOptionModel(){
+		//obtener input
+		var optionTextInput = document.getElementById('option_text');
+		//obtengo texto del modelo
+		var optionText = clickedOption.text;
+		//si es distinto a null se lo seteo al input
+		if (!optionText){
+			optionText = "";
+		} 
+		optionTextInput.value = optionText;
+		optionModal.style.display = "block";
 
+	}
 
 	function deleteEdge(){
-
-
 
 		var step = wf.getStepByNodeId(clickedEdge.from);
 		edgeClicked(clickedEdge.id);
@@ -575,7 +759,8 @@ function addStep() {
 			clickedStep = null;
 		}
 		document.getElementById("icon-bar-option").style.display = "block";
-					document.getElementById("selectedStep").innerHTML = "Option selected";
+		clickedOption = wf.getOptionById(node);
+		document.getElementById("selectedStep").innerHTML = "Option selected "+JSON.stringify(clickedOption) ;
 
 	}
 
@@ -597,10 +782,10 @@ function edgeClicked(edgeId){
 			nodeClicked(clickedStep.id);
 		}
 		if(isOption){
-					document.getElementById("icon-bar-edge").style.display = "none";
-					document.getElementById("selectedStep").innerHTML = "";
-					document.getElementById("icon-bar-option").style.display = "none";
-					clickedEdge = null;
+			document.getElementById("icon-bar-edge").style.display = "none";
+			document.getElementById("selectedStep").innerHTML = "";
+			document.getElementById("icon-bar-option").style.display = "none";
+			clickedEdge = null;
 		} else {
 			if (clickedEdge){
 
@@ -628,12 +813,12 @@ function edgeClicked(edgeId){
 
 
 
-		}
+	}
 
 
-		function draw() {
-			destroy();
-			transformData();
+	function draw() {
+		destroy();
+		transformData();
 
             // create a network
             container = document.getElementById('mynetwork');
