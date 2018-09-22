@@ -639,10 +639,16 @@ function addStep() {
 			for (i = 0; i < steps.length; i++) { 
 				var step = steps[i];
 				var fs = wf.getFatherStepByNodeId(step.id);
+				var fss = wf.getFathersStepByNodeId(step.id);
+
 				var level;
 
 				if (fs) {
 					level = fs.getLevelToChild(); 
+					
+					if (fss.length > 1){
+						level = fss[1].getLevelToChild(); 
+					}
 					step.level =level;
 				} else {
 					level = 0; 
