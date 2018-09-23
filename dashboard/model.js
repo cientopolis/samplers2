@@ -4,6 +4,27 @@ class Workflow {
 		this.nodestypes = nodestypes;
 	}
 
+	getOptionById(nodeId) {
+		for (var i = 0; i < steps.length; i++) {
+			var currentStep = steps[i];
+			var childStep = currentStep.getChild();
+			if(childStep){
+				if(childStep.length){
+				for (var j = 0; j < childStep.length; j++) {
+					if(childStep[j]){
+						if (childStep[j].id == nodeId){
+							return childStep[j];
+						}
+
+					}
+				}
+			}
+
+			}
+		}
+		return null
+	}
+
 	getStepByNodeId(nodeId) {
 		for (var i = 0; i < steps.length; i++) {
 			if (steps[i].id == nodeId){
@@ -11,6 +32,38 @@ class Workflow {
 			}
 		}
 	}
+
+	getFathersStepByNodeId(nodeId) {
+		var fathers = [];
+		for (var i = 0; i < steps.length; i++) {
+			var step = steps[i];
+
+			if(step.getChild()){
+				var options = step.getChild();
+				if(options.length){
+
+					for (var j = 0; j < options.length; j++) {
+						var option = options[j];
+						if(option){
+							if (option.getNext().id == nodeId){
+								fathers.push(steps[i]);
+							}
+						}
+					}
+
+				} else {
+
+					if (step.getChild().id == nodeId){
+						fathers.push(steps[i]);
+					}
+				}
+				
+			}
+			
+		}
+		return fathers;
+	}
+
 
 	getFatherStepByNodeId(nodeId) {
 		
