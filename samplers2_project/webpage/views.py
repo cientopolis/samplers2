@@ -28,6 +28,7 @@ import datetime
 from social_django.models import UserSocialAuth
 from django.core.urlresolvers import reverse
 from itertools import chain
+import csv
 
 
 @login_required
@@ -206,8 +207,43 @@ def showResults(request, id=None):
                         wf_result[step_id] = result_location_object
             '''
         wf_results.append(wf_result)
-    ctx = { 'steps_information': steps_information, 'wf_results' : wf_results}
+    isCsvDownload = request.GET.get('csv', None)
+    if isCsvDownload:
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+        writer = csv.writer(response,delimiter=';')
+        csvHeaders = getCsvHeaders(workflow)
+        writer.writerow(csvHeaders) 
+        writer = buildTableContent(wf_results,steps_information,writer)
+        return response
+    ctx = { 'steps_information': steps_information, 'wf_results' : wf_results, "wf_id": workflow.id}
     return render(request, 'webpage/showWorkflowResults.html', ctx)
+
+def getCsvHeaders(workflow):
+    result = []
+    result.append("Inicio")
+    result.append("Fin")
+    result.append("Id")
+    for step in workflow.steps.all():
+        if step.step_type != StepType.INFORMATIONSTEP.value:
+            result.append(step.step_type)
+    return result
+
+def buildTableContent(wf_results,steps_information,writer):
+    for wf_result in wf_results:
+        values = []
+        values.append(wf_result['start_time'])
+        values.append(wf_result['end_time'])
+        values.append(wf_result['id'])
+        for step_information in steps_information:
+            id = step_information['step_id']
+            if wf_result.get(id) is not None:
+                values.append(wf_result[id])
+            else:
+                values.append("-")
+        writer.writerow(values)
+    return writer
 
 def getStepsInformation(workflow):
     result = []
@@ -298,7 +334,6 @@ class WorkflowResult(APIView):
     List all workflow, or create a new workflow.
     """
     def post(self, request, pk, format=None):
-        pdb.set_trace()
         content = request.FILES['sample']
         query_params = dict()
         raw_qs = request.META.get('QUERY_STRING', '')
@@ -314,6 +349,7 @@ class WorkflowResult(APIView):
             if "json" in file:
                 json_file = unzipped.read(file)
         data = json.loads(json_file)
+        pdb.set_trace()
         workflow = Workflow.objects.get(id=pk)
         workflow_result = WorkflowResultModel()
         if (user_id is not None) & (user_id != ""):
@@ -327,50 +363,51 @@ class WorkflowResult(APIView):
         steps = data['steps']
         for step in steps: 
             step_type = step['type']
-            if  step_type == StepType.TEXTSTEP.value:
+            step_data = step['data']
+            if step_type in 'InsertTextStepResult':
                 textStepResult = TextStepResult()
                 textStepResult.workflow_result = workflow_result
-                textStepResult.step_id = step['stepId']
-                textStepResult.inserted_text = step['insertedText']
+                textStepResult.step_id = step_data['stepId']
+                textStepResult.inserted_text = step_data['insertedText']
                 textStepResult.save()
-            if step_type == StepType.LOCATIONSTEP.value:
+            if step_type in 'LocationStepResult':
                 location_step_result = LocationStepResult()
                 location_step_result.workflow_result = workflow_result
-                location_step_result.step_id = step['stepId']
-                location_step_result.latitude = step['latitude']
-                location_step_result.longitude = step['longitude']
+                location_step_result.step_id = step_data['stepId']
+                location_step_result.latitude = step_data['latitude']
+                location_step_result.longitude = step_data['longitude']
                 location_step_result.save()
-            if step_type == StepType.SELECTMULTIPLESTEP.value:
+            if step_type in 'MultipleSelectStepResult':
                 multiple_step_result = SelectStepResult()
                 multiple_step_result.workflow_result = workflow_result
-                multiple_step_result.step_id = step['stepId']
+                multiple_step_result.step_id = step_data['stepId']
                 multiple_step_result.type = "SelectMultipleStepResult"
                 multiple_step_result.save()
-                options = step['selectedOptions']
+                options = step_data['selectedOptions']
                 for option in options:
                     option_result = OptionToShowResult()
                     option_result.select_step_result = multiple_step_result
                     option_result.option_id = option['id']
                     option_result.text_to_show = option['textToShow']
                     option_result.save()
-            if step_type == StepType.SELECTONESTEP.value:
+            if step_type in 'SelectOneStepResult':
                 one_step_result = SelectStepResult()
                 one_step_result.workflow_result = workflow_result
-                one_step_result.step_id = step['stepId']
+                one_step_result.step_id = step_data['stepId']
                 one_step_result.type = "SelectOneStepResult"
                 one_step_result.save()
-                option = step['selectedOption']
+                option = step_data['selectedOption']
                 option_result = OptionToShowResult()
                 option_result.select_step_result = one_step_result
                 option_result.option_id = option['id']
                 option_result.text_to_show = option['textToShow']
                 option_result.next_step_id = option['nextStepId']
                 option_result.save()
-            if step_type == StepType.SOUNDRECORDSTEP.value:
+            if step_type in 'SoundRecordStepResult':
                 record_step_result = SoundRecordStepResult()
                 record_step_result.workflow_result = workflow_result
-                record_step_result.step_id = step['stepId']
-                file_name = step['soundFileName']
+                record_step_result.step_id = step_data['stepId']
+                file_name = step_data['soundFileName']
                 for file in list_name:
                     if file_name in file:
                         record_file_path = unzipped.extract(file)
@@ -378,11 +415,11 @@ class WorkflowResult(APIView):
                 record_step_result.file = File(record_file)
                 os.remove(file_name)
                 record_step_result.save()
-            if step_type == StepType.PHOTOSTEP.value:
+            if step_type in 'PhotoStepResult':
                 photo_step_result = PhotoStepResult()
                 photo_step_result.workflow_result = workflow_result
-                photo_step_result.step_id = step['stepId']
-                file_name = step['imageFileName']
+                photo_step_result.step_id = step_data['stepId']
+                file_name = step_data['imageFileName']
                 for file in list_name:
                     if file_name in file:
                         photo_file_path = unzipped.extract(file)
@@ -390,24 +427,24 @@ class WorkflowResult(APIView):
                 photo_step_result.file = File(photo_file)
                 os.remove(file_name)
                 photo_step_result.save()
-            if step_type == StepType.TIMESTEP.value:
+            if step_type in 'InsertTimeStepResult':
                 time_step_result = TimeStepResult()
                 time_step_result.workflow_result = workflow_result
-                time_step_result.step_id = step['stepId']
-                time_step_result.selected_time = dateutil.parser.parse(step['selected_time'])
+                time_step_result.step_id = step_data['stepId']
+                time_step_result.selected_time = dateutil.parser.parse(step_data['selected_time'])
                 time_step_result.save()
-            if step_type == StepType.DATESTEP.value:
+            if step_type in 'InsertDateStepResult':
                 date_step_result = DateStepResult()
                 date_step_result.workflow_result = workflow_result
-                date_step_result.step_id = step['stepId']
-                date_step_result.selected_date = dateutil.parser.parse(step['selected_time'])
+                date_step_result.step_id = step_data['stepId']
+                date_step_result.selected_date = dateutil.parser.parse(step_data['selected_time'])
                 date_step_result.save()
-            if step_type == StepType.ROUTESTEP.value:
+            if step_type in 'RouteStepResult':
                 route_step_result = RouteStepResult()
                 route_step_result.workflow_result = workflow_result
-                route_step_result.step_id = step['stepId']
+                route_step_result.step_id = step_data['stepId']
                 route_step_result.save()
-                routes = step['route']
+                routes = step_data['route']
                 for route in routes:
                     route_information_result = RouteInformationResult()
                     route_information_result.route_step_result = route_step_result

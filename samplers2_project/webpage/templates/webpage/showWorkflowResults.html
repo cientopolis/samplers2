@@ -28,6 +28,8 @@
     {% endfor %}
   </table>
 
+  <a href="{% url 'webpage:showResults' wf_id %}?csv=true"> Descargar CSV</a>
+
  {% else %}
   <p>No posee resultados</p>
 {% endif %}
