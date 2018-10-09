@@ -128,6 +128,7 @@ def showResults(request, id=None):
         workflow = Workflow.objects.get(id=id)
     steps_information = getStepsInformation(workflow)
     wf_results = []
+    media_url = request.get_host() + "/webpage" + settings.MEDIA_URL
     for wf in workflow.workflow_results.all():
         wf_result = {}
         wf_result["start_time"] = wf.start_date_time.strftime("%d-%m-%Y")
@@ -167,13 +168,13 @@ def showResults(request, id=None):
                 if photo_step_results:
                     photo_step_result = photo_step_results.filter(step_id=step_id).first()
                     if photo_step_result:
-                        wf_result[step_id] = photo_step_result.file
+                        wf_result[step_id] = media_url + str(photo_step_result.file)
             if step_information['step_type'] == StepType.SOUNDRECORDSTEP.value:
                 sound_step_results = wf.sound_step_results.all()
                 if sound_step_results:
                     sound_step_result = sound_step_results.get(step_id=step_id)
                     if sound_step_result:
-                        wf_result[step_id] = sound_step_result.file
+                        wf_result[step_id] = media_url + str(sound_step_result.file)
             if step_information['step_type'] == StepType.SELECTONESTEP.value:
                 one_step_results = wf.select_step_results.all().filter(type="SelectOneStepResult")
                 if one_step_results:
@@ -207,10 +208,13 @@ def showResults(request, id=None):
                         wf_result[step_id] = result_location_object
             '''
         wf_results.append(wf_result)
+
     isCsvDownload = request.GET.get('csv', None)
     if isCsvDownload:
+        file_name = workflow.name + "_" +datetime.datetime.today().strftime('%d-%m-%Y %H:%M:%S')
+        pdb.set_trace()
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+        response['Content-Disposition'] = 'attachment; filename="%s"' % file_name + ".csv"
 
         writer = csv.writer(response,delimiter=';')
         csvHeaders = getCsvHeaders(workflow)

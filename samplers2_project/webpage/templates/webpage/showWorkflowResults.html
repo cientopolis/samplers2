@@ -18,11 +18,16 @@
          <td>{{ wf_result.start_time }}</td>
          <td>{{ wf_result.end_time }}</td>
          {% for step_information in steps_information %}
-            {% if wf_result|get_item:step_information.step_id %}
-              <td> {{ wf_result|get_item:step_information.step_id }} </td>
-              {% else %}
-                <td> - </td>
+            {% if wf_result|get_item:step_information.step_id and step_information.step_type == 'PhotoStep' %}
+              <td><a href = "{{ wf_result|get_item:step_information.step_id }}"> Ver Foto </td>
+              {% elif wf_result|get_item:step_information.step_id and step_information.step_type == 'SoundRecordStep' %}
+                <td><a href = "{{ wf_result|get_item:step_information.step_id }}"> Escuchar Audio </td>
+                {% elif wf_result|get_item:step_information.step_id %}
+                    <td> {{ wf_result|get_item:step_information.step_id }} </td>
+                {% else %}
+                    <td> - </td>
             {% endif %}
+
          {% endfor %}
        </tr>
     {% endfor %}
