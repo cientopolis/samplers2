@@ -210,7 +210,7 @@
 	
 
 	function initialice() {
-		spect = {
+		var spect = {
 			text_to_show: ''
 		}
 		steps = [];
@@ -222,10 +222,18 @@
 		ntQuestion = new NodeType('QUESTION','question.png',spect);
 		ntHour = new NodeType('HOUR','hour.png',spect);	
 		ntDate = new NodeType('DATE','date.png',spect);
+		ntVoice = new NodeType('VOICE','voice.png',spect);
+		spect = {
+			text_to_show: '',
+			options: []
+		}
 		ntMultpleSeleccion = new NodeType('MULTIPLE','multipleSelection.png',spect);
-		
+		spect = {
+			text_to_show: '',
+			options: []
+		}
 		ntText = new NodeType('TEXT','text.png',spect);	
-		ntVoice = new NodeType('VOICE','voice.png',spect);	
+			
 
 		nodesTypes.push(ntSelect);
 		nodesTypes.push(ntGps);
@@ -512,9 +520,14 @@
 }
 
 function JSONToServer(){
-
-	console.log("JSON: " + JSON.stringify({"steps" : wf.getJsonToServer(),"name": "WorkflowCompleto",
+	if (wf.isValid()){
+		console.log("JSON Valido : " + JSON.stringify({"steps" : wf.getJsonToServer(),"name": "WorkflowCompleto",
   "project": 1}));
+	} else {
+		console.log("JSON Invalido");
+	}
+
+	
 }
 
 function goToSpects(type) {
@@ -554,7 +567,11 @@ function goToSpects(type) {
 
 			spectContainer.innerHTML = '<div><h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show" value="'+text+'" id="text_to_show"></div><div class="option_container"><h3>Opciones</h3>'+options+'</div><p onclick="addOption()">Click aqui para agregar una opcion ...</p>';
 		} else {
-			var text = (clickedStep.nodeType.spect.text_to_show) ? clickedStep.nodeType.spect.text_to_show : "";
+			var text = "";
+			if (clickedStep.nodeType.spect){
+				text = (clickedStep.nodeType.spect.text_to_show) ? clickedStep.nodeType.spect.text_to_show : "";
+			}
+				
 			spectContainer.innerHTML = '<h3>Ingrese el as a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" id="text_to_show" value="'+text+'" name="text_to_show">';
 		} 
 	}

@@ -33,6 +33,44 @@ class Workflow {
 		}
 	}
 
+	isValid() {
+		return (this.hasNotCicle() && this.isConext() && this.isFillUp());
+		for (var i = 0; i < steps.length; i++) {
+			var actualStep = steps[i];
+
+		}
+	}
+
+	hasNotCicle(){
+		return true;
+	}
+
+	isConext(){
+		var level0 = 0;
+		for (var i = 0; i < steps.length; i++) {
+			var actualStep = steps[i];
+			if (actualStep.level == 0){
+				level0++;
+				if (level0 > 1){
+					return false;
+				}
+			}
+
+		}
+		return true;
+	}
+
+	isFillUp(){
+		for (var i = 0; i < steps.length; i++) {
+			var actualStep = steps[i];
+			if (!actualStep.isFillUp()){
+				return false
+			}
+
+		}
+		return true;
+	}
+
 	getJsonToServer() {
 		var jsonSteps = [];
 		for (var i = 0; i < steps.length; i++) {
@@ -133,8 +171,51 @@ class NodeType {
 		this.icon = icon;
 		this.spect = spect;
 	}
-	validate() {
-		console.log('validate');
+	
+	validateCommon(){
+		if(this.spect){
+			return this.spect.text_to_show.trim();
+		} else {
+			return false;
+		}
+	}
+	validateMultiple(){
+		if(this.spect){
+			if (this.spect.text_to_show.trim() && this.spect.options){
+				if (this.spect.options.length > 0){
+					return true;
+				}
+			}
+		} else {
+			return false;
+		}
+	}
+	validateText(){
+		if(this.spect){
+			return (this.spect.text_to_show.trim() && this.spect.example_text.trim() && this.spect.long_text);
+		} else {
+			return false;
+		}
+	}
+
+	isFillUp() {
+		switch(this.name) {
+
+			case "MULTIPLE":
+
+			return this.validateMultiple();
+			break;
+
+			case "TEXT":
+			return this.validateText();
+			break;
+
+
+			default:
+			return this.validateCommon();
+			
+			break;
+		}
 	}
 
 }
@@ -178,6 +259,24 @@ class Multiple extends Step {
 		var option = new Option(text,(Math.floor((Math.random() * 1000) )));
 		option.addNext(step);
 		this.addOption(option);
+	}
+	isFillUp(){
+		if(this.options){
+			for (var i = 0; i < this.options.length; i++) {
+				if(this.options[i]){
+					if (!this.options[i].isFillUp()){
+						return false;
+					}
+				}
+			}
+		} else {
+			return false;
+		}
+		
+		if (!this.nodeType.isFillUp()){
+			return false;
+		}
+		return true;
 	}
 	getIdToChild(step) {
 		if (this.options){
@@ -267,6 +366,9 @@ class Option {
 	addNext(step) {
 		this.next = step;
 	}
+	isFillUp(){
+		return (this.text && this.text.trim());
+	}
 	canAddNext() {
 		return !this.next;
 	}
@@ -319,6 +421,9 @@ class Simple extends Step {
 			"optional": this.nodeType.spect.optional
 		};
 
+	}
+	isFillUp(){
+		return this.nodeType.isFillUp();
 	}
 	jsonSelectToServer(){
 		var jsonOptions = [];
