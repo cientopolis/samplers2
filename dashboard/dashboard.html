@@ -141,6 +141,7 @@
 
 
 	<div class="row">
+		<button type="button" class="btn btn-primary" onclick="JSONToServer()">Imprimir</button>
 		<div class="col-sm-8">
 
 			<div id="mynetwork"><div class="vis-network" tabindex="900" style="position: relative; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;"><canvas width="1200" height="1200" style="position: relative; touch-action: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;"></canvas></div></div>
@@ -209,7 +210,7 @@
 	
 
 	function initialice() {
-		spect = {
+		var spect = {
 			text_to_show: ''
 		}
 		steps = [];
@@ -221,10 +222,18 @@
 		ntQuestion = new NodeType('QUESTION','question.png',spect);
 		ntHour = new NodeType('HOUR','hour.png',spect);	
 		ntDate = new NodeType('DATE','date.png',spect);
+		ntVoice = new NodeType('VOICE','voice.png',spect);
+		spect = {
+			text_to_show: '',
+			options: []
+		}
 		ntMultpleSeleccion = new NodeType('MULTIPLE','multipleSelection.png',spect);
-		
+		spect = {
+			text_to_show: '',
+			options: []
+		}
 		ntText = new NodeType('TEXT','text.png',spect);	
-		ntVoice = new NodeType('VOICE','voice.png',spect);	
+			
 
 		nodesTypes.push(ntSelect);
 		nodesTypes.push(ntGps);
@@ -504,7 +513,20 @@
 	new_node_type.value = getTypeNodeId(clickedStep.getNodeType().name);
 	if (clickedStep.getNodeType().name == "SELECT"){
 		new_node_type.disabled = true;
+	} else {
+		new_node_type.disabled = false;
 	}
+	
+}
+
+function JSONToServer(){
+	if (wf.isValid()){
+		console.log("JSON Valido : " + JSON.stringify({"steps" : wf.getJsonToServer(),"name": "WorkflowCompleto",
+  "project": 1}));
+	} else {
+		console.log("JSON Invalido");
+	}
+
 	
 }
 
@@ -521,7 +543,7 @@ function goToSpects(type) {
 		clickedStep.nodeType.spect.data_type;
 
 
-		spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" value="'+text+'" name="text_to_show" id="text_to_show"><h3>Ingrese el texto de muestra</h3><hr><input class="col-sm-12 form-control" type="text" id="example_text" value="'+example_text+'"  name="example_text"><h3>Ingrese el largo maximo del texto</h3><hr><input class="col-sm-12 form-control" type="number" min="1" id="long_text" value="'+long_text+'"  name="long_text"><h3>Ingrese el tipo de dato</h3><hr><select class="col-sm-12 form-control" name="data_type" id="data_type"><option value="text">Texto</option><option value="other">Otro</option><option value="number">Numerico</option></select><h3>Ingrese si es opcional</h3><hr><select class="col-sm-12 form-control" name="optional" id="optional"><option value="true">Si</option><option value="false">No</option></select>';
+		spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" value="'+text+'" name="text_to_show" id="text_to_show"><h3>Ingrese el texto de muestra</h3><hr><input class="col-sm-12 form-control" type="text" id="example_text" value="'+example_text+'"  name="example_text"><h3>Ingrese el largo maximo del texto</h3><hr><input class="col-sm-12 form-control" type="number" min="1" id="long_text" value="'+long_text+'"  name="long_text"><h3>Ingrese el tipo de dato</h3><hr><select class="col-sm-12 form-control" name="data_type" id="data_type"><option value="text">Texto</option><option value="other">Otro</option><option value="decimal">Decimal</option></select><h3>Ingrese si es opcional</h3><hr><select class="col-sm-12 form-control" name="optional" id="optional"><option value="true">Si</option><option value="false">No</option></select>';
 		if (clickedStep.nodeType.spect.data_type){
 			document.getElementById('data_type').value = clickedStep.nodeType.spect.data_type;
 		}
@@ -545,7 +567,11 @@ function goToSpects(type) {
 
 			spectContainer.innerHTML = '<div><h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show" value="'+text+'" id="text_to_show"></div><div class="option_container"><h3>Opciones</h3>'+options+'</div><p onclick="addOption()">Click aqui para agregar una opcion ...</p>';
 		} else {
-			var text = (clickedStep.nodeType.spect.text_to_show) ? clickedStep.nodeType.spect.text_to_show : "";
+			var text = "";
+			if (clickedStep.nodeType.spect){
+				text = (clickedStep.nodeType.spect.text_to_show) ? clickedStep.nodeType.spect.text_to_show : "";
+			}
+				
 			spectContainer.innerHTML = '<h3>Ingrese el as a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" id="text_to_show" value="'+text+'" name="text_to_show">';
 		} 
 	}
@@ -792,6 +818,7 @@ function edgeClicked(edgeId){
 			document.getElementById("selectedStep").innerHTML = "";
 			document.getElementById("icon-bar-option").style.display = "none";
 			clickedEdge = null;
+			clickedStep = null;
 		} else {
 			if (clickedEdge){
 
