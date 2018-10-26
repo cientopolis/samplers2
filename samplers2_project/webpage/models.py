@@ -69,7 +69,7 @@ class Step(models.Model):
     #Ver si van estos
     # identifier = models.IntegerField()
     next_step_id = models.IntegerField(null = True, blank=True)
-    order_in_workflow = models.IntegerField()
+    step_id = models.IntegerField(null=False)
     workflow = models.ForeignKey(Workflow, related_name='steps', on_delete=models.CASCADE)
     text_to_show = models.TextField(max_length=500, blank=True)
     #Only for TextStep

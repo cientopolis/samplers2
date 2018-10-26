@@ -21,7 +21,7 @@ class OptionToShowSerializer(serializers.ModelSerializer):
 class StepSerializer (serializers.ModelSerializer):
     class Meta:
         model = Step
-        fields = ('step_type', 'next_step_id', 'text_to_show', 'sample_text', 'max_length', 'optional',
+        fields = ('step_type', 'next_step_id', 'step_id', 'text_to_show', 'sample_text', 'max_length', 'optional',
                   'title', 'options_to_show')
 
     def to_representation(self, obj):
@@ -47,7 +47,7 @@ class StepSerializerPost (serializers.ModelSerializer):
 
     class Meta:
         model = Step
-        fields = ('step_type', 'next_step_id','text_to_show', 'sample_text', 'max_length', 'input_type', 'optional',
+        fields = ('step_type', 'next_step_id','step_id','text_to_show', 'sample_text', 'max_length', 'input_type', 'optional',
                   'title', 'options_to_show')
         #read_only_fields = ('next_step_id',)
 
@@ -60,7 +60,7 @@ class WorkflowSerializer(serializers.ModelSerializer):
         fields = ('name', 'project', 'steps')
 
     def get_steps(self, instance):
-        steps = instance.steps.all().order_by('order_in_workflow')
+        steps = instance.steps.all().order_by('step_id')
         return StepSerializer(steps, many=True).data
 
 
@@ -87,7 +87,7 @@ class WorkflowSerializerPost(serializers.ModelSerializer):
 
 def createWorkflowWithSteps(steps, workflow):
         for index, step in enumerate(steps):
-            step["order_in_workflow"] = index + 1
+            #step["order_in_workflow"] = index + 1
             step_dictionary = steps[index]
             step_type = step_dictionary['step_type']
             options_to_show_data = []
