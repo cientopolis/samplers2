@@ -21,6 +21,7 @@
       <th>Eliminar Proyecto</th>
       <th>Invitar Científico</th>
       <th>Ver Resultados</th>
+      <th>Crear Wofkflow</th>
     </tr>
     {% for project in projects_list %}
        <tr>
@@ -41,6 +42,7 @@
               -
               {% endif %}
         </td>
+        <td> <a href="{% url 'webpage:createWorkflow' project.id %}"> Crear Workflow</a></td>
        </tr>
     {% endfor %}
   </table>

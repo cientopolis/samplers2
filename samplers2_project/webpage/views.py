@@ -88,6 +88,11 @@ def createProject(request, id=None):
     return render(request, 'webpage/projectForm.html', {'form': form})
 
 @login_required
+def createWorkflow(request, id=None):
+    ctx = { 'project_id':id}
+    return render(request, 'webpage/dashboard/dashboard.html', ctx)
+
+@login_required
 def editProject(request, id=None):
     if id:
         project = get_object_or_404(Project, pk=id)
@@ -256,7 +261,7 @@ def getStepsInformation(workflow):
         #Elimino el information step
         if step.step_type != StepType.INFORMATIONSTEP.value:
             step_information['step_type'] = step.step_type
-            step_information['step_id'] = step.order_in_workflow
+            step_information['step_id'] = step.step_id
             result.append(step_information)
     return result
 
@@ -339,13 +344,6 @@ class WorkflowResult(APIView):
     """
     def post(self, request, pk, format=None):
         content = request.FILES['sample']
-        query_params = dict()
-        raw_qs = request.META.get('QUERY_STRING', '')
-        if raw_qs:
-            for line in raw_qs.split("&"):
-                key,arg = line.split("=")
-                query_params[key] = arg
-        user_id = query_params['userId']
         unzipped = zipfile.ZipFile(content)
         unzipped.extractall('result')
         list_name = unzipped.namelist()
@@ -353,35 +351,37 @@ class WorkflowResult(APIView):
             if "json" in file:
                 json_file = unzipped.read(file)
         data = json.loads(json_file)
-        pdb.set_trace()
         workflow = Workflow.objects.get(id=pk)
         workflow_result = WorkflowResultModel()
-        if (user_id is not None) & (user_id != ""):
-            user = Profile.objects.get(pk=user_id)
-            workflow_result.profile = user
         workflow_result.workflow = workflow
         workflow_result.sent = data['sent']
         workflow_result.start_date_time = dateutil.parser.parse(data['startDateTime'])
         workflow_result.end_date_time = dateutil.parser.parse(data['endDateTime'])
+        custom_params = data['customParams']
+        user_id = custom_params['userId']
+        if user_id:
+            #Chequera si es Profile.objects.get(pk=user_id) o Profile.objects.get(user=user_id)
+            profile = Profile.objects.get(pk=user_id)
+            workflow_result.profile = profile
         workflow_result.save()
         steps = data['steps']
         for step in steps: 
             step_type = step['type']
             step_data = step['data']
-            if step_type in 'InsertTextStepResult':
+            if 'InsertTextStepResult' in step_type:
                 textStepResult = TextStepResult()
                 textStepResult.workflow_result = workflow_result
                 textStepResult.step_id = step_data['stepId']
                 textStepResult.inserted_text = step_data['insertedText']
                 textStepResult.save()
-            if step_type in 'LocationStepResult':
+            if 'LocationStepResult' in step_type:
                 location_step_result = LocationStepResult()
                 location_step_result.workflow_result = workflow_result
                 location_step_result.step_id = step_data['stepId']
                 location_step_result.latitude = step_data['latitude']
                 location_step_result.longitude = step_data['longitude']
                 location_step_result.save()
-            if step_type in 'MultipleSelectStepResult':
+            if 'MultipleSelectStepResult' in step_type:
                 multiple_step_result = SelectStepResult()
                 multiple_step_result.workflow_result = workflow_result
                 multiple_step_result.step_id = step_data['stepId']
@@ -394,7 +394,7 @@ class WorkflowResult(APIView):
                     option_result.option_id = option['id']
                     option_result.text_to_show = option['textToShow']
                     option_result.save()
-            if step_type in 'SelectOneStepResult':
+            if 'SelectOneStepResult' in step_type:
                 one_step_result = SelectStepResult()
                 one_step_result.workflow_result = workflow_result
                 one_step_result.step_id = step_data['stepId']
@@ -407,7 +407,7 @@ class WorkflowResult(APIView):
                 option_result.text_to_show = option['textToShow']
                 option_result.next_step_id = option['nextStepId']
                 option_result.save()
-            if step_type in 'SoundRecordStepResult':
+            if 'SoundRecordStepResult' in step_type:
                 record_step_result = SoundRecordStepResult()
                 record_step_result.workflow_result = workflow_result
                 record_step_result.step_id = step_data['stepId']
@@ -419,7 +419,7 @@ class WorkflowResult(APIView):
                 record_step_result.file = File(record_file)
                 os.remove(file_name)
                 record_step_result.save()
-            if step_type in 'PhotoStepResult':
+            if 'PhotoStepResult' in step_type:
                 photo_step_result = PhotoStepResult()
                 photo_step_result.workflow_result = workflow_result
                 photo_step_result.step_id = step_data['stepId']
@@ -431,19 +431,19 @@ class WorkflowResult(APIView):
                 photo_step_result.file = File(photo_file)
                 os.remove(file_name)
                 photo_step_result.save()
-            if step_type in 'InsertTimeStepResult':
+            if 'InsertTimeStepResult' in step_type:
                 time_step_result = TimeStepResult()
                 time_step_result.workflow_result = workflow_result
                 time_step_result.step_id = step_data['stepId']
                 time_step_result.selected_time = dateutil.parser.parse(step_data['selected_time'])
                 time_step_result.save()
-            if step_type in 'InsertDateStepResult':
+            if 'InsertDateStepResult' in step_type:
                 date_step_result = DateStepResult()
                 date_step_result.workflow_result = workflow_result
                 date_step_result.step_id = step_data['stepId']
                 date_step_result.selected_date = dateutil.parser.parse(step_data['selected_time'])
                 date_step_result.save()
-            if step_type in 'RouteStepResult':
+            if 'RouteStepResult' in step_type:
                 route_step_result = RouteStepResult()
                 route_step_result.workflow_result = workflow_result
                 route_step_result.step_id = step_data['stepId']
