@@ -95,13 +95,9 @@
 				<span class="close">&times;</span>
 				<h2>Configuracion especifica del paso</h2>
 			</div>
-			<div class="modal-body">
-				<h3>Ingrese el tipo de paso</h3>
-				<div id="spectContainer" class="row">
-					
-
-				</div>
-				<!-- aca va el contenido -->
+			<div id="spectContainer" class="modal-body">
+				
+				
 
 			</div>
 			<div class="modal-footer" style="margin-top: 30px;">
@@ -141,7 +137,7 @@
 
 
 	<div class="row">
-		<button type="button" class="btn btn-primary" onclick="JSONToServer()">Imprimir</button>
+		<button type="button" class="btn btn-primary" id="imprimir">Imprimir</button>
 		<div class="col-sm-8">
 
 			<div id="mynetwork"><div class="vis-network" tabindex="900" style="position: relative; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;"><canvas width="1200" height="1200" style="position: relative; touch-action: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;"></canvas></div></div>
@@ -210,6 +206,84 @@
 	
 
 	function initialice() {
+		var data = {
+    "data": {
+        "name": "Muestra CIACIAR",
+        "project": 5,
+        "steps": [
+            {
+                "step_type": "TimeStep",
+                "next_step_id": 1,
+                "step_id": 0,
+                "text_to_show": "Pone la hora",
+                "sample_text": "",
+                "max_length": null,
+                "input_type": "",
+                "optional": null,
+                "title": "",
+                "options_to_show": []
+            },
+            {
+                "step_type": "DateStep",
+                "next_step_id": 2,
+                "step_id": 1,
+                "text_to_show": "Pone la fecha",
+                "sample_text": "",
+                "max_length": null,
+                "input_type": "",
+                "optional": null,
+                "title": "",
+                "options_to_show": []
+            },
+            {
+                "step_type": "SelectOneStep",
+                "next_step_id": null,
+                "step_id": 2,
+                "text_to_show": "",
+                "sample_text": "",
+                "max_length": null,
+                "input_type": "",
+                "optional": null,
+                "title": "Pregunta de bifurcacion",
+                "options_to_show": [
+                    {
+                        "text_to_show": "respuesta 1",
+                        "next_step_id": 3
+                    },
+                    {
+                        "text_to_show": "Foto",
+                        "next_step_id": 4
+                    }
+                ]
+            },
+            {
+                "step_type": "InformationStep",
+                "next_step_id": null,
+                "step_id": 3,
+                "text_to_show": "No sos foto",
+                "sample_text": "",
+                "max_length": null,
+                "input_type": "",
+                "optional": null,
+                "title": "",
+                "options_to_show": []
+            },
+            {
+                "step_type": "PhotoStep",
+                "next_step_id": null,
+                "step_id": 4,
+                "text_to_show": "Saca una fotooo",
+                "sample_text": "",
+                "max_length": null,
+                "input_type": "",
+                "optional": null,
+                "title": "",
+                "options_to_show": []
+            }
+        ]
+    },
+    "status_code": 201
+}
 		var spect = {
 			text_to_show: ''
 		}
@@ -233,7 +307,7 @@
 			options: []
 		}
 		ntText = new NodeType('TEXT','text.png',spect);	
-			
+
 
 		nodesTypes.push(ntSelect);
 		nodesTypes.push(ntGps);
@@ -247,11 +321,165 @@
 		nodesTypes.push(ntVoice);
 		
 
-
 		wf = new Workflow(steps,nodesTypes);
-		var s = new Simple(ntInfo,0,0);
-		wf.addStep(s);
+		if(data){
+			getModelFromJson(data);
+		} else {
+		var s = new Simple(ntInfo,1,0);
+		wf.addStep(s);	
+		}
+		
+		
+
 		draw();
+	}
+
+	function getSelectOneStepSpect(data){
+		return {"text_to_show": data.title};
+	}
+
+	function getTextStepSpect(data){
+		return {"text_to_show": data.text_to_show, "example_text": data.example_text, "long_text": data.long_text, "data_type": data.data_type, "optional": data.optional};
+	}
+
+	function getCommonStepSpect(data){
+		return {"text_to_show": data.text_to_show};
+	}
+
+	function getMultipleSelectStepSpect(data){
+		var options = [];
+		for (var i = 0; i < data.options.length; i++) {
+			options.push(data.options[i]);
+		}
+		return {"text_to_show": data.text_to_show, "options" : options};
+	}
+
+
+
+	function createStepFromJson(step){
+		var spect = {};
+		switch(step.step_type) {
+			case "SelectOneStep":
+			console.log(JSON.stringify(getSelectOneStepSpect(step)));
+			spect = getSelectOneStepSpect(step);
+			var selectNodeType = new NodeType('SELECT','select.png',spect);
+			var multipleStep = new Multiple(selectNodeType,step.step_id, step.step_id);
+			wf.addStep(multipleStep);
+			break;
+
+			case "LocationStep":
+
+			spect = getCommonStepSpect(step);
+			var gpsNodeType = new NodeType('GPS','gps.png',spect);
+			var step = new Simple(gpsNodeType,step.step_id, step.step_id);
+			wf.addStep(step);
+			break;
+
+			case "PhotoStep":
+
+			spect = getCommonStepSpect(step);
+			var camaraNodeType = new NodeType('CAMARA','camara.png',spect);
+			var step = new Simple(camaraNodeType,step.step_id, step.step_id);
+			wf.addStep(step);
+			break;
+
+			case "InformationStep":
+
+			spect = getCommonStepSpect(step);
+			var infoNodeType = new NodeType('INFO','info.png',step);
+			var step = new Simple(infoNodeType,step.step_id, step.step_id);
+			wf.addStep(step);
+			break;
+
+			case "QUESTION":
+
+			spect = getCommonStepSpect(step);
+			var questionNodeType = new NodeType('QUESTION','question.png',spect);
+			var step = new Simple(questionNodeType,step.step_id, step.step_id);
+			wf.addStep(step);
+			break;
+
+			case "SoundRecordStep": 
+			spect = getCommonStepSpect(step);
+			var voiceNodeType = new NodeType('VOICE','voice.png',spect);
+			var step = new Simple(voiceNodeType,step.step_id, step.step_id);
+			wf.addStep(step);	
+			break;
+
+			case "TimeStep":
+
+			spect = getCommonStepSpect(step);
+			var hourNodeType = new NodeType('HOUR','hour.png',spect);
+			var step = new Simple(hourNodeType,step.step_id, step.step_id);
+			wf.addStep(step);
+			break;
+
+			case "DateStep": 
+			spect = getCommonStepSpect(step);
+			var dateNodeType = new NodeType('DATE','date.png',spect);
+			var step = new Simple(dateNodeType,step.step_id, step.step_id);
+			wf.addStep(step);
+			break;
+
+			case "MultipleSelectStep":
+			spect = getMultipleSelectStepSpect(step);
+			var multipleNodeType = new NodeType('MULTIPLE','multipleSelection.png',spect);
+			var step = new Simple(multipleNodeType,step.step_id, step.step_id);
+			wf.addStep(step);
+			break;
+
+			case "TextStep":
+			spect = getTextStepSpect(step);
+			var textNodeType = new NodeType('TEXT','text.png',spect);
+			var step = new Simple(textNodeType,step.step_id, step.step_id);
+			wf.addStep(step);
+			break;
+
+			default:
+
+			spect = getCommonStepSpect(step);
+			var gpsNodeType = new NodeType('GPS','gps.png',spect);
+			var step = new Simple(gpsNodeType,step.step_id, step.step_id);
+			wf.addStep(step);
+			break;
+		}
+	}
+
+	function addChildsToSelectStep(step){
+		var fatherStep = wf.getStepByNodeId(step.step_id);
+		for (var i = 0; i < step.options_to_show.length; i++) {
+			var childStep = wf.getStepByNodeId(step.options_to_show[i].next_step_id);
+			fatherStep.addChildStep(childStep, step.options_to_show[i].text_to_show );
+		}
+	}
+
+	function addNextStepFromJson(step){
+		switch(step.step_type) {
+			case "SelectOneStep":
+			addChildsToSelectStep(step);
+			break;
+
+			default:
+			var fatherStep = wf.getStepByNodeId(step.step_id);
+			var childStep = wf.getStepByNodeId(step.next_step_id);
+			fatherStep.addChildStep(childStep);
+
+			break;
+		}
+	}
+
+	function getModelFromJson(data){
+		console.log(JSON.stringify(data.data.steps));
+		var steps = data.data.steps;
+		for (var i = 0; i < steps.length; i++) {
+			createStepFromJson(steps[i]);
+		}
+
+		for (var i = 0; i < steps.length; i++) {
+			addNextStepFromJson(steps[i]);
+		}
+
+
 	}
 
 	function getTypeNodeId(type){
@@ -439,7 +667,7 @@
 		if (clickedStep.canAddChildStep()){
 				//TODO: chequear que id ponerle
 
-				var multipleStep = new Multiple(ntSelect,(Math.floor((Math.random() * 1000) )), clickedStep.level+1);
+				var multipleStep = new Multiple(ntSelect,wf.getStepCount()+1, clickedStep.level+1);
 				clickedStep.addChildStep(multipleStep);
 				wf.addStep(multipleStep);
 			} else {
@@ -467,9 +695,9 @@
 				}
 			}
 
-				wf.deleteStep(clickedStep.id);
+			wf.deleteStep(clickedStep.id);
 
-			} else {
+		} else {
 				//Es el primero
 				wf.deleteStep(clickedStep.id);
 			} 
@@ -521,8 +749,9 @@
 
 function JSONToServer(){
 	if (wf.isValid()){
+		post('http://localhost:8000/webpage/workflow/');
 		console.log("JSON Valido : " + JSON.stringify({"steps" : wf.getJsonToServer(),"name": "WorkflowCompleto",
-  "project": 1}));
+			"project": 1}));
 	} else {
 		console.log("JSON Invalido");
 	}
@@ -543,7 +772,7 @@ function goToSpects(type) {
 		clickedStep.nodeType.spect.data_type;
 
 
-		spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" value="'+text+'" name="text_to_show" id="text_to_show"><h3>Ingrese el texto de muestra</h3><hr><input class="col-sm-12 form-control" type="text" id="example_text" value="'+example_text+'"  name="example_text"><h3>Ingrese el largo maximo del texto</h3><hr><input class="col-sm-12 form-control" type="number" min="1" id="long_text" value="'+long_text+'"  name="long_text"><h3>Ingrese el tipo de dato</h3><hr><select class="col-sm-12 form-control" name="data_type" id="data_type"><option value="text">Texto</option><option value="other">Otro</option><option value="decimal">Decimal</option></select><h3>Ingrese si es opcional</h3><hr><select class="col-sm-12 form-control" name="optional" id="optional"><option value="true">Si</option><option value="false">No</option></select>';
+		spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><input class="col-sm-12 form-control" type="text" value="'+text+'" name="text_to_show" id="text_to_show"><hr><h3>Ingrese el texto de muestra</h3><input class="col-sm-12 form-control" type="text" id="example_text" value="'+example_text+'"  name="example_text"><hr><h3>Ingrese el largo maximo del texto</h3><input class="col-sm-12 form-control" type="number" min="1" id="long_text" value="'+long_text+'"  name="long_text"><hr><h3>Ingrese el tipo de dato</h3><select class="col-sm-12 form-control" name="data_type" id="data_type"><option value="text">Texto</option><option value="other">Otro</option><option value="decimal">Decimal</option></select><hr><h3>Ingrese si es opcional</h3><select class="col-sm-12 form-control" name="optional" id="optional"><option value="true">Si</option><option value="false">No</option></select>';
 		if (clickedStep.nodeType.spect.data_type){
 			document.getElementById('data_type').value = clickedStep.nodeType.spect.data_type;
 		}
@@ -571,8 +800,8 @@ function goToSpects(type) {
 			if (clickedStep.nodeType.spect){
 				text = (clickedStep.nodeType.spect.text_to_show) ? clickedStep.nodeType.spect.text_to_show : "";
 			}
-				
-			spectContainer.innerHTML = '<h3>Ingrese el as a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" id="text_to_show" value="'+text+'" name="text_to_show">';
+
+			spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" id="text_to_show" value="'+text+'" name="text_to_show">';
 		} 
 	}
 	modal.style.display = "none";
@@ -616,11 +845,26 @@ function setTypeConfiguration(spects) {
 }
 
 
+function post(path, params, method) {
+    method = method || "post"; // Set method to post by default if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+
+    form.body.appendChild(JSON.stringify({"steps" : wf.getJsonToServer(),"name": "Dashboard",
+    	"project": 112}));
+    form.submit();
+}
+
 function addStep() {
 
 	if (clickedStep.canAddChildStep()){
 				//TODO: chequear que id ponerle
-				var infoStep = new Simple(new NodeType('INFO','info.png',spect),(Math.floor((Math.random() * 100000) )), clickedStep.level+1);
+				var infoStep = new Simple(new NodeType('INFO','info.png',spect),wf.getStepCount()+1, clickedStep.level+1);
 				clickedStep.addChildStep(infoStep);
 				wf.addStep(infoStep);
 			} else {
@@ -894,6 +1138,37 @@ function edgeClicked(edgeId){
             });
 
         }
+        $(document).ready(function(){
+        	$("#imprimir").click(function(){
+        		if(wf.isValid()){
+        			console.log(JSON.stringify({"steps" : wf.getJsonToServer(),"name": "Muestra CIACIAR","project": 11}));
+        		} else {
+        			console.log("anda mal");
+        		}
+
+        		
+
+        		// $.ajax({
+        		// 	type: 'POST',
+        		// 	url: "http://localhost:8000/webpage/workflow/",
+        		// 	data: JSON.stringify({"steps" : wf.getJsonToServer(),"name": "Muestra CIACIAR","project": 11}),
+        		// 	error: function(e) {
+        		// 		console.log(e);
+        		// 	},
+        		// 	contentType: "application/json"
+        		// });
+
+
+
+
+        		
+
+
+
+
+
+        	});
+        });
 
 
 
