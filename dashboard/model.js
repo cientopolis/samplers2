@@ -25,6 +25,16 @@ class Workflow {
 		return null
 	}
 
+	getStepCount() {
+		var count = 0;
+		for (var i = 0; i < steps.length; i++) {
+			if (steps[i].isStep()){
+				count++;
+			}
+		}
+		return count;
+	}
+
 	getStepByNodeId(nodeId) {
 		for (var i = 0; i < steps.length; i++) {
 			if (steps[i].id == nodeId){
@@ -226,6 +236,9 @@ class Step {
 		this.id = id;
 		this.level = level;
 	}
+	isStep(){
+		return true;
+	}
 	setNodeType(nodeType){
 		this.nodeType = nodeType;
 	}
@@ -241,7 +254,7 @@ class Multiple extends Step {
 		if (!this.options){
 			this.options = [];
 		}
-		this.options.push(option,options.length);
+		this.options.push(option);
 	}
 	getChild(){
 		return this.options;
@@ -304,6 +317,7 @@ class Multiple extends Step {
 		}
 
 		return {
+			"step_id" : this.id,
 			"step_type": "SelectOneStep",
 			"title": this.nodeType.spect.text_to_show,
 			"options_to_show": jsonOptions
@@ -360,6 +374,9 @@ class Option {
 		this.text = text;
 		this.id = id;
 	}
+	isStep(){
+		return false;
+	}
 	deleteNext() {
 		this.next = null;
 	}
@@ -410,8 +427,8 @@ class Simple extends Step {
 	}
 
 	jsonTextToServer(){
-		console.log("next: "+ this.getNext());
 		return {
+			"step_id" : this.id,
 			"step_type": "TextStep",
 			"text_to_show": this.nodeType.spect.text_to_show,
 			"sample_test": this.nodeType.spect.example_text,
@@ -437,6 +454,7 @@ class Simple extends Step {
 		}
 
 		return {
+			"step_id" : this.id,
 			"step_type": "SelectMultipleStep",
 			"title": this.nodeType.spect.text_to_show,
 			"next_step_id": this.getNext() ? this.getNext().id : null,
@@ -447,6 +465,7 @@ class Simple extends Step {
 	jsonRouteToServer(){
 
 		return {
+			"step_id" : this.id,
 			"step_type": "RouteStep",
 			"text_to_show": this.nodeType.spect.text_to_show,
 			"next_step_id": this.getNext() ? this.getNext().id : null,
@@ -496,6 +515,7 @@ class Simple extends Step {
 			break;
 		}
 		return {
+			"step_id" : this.id,
 			"step_type": type,
 			"text_to_show": this.nodeType.spect.text_to_show,
 			"next_step_id": this.getNext() ? this.getNext().id : null,
