@@ -616,7 +616,9 @@ class Login(APIView):
             user_information = {}
             user_information["username"] = user_social.user.username
             user_information["email"] = user_social.user.email
+            user_information["id"] = user_social.user.profile.id
             obj["user_information"] = user_information
+
         except UserSocialAuth.DoesNotExist:  
             status_code = 404
             obj["msg"] = "User not exists"
