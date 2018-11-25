@@ -624,7 +624,7 @@ class Login(APIView):
             obj["msg"] = "User not exists"
             obj["exists"] = False
             obj["redirect_url"] = "http://localhost:8000/login/"
-        return Response({"data":obj, "status_code": status_code}, status= status_code)
+        return Response({"data":obj, "status_code": status_code}, status= 200)
 
     '''
     def post(self, request, format=None):
