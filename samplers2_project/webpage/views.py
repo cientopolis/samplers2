@@ -29,6 +29,7 @@ from social_django.models import UserSocialAuth
 from django.core.urlresolvers import reverse
 from itertools import chain
 import csv
+from jsonfield import JSONField
 
 
 @login_required
@@ -608,23 +609,30 @@ class Login(APIView):
         user_id = request.GET.get("uid")
         provider = request.GET.get("provider")
         status_code = 200
-        obj = {}
-        obj["msg"] = "User exists"
-        obj["exists"] = True
+        response = {}
         try:
-            user_social = UserSocialAuth.objects.get(uid=user_id)
+            if provider == 'gmail':
+                user_social = UserSocialAuth.objects.get(uid=user_id)
+            elif provider == 'facebook': 
+                user_social = UserSocialAuth.objects.get(extra_data__contains = '"token_for_business": "{}"'.format(user_id))
+            else :
+                status_code = 400
+                response["msg"] = "Provider doesnt exist"
+                return Response({"data":response, "status_code": status_code}, status= 200)
+            response["msg"] = "User exists"
+            response["exists"] = True
             user_information = {}
             user_information["username"] = user_social.user.username
             user_information["email"] = user_social.user.email
             user_information["id"] = user_social.user.profile.id
-            obj["user_information"] = user_information
+            response["user_information"] = user_information
 
         except UserSocialAuth.DoesNotExist:  
             status_code = 404
-            obj["msg"] = "User not exists"
-            obj["exists"] = False
-            obj["redirect_url"] = "http://localhost:8000/login/"
-        return Response({"data":obj, "status_code": status_code}, status= 200)
+            response["msg"] = "User not exists"
+            response["exists"] = False
+            response["redirect_url"] = "http://localhost:8000/login/"
+        return Response({"data":response, "status_code": status_code}, status= 200)
 
     '''
     def post(self, request, format=None):
