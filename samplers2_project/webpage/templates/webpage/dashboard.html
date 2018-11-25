@@ -39,15 +39,16 @@
 
 
 </style>
-<link rel="stylesheet" href="./style.css">
+{% load static %}
+<link rel="stylesheet" href="{% static "dashboard/style.css" %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-<link rel="stylesheet" href="./style.css">
-<script src="./model.js"></script>
+<script src="{% static "dashboard/model.js" %}"></script>
+
 </head>
 
 <body onload="initialice();">
@@ -289,24 +290,25 @@
 		}
 		steps = [];
 		nodesTypes = [];
-		ntSelect = new NodeType('SELECT','select.png',spect);
-		ntGps = new NodeType('GPS','gps.png',spect);
-		ntCamara = new NodeType('CAMARA','camara.png',spect);
-		ntInfo = new NodeType('INFO','info.png',spect);
-		ntQuestion = new NodeType('QUESTION','question.png',spect);
-		ntHour = new NodeType('HOUR','hour.png',spect);	
-		ntDate = new NodeType('DATE','date.png',spect);
-		ntVoice = new NodeType('VOICE','voice.png',spect);
+
+		ntSelect = new NodeType('SELECT',"{% static "dashboard/select.png" %}",spect);
+		ntGps = new NodeType('GPS',"{% static "dashboard/gps.png" %}",spect);
+		ntCamara = new NodeType('CAMARA',"{% static "dashboard/camara.png" %}",spect);
+		ntInfo = new NodeType('INFO',"{% static "dashboard/info.png" %}",spect);
+		ntQuestion = new NodeType('QUESTION',"{% static "dashboard/question.png" %}",spect);
+		ntHour = new NodeType('HOUR',"{% static "dashboard/hour.png" %}",spect);	
+		ntDate = new NodeType('DATE',"{% static "dashboard/date.png" %}",spect);
+		ntVoice = new NodeType('VOICE',"{% static "dashboard/voice.png" %}",spect);
 		spect = {
 			text_to_show: '',
 			options: []
 		}
-		ntMultpleSeleccion = new NodeType('MULTIPLE','multipleSelection.png',spect);
+		ntMultpleSeleccion = new NodeType('MULTIPLE',"{% static "dashboard/multipleSelection.png" %}",spect);
 		spect = {
 			text_to_show: '',
 			options: []
 		}
-		ntText = new NodeType('TEXT','text.png',spect);	
+		ntText = new NodeType('TEXT',"{% static "dashboard/text.png" %}",spect);	
 
 
 		nodesTypes.push(ntSelect);
@@ -362,7 +364,7 @@
 			case "SelectOneStep":
 			console.log(JSON.stringify(getSelectOneStepSpect(step)));
 			spect = getSelectOneStepSpect(step);
-			var selectNodeType = new NodeType('SELECT','select.png',spect);
+			var selectNodeType = new NodeType('SELECT',"{% static "dashboard/select.png" %}",spect);
 			var multipleStep = new Multiple(selectNodeType,step.step_id, step.step_id);
 			wf.addStep(multipleStep);
 			break;
@@ -370,7 +372,7 @@
 			case "LocationStep":
 
 			spect = getCommonStepSpect(step);
-			var gpsNodeType = new NodeType('GPS','gps.png',spect);
+			var gpsNodeType = new NodeType('GPS',"{% static "dashboard/gps.png" %}",spect);
 			var step = new Simple(gpsNodeType,step.step_id, step.step_id);
 			wf.addStep(step);
 			break;
@@ -378,7 +380,7 @@
 			case "PhotoStep":
 
 			spect = getCommonStepSpect(step);
-			var camaraNodeType = new NodeType('CAMARA','camara.png',spect);
+			var camaraNodeType = new NodeType('CAMARA',"{% static "dashboard/camara.png" %}",spect);
 			var step = new Simple(camaraNodeType,step.step_id, step.step_id);
 			wf.addStep(step);
 			break;
@@ -386,7 +388,7 @@
 			case "InformationStep":
 
 			spect = getCommonStepSpect(step);
-			var infoNodeType = new NodeType('INFO','info.png',step);
+			var infoNodeType = new NodeType('INFO',"{% static "dashboard/info.png" %}",step);
 			var step = new Simple(infoNodeType,step.step_id, step.step_id);
 			wf.addStep(step);
 			break;
@@ -394,14 +396,14 @@
 			case "QUESTION":
 
 			spect = getCommonStepSpect(step);
-			var questionNodeType = new NodeType('QUESTION','question.png',spect);
+			var questionNodeType = new NodeType('QUESTION',"{% static "dashboard/question.png" %}",spect);
 			var step = new Simple(questionNodeType,step.step_id, step.step_id);
 			wf.addStep(step);
 			break;
 
 			case "SoundRecordStep": 
 			spect = getCommonStepSpect(step);
-			var voiceNodeType = new NodeType('VOICE','voice.png',spect);
+			var voiceNodeType = new NodeType('VOICE',"{% static "dashboard/voice.png" %}",spect);
 			var step = new Simple(voiceNodeType,step.step_id, step.step_id);
 			wf.addStep(step);	
 			break;
@@ -409,28 +411,28 @@
 			case "TimeStep":
 
 			spect = getCommonStepSpect(step);
-			var hourNodeType = new NodeType('HOUR','hour.png',spect);
+			var hourNodeType = new NodeType('HOUR',"{% static "dashboard/hour.png" %}",spect);
 			var step = new Simple(hourNodeType,step.step_id, step.step_id);
 			wf.addStep(step);
 			break;
 
 			case "DateStep": 
 			spect = getCommonStepSpect(step);
-			var dateNodeType = new NodeType('DATE','date.png',spect);
+			var dateNodeType = new NodeType('DATE',"{% static "dashboard/date.png" %}",spect);
 			var step = new Simple(dateNodeType,step.step_id, step.step_id);
 			wf.addStep(step);
 			break;
 
 			case "MultipleSelectStep":
 			spect = getMultipleSelectStepSpect(step);
-			var multipleNodeType = new NodeType('MULTIPLE','multipleSelection.png',spect);
+			var multipleNodeType = new NodeType('MULTIPLE',"{% static "dashboard/multipleSelection.png" %}",spect);
 			var step = new Simple(multipleNodeType,step.step_id, step.step_id);
 			wf.addStep(step);
 			break;
 
 			case "TextStep":
 			spect = getTextStepSpect(step);
-			var textNodeType = new NodeType('TEXT','text.png',spect);
+			var textNodeType = new NodeType('TEXT',"{% static "dashboard/text.png" %}",spect);
 			var step = new Simple(textNodeType,step.step_id, step.step_id);
 			wf.addStep(step);
 			break;
@@ -438,7 +440,7 @@
 			default:
 
 			spect = getCommonStepSpect(step);
-			var gpsNodeType = new NodeType('GPS','gps.png',spect);
+			var gpsNodeType = new NodeType('GPS',"{% static "dashboard/gps.png" %}",spect);
 			var step = new Simple(gpsNodeType,step.step_id, step.step_id);
 			wf.addStep(step);
 			break;
@@ -545,57 +547,57 @@
 		switch(name) {
 			case "SELECT":
 
-			return new NodeType('SELECT','select.png','');
+			return new NodeType('SELECT',"{% static "dashboard/select.png" %}",'');
 			break;
 
 			case "GPS":
 
-			return new NodeType('GPS','gps.png',spect);
+			return new NodeType('GPS',"{% static "dashboard/gps.png" %}",spect);
 			break;
 
 			case "CAMARA":
 
-			return new NodeType('CAMARA','camara.png',spect);
+			return new NodeType('CAMARA',"{% static "dashboard/camara.png" %}",spect);
 			break;
 
 			case "INFO":
 
-			return new NodeType('INFO','info.png','');
+			return new NodeType('INFO',"{% static "dashboard/info.png" %}",'');
 			break;
 
 			case "QUESTION":
 
-			return new NodeType('QUESTION','question.png','');
+			return new NodeType('QUESTION',"{% static "dashboard/question.png" %}",'');
 			break;
 
 			case "VOICE":
 
-			return new NodeType('VOICE','voice.png','');	
+			return new NodeType('VOICE',"{% static "dashboard/voice.png" %}",'');	
 			break;
 
 			case "HOUR":
 
-			return new NodeType('HOUR','hour.png','');
+			return new NodeType('HOUR',"{% static "dashboard/hour.png" %}",'');
 			break;
 
 			case "DATE":
 
-			return new NodeType('DATE','date.png','');
+			return new NodeType('DATE',"{% static "dashboard/date.png" %}",'');
 			break;
 
 			case "MULTIPLE":
 
-			return new NodeType('MULTIPLE','multipleSelection.png','');
+			return new NodeType('MULTIPLE',"{% static "dashboard/multipleSelection.png" %}",'');
 			break;
 
 			case "TEXT":
 
-			return new NodeType('TEXT','text.png','');
+			return new NodeType('TEXT',"{% static "dashboard/text.png" %}",'');
 			break;
 
 			default:
 
-			return new NodeType('INFO','info.png','');
+			return new NodeType('INFO',"{% static "dashboard/info.png" %}",'');
 			break;
 		}
 	}
@@ -864,7 +866,7 @@ function addStep() {
 
 	if (clickedStep.canAddChildStep()){
 				//TODO: chequear que id ponerle
-				var infoStep = new Simple(new NodeType('INFO','info.png',spect),wf.getStepCount()+1, clickedStep.level+1);
+				var infoStep = new Simple(new NodeType('INFO',"{% static "dashboard/info.png" %}",spect),wf.getStepCount()+1, clickedStep.level+1);
 				clickedStep.addChildStep(infoStep);
 				wf.addStep(infoStep);
 			} else {

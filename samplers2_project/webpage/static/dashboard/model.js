@@ -353,13 +353,13 @@ class Multiple extends Step {
 		}
 	}
 	getNodesToRender(father, level) {
+		{% load static %}
 		nodes.push({id: this.id , shape: 'circularImage', image:this.getNodeType().icon, 'level' : level  , label: String(this.id)});
 		if (this.options){
 			for (var i = 0; i < this.options.length; i++) {
-				//Ver que id ponerle
 				if(this.options[i]){
 					var optionId = this.options[i].id;
-					nodes.push({id: optionId, shape: 'circularImage', 'image':'option.png', 'level' : level+1  , label: String("option: " +optionId)});
+					nodes.push({id: optionId, shape: 'circularImage', 'image':"{% static "/select.png" %}", 'level' : level+1  , label: String("option: " +optionId)});
 				}
 
 

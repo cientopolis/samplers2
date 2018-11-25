@@ -90,7 +90,7 @@ def createProject(request, id=None):
 @login_required
 def createWorkflow(request, id=None):
     ctx = { 'project_id':id}
-    return render(request, 'webpage/dashboard/dashboard.html', ctx)
+    return render(request, 'webpage/dashboard.html', ctx)
 
 @login_required
 def editProject(request, id=None):
