@@ -1,5 +1,3 @@
-DJANGO_STATIC_URL = '{{ STATIC_URL }}';
-
 class Workflow {
 	constructor(steps,nodestypes) {
 		this.steps = steps;
@@ -355,13 +353,12 @@ class Multiple extends Step {
 		}
 	}
 	getNodesToRender(father, level) {
-		console.log(DJANGO_STATIC_URL);
 		nodes.push({id: this.id , shape: 'circularImage', image:this.getNodeType().icon, 'level' : level  , label: String(this.id)});
 		if (this.options){
 			for (var i = 0; i < this.options.length; i++) {
 				if(this.options[i]){
 					var optionId = this.options[i].id;
-					nodes.push({id: optionId, shape: 'circularImage', 'image':'/option.png' ,'level' : level+1  , label: String("option: " +optionId)});
+					nodes.push({id: optionId,  'level' : level+1  , label: String("option: " +optionId)});
 				}
 
 

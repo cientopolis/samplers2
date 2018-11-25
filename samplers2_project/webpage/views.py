@@ -30,6 +30,9 @@ from django.core.urlresolvers import reverse
 from itertools import chain
 import csv
 from jsonfield import JSONField
+import simplejson as json
+from django.core.exceptions import ObjectDoesNotExist
+
 
 
 @login_required
@@ -90,7 +93,17 @@ def createProject(request, id=None):
 
 @login_required
 def createWorkflow(request, id=None):
-    ctx = { 'project_id':id}
+    project = Project.objects.get(pk=id)
+    response = {}
+    try:
+        workflow = project.workflow
+        serializer = WorkflowSerializer(workflow)
+        response = serializer.data
+    except ObjectDoesNotExist:
+        response["project"] = id
+        response["steps"] = None
+    response_in_json = json.dumps(response)
+    ctx = { "data":response_in_json}
     return render(request, 'webpage/dashboard.html', ctx)
 
 @login_required
