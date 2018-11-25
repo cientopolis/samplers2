@@ -103,9 +103,9 @@ SOCIAL_AUTH_FACEBOOK_SECRET = 'a6b97cd6848c84e142c1d88ff99e9a5b'
 
 SOCIAL_AUTH_USER_FIELDS = ['username','email']
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = ['first_name', 'last_name','username','email']
+SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = ['first_name', 'last_name','username','email','token_for_business']
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-'fields': 'id,name,email',
+'fields': 'id,name,email,token_for_business',
 }
 
 # Google Settings
