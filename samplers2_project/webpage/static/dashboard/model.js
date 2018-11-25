@@ -359,7 +359,7 @@ class Multiple extends Step {
 			for (var i = 0; i < this.options.length; i++) {
 				if(this.options[i]){
 					var optionId = this.options[i].id;
-					nodes.push({id: optionId, shape: 'circularImage', 'image':"{% static "/select.png" %}", 'level' : level+1  , label: String("option: " +optionId)});
+					nodes.push({id: optionId, shape: 'circularImage', 'image':"{% static "/option.png" %}", 'level' : level+1  , label: String("option: " +optionId)});
 				}
 
 
