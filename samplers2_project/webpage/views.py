@@ -29,8 +29,7 @@ from social_django.models import UserSocialAuth
 from django.core.urlresolvers import reverse
 from itertools import chain
 import csv
-from jsonfield import JSONField
-import simplejson as json
+#import simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
 
 

@@ -1,5 +1,4 @@
 
-var image123 = "{% static "dashboard/option.png" %}"
 
 class Workflow {
 	constructor(steps,nodestypes) {
@@ -358,7 +357,6 @@ class Multiple extends Step {
 
 
 	getNodesToRender(father, level) {
-		console.log(image123)
 		nodes.push({id: this.id , shape: 'circularImage', image:this.getNodeType().icon, 'level' : level  , label: String(this.id)});
 		if (this.options){
 			for (var i = 0; i < this.options.length; i++) {
