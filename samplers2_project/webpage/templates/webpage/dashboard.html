@@ -44,7 +44,7 @@
 
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js">
-   
+
 </script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
@@ -139,7 +139,12 @@
 	</div>
 
 
-
+	<div class="row">
+		<div class="col-sm-12">
+			<label for="workflowName">Workflow name</label>
+			<input type="text" class="form-control" id="workflowName" placeholder="Enter name">
+		</div>
+	</div>
 	<div class="row">
 		<button type="button" class="btn btn-primary" id="imprimir">Imprimir</button>
 		<div class="col-sm-8">
@@ -211,85 +216,7 @@
 	function initialice() {
 		image = "{% static "dashboard/option.png" %}"
 		dataView = JSON.parse(dataView);
-		console.log(dataView)
-		var data = {
-    "data": {
-        "name": "Muestra CIACIAR",
-        "project": 5,
-        "steps": [
-            {
-                "step_type": "TimeStep",
-                "next_step_id": 1,
-                "step_id": 0,
-                "text_to_show": "Pone la hora",
-                "sample_text": "",
-                "max_length": null,
-                "input_type": "",
-                "optional": null,
-                "title": "",
-                "options_to_show": []
-            },
-            {
-                "step_type": "DateStep",
-                "next_step_id": 2,
-                "step_id": 1,
-                "text_to_show": "Pone la fecha",
-                "sample_text": "",
-                "max_length": null,
-                "input_type": "",
-                "optional": null,
-                "title": "",
-                "options_to_show": []
-            },
-            {
-                "step_type": "SelectOneStep",
-                "next_step_id": null,
-                "step_id": 2,
-                "text_to_show": "",
-                "sample_text": "",
-                "max_length": null,
-                "input_type": "",
-                "optional": null,
-                "title": "Pregunta de bifurcacion",
-                "options_to_show": [
-                    {
-                        "text_to_show": "respuesta 1",
-                        "next_step_id": 3
-                    },
-                    {
-                        "text_to_show": "Foto",
-                        "next_step_id": 4
-                    }
-                ]
-            },
-            {
-                "step_type": "InformationStep",
-                "next_step_id": null,
-                "step_id": 3,
-                "text_to_show": "No sos foto",
-                "sample_text": "",
-                "max_length": null,
-                "input_type": "",
-                "optional": null,
-                "title": "",
-                "options_to_show": []
-            },
-            {
-                "step_type": "PhotoStep",
-                "next_step_id": null,
-                "step_id": 4,
-                "text_to_show": "Saca una fotooo",
-                "sample_text": "",
-                "max_length": null,
-                "input_type": "",
-                "optional": null,
-                "title": "",
-                "options_to_show": []
-            }
-        ]
-    },
-    "status_code": 201
-}
+		var data = dataView;
 		var spect = {
 			text_to_show: ''
 		}
@@ -329,11 +256,11 @@
 		
 
 		wf = new Workflow(steps,nodesTypes);
-		if(data){
+		if(data.steps){
 			getModelFromJson(data);
 		} else {
-		var s = new Simple(ntInfo,1,0);
-		wf.addStep(s);	
+			var s = new Simple(ntInfo,1,0);
+			wf.addStep(s);	
 		}
 		
 		
@@ -367,7 +294,6 @@
 		var spect = {};
 		switch(step.step_type) {
 			case "SelectOneStep":
-			console.log(JSON.stringify(getSelectOneStepSpect(step)));
 			spect = getSelectOneStepSpect(step);
 			var selectNodeType = new NodeType('SELECT',"{% static "dashboard/select.png" %}",spect);
 			var multipleStep = new Multiple(selectNodeType,step.step_id, step.step_id);
@@ -476,7 +402,7 @@
 	}
 
 	function getModelFromJson(data){
-		var steps = data.data.steps;
+		var steps = data.steps;
 		for (var i = 0; i < steps.length; i++) {
 			createStepFromJson(steps[i]);
 		}
@@ -753,17 +679,6 @@
 	
 }
 
-function JSONToServer(){
-	if (wf.isValid()){
-		post('http://localhost:8000/webpage/workflow/');
-		console.log("JSON Valido : " + JSON.stringify({"steps" : wf.getJsonToServer(),"name": "WorkflowCompleto",
-			"project": 1}));
-	} else {
-		console.log("JSON Invalido");
-	}
-
-	
-}
 
 function goToSpects(type) {
 	var newType = getNewNodeType(getTypeNodeById(new_node_type.value).name);
@@ -848,22 +763,6 @@ function setTypeConfiguration(spects) {
 	modal.style.display = "none";
 	spectModal.style.display = "none";
 	draw();
-}
-
-
-function post(path, params, method) {
-    method = method || "post"; // Set method to post by default if not specified.
-
-    // The rest of this code assumes you are not using a library.
-    // It can be made less wordy if you use one.
-    var form = document.createElement("form");
-    form.setAttribute("method", method);
-    form.setAttribute("action", path);
-
-
-    form.body.appendChild(JSON.stringify({"steps" : wf.getJsonToServer(),"name": "Dashboard",
-    	"project": 112}));
-    form.submit();
 }
 
 function addStep() {
@@ -1098,6 +997,34 @@ function edgeClicked(edgeId){
 
 	}
 
+	 /**
+	 * sends a request to the specified url from a form. this will change the window location.
+	 * @param {string} path the path to send the post request to
+	 * @param {object} params the paramiters to add to the url
+	 * @param {string} [method=post] the method to use on the form
+	 */
+
+	function post(path, params, method) {
+		var token = '{{ csrf_token }}';
+		$.ajax({
+		    type: method,
+		    url: path,
+		    beforeSend: function(xhr) {
+        		xhr.setRequestHeader('X-CSRFToken', token)
+    		},
+		    processData: false,
+		    contentType: 'application/json',
+		    data:  params ,
+		    success: function(r) {
+		    	alert("Su workflow fue creado exitosamente");
+		    },
+		    error: function(r) {
+		    	alert("Algo salio mal, intente mas tarde");
+		    }
+		});
+	    
+	}
+
 
 	function draw() {
 		destroy();
@@ -1146,35 +1073,26 @@ function edgeClicked(edgeId){
         }
         $(document).ready(function(){
         	$("#imprimir").click(function(){
-        		if(wf.isValid()){
-        			console.log(JSON.stringify({"steps" : wf.getJsonToServer(),"name": "Muestra CIACIAR","project": 11}));
-        		} else {
-        			console.log("anda mal");
-        		}
+        		if (wf.isValid()){
+				var workflowName = document.getElementById('workflowName').value;
+				if (workflowName) {
 
-        		
-
-        		// $.ajax({
-        		// 	type: 'POST',
-        		// 	url: "http://localhost:8000/webpage/workflow/",
-        		// 	data: JSON.stringify({"steps" : wf.getJsonToServer(),"name": "Muestra CIACIAR","project": 11}),
-        		// 	error: function(e) {
-        		// 		console.log(e);
-        		// 	},
-        		// 	contentType: "application/json"
-        		// });
+					method = dataView.steps ? 'POST': 'POST';
+    				post('http://localhost:8000/webpage/workflow/', JSON.stringify({"steps" : wf.getJsonToServer(),"name": workflowName,"project": dataView.project}), method);
 
 
 
 
-        		
+				} else {
+					console.log("Ingrese un nombre");
+				}
+		
+				} else {
+					console.log("JSON Invalido");
+				}
 
-
-
-
-
-        	});
-        });
+		        });
+		        });
 
 
 
