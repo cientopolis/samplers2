@@ -216,6 +216,7 @@
 	function initialice() {
 		image = "{% static "dashboard/option.png" %}"
 		dataView = JSON.parse(dataView);
+		console.log(dataView);
 		var data = dataView;
 		var spect = {
 			text_to_show: ''
@@ -256,6 +257,11 @@
 		
 
 		wf = new Workflow(steps,nodesTypes);
+		if (data.name){
+			var workflowName = document.getElementById('workflowName').value = data.name;
+		}
+		
+
 		if(data.steps){
 			getModelFromJson(data);
 		} else {
@@ -1004,7 +1010,7 @@ function edgeClicked(edgeId){
 	 * @param {string} [method=post] the method to use on the form
 	 */
 
-	function post(path, params, method) {
+	function doRequest(path, params, method) {
 		var token = '{{ csrf_token }}';
 		$.ajax({
 		    type: method,
@@ -1077,8 +1083,10 @@ function edgeClicked(edgeId){
 				var workflowName = document.getElementById('workflowName').value;
 				if (workflowName) {
 
-					method = dataView.steps ? 'POST': 'POST';
-    				post('http://localhost:8000/webpage/workflow/', JSON.stringify({"steps" : wf.getJsonToServer(),"name": workflowName,"project": dataView.project}), method);
+					method = dataView.steps ? 'PUT': 'POST';
+					path = dataView.steps ? 'http://localhost:8000/webpage/workflow/'+dataView.project: 'http://localhost:8000/webpage/workflow/';
+					console.log(method);
+    				doRequest(path, JSON.stringify({"steps" : wf.getJsonToServer(),"name": workflowName,"project": dataView.project}), method);
 
 
 
