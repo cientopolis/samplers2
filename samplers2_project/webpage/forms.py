@@ -23,6 +23,11 @@ class ProjectForm(ModelForm):
         fields = ('name','description')
         exclude = ('owner',)
 
+class LoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+    edad = forms.CharField()
+
 class InviteScientistForm(forms.Form):
     email = forms.EmailField(required=True)
 
