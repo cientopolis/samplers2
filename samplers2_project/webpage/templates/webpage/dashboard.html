@@ -765,7 +765,6 @@ function getSpectFromModal(nodeType){
 function setTypeConfiguration(spects) {
 	
 	clickedStep.nodeType.spect = getSpectFromModal(clickedStep.nodeType);
-	console.log(getSpectFromModal(clickedStep.nodeType));
 	modal.style.display = "none";
 	spectModal.style.display = "none";
 	draw();
@@ -1079,15 +1078,15 @@ function edgeClicked(edgeId){
 				var workflowName = document.getElementById('workflowName').value;
 				if (workflowName) {
 					method = dataView.steps ? 'PUT': 'POST';
-					path = dataView.steps ? 'http://localhost:8000/webpage/workflow/'+dataView.project: 'http://localhost:8000/webpage/workflow/';
+					path = dataView.steps ? 'http://localhost:8000/webpage/workflow/'+dataView.id: 'http://localhost:8000/webpage/workflow/';
     				doRequest(path, JSON.stringify({"steps" : wf.getJsonToServer(),"name": workflowName,"project": dataView.project}), method);
 
 				} else {
-					console.log("Ingrese un nombre");
+					alert("Ingrese un nombre");
 				}
 		
 				} else {
-					console.log("JSON Invalido");
+					alert("JSON Invalido");
 				}
 
 		        });

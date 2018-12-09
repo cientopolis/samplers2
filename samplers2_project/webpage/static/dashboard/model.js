@@ -47,10 +47,6 @@ class Workflow {
 
 	isValid() {
 		return (this.hasNotCicle() && this.isConext() && this.isFillUp());
-		for (var i = 0; i < steps.length; i++) {
-			var actualStep = steps[i];
-
-		}
 	}
 
 	hasNotCicle(){
