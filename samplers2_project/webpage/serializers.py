@@ -57,7 +57,7 @@ class WorkflowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Workflow
-        fields = ('name', 'project', 'steps')
+        fields = ('id','name', 'project', 'steps')
 
     def get_steps(self, instance):
         steps = instance.steps.all().order_by('step_id')
