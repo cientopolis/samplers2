@@ -997,10 +997,6 @@ function edgeClicked(edgeId){
 			}
 		}
 
-
-
-
-
 	}
 
 	 /**
@@ -1082,14 +1078,9 @@ function edgeClicked(edgeId){
         		if (wf.isValid()){
 				var workflowName = document.getElementById('workflowName').value;
 				if (workflowName) {
-
 					method = dataView.steps ? 'PUT': 'POST';
 					path = dataView.steps ? 'http://localhost:8000/webpage/workflow/'+dataView.project: 'http://localhost:8000/webpage/workflow/';
-					console.log(method);
     				doRequest(path, JSON.stringify({"steps" : wf.getJsonToServer(),"name": workflowName,"project": dataView.project}), method);
-
-
-
 
 				} else {
 					console.log("Ingrese un nombre");
