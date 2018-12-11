@@ -211,6 +211,13 @@ iframe {
   text-align: center;
 }
 
+.errorlist 
+    {
+        color: red;
+        font-size:12px;
+    }
+
+
 /*------------------------------------------------------------------
 [ Button sign in with ]*/
 .btn-face,

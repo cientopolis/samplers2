@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from webpage.models import Profile, Project
 from django.forms import ModelForm
@@ -21,12 +22,7 @@ class ProjectForm(ModelForm):
     class Meta:
         model = Project
         fields = ('name','description')
-        exclude = ('owner',)
-
-class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(label='Password', widget=forms.PasswordInput)
-    edad = forms.CharField()
+        exclude = ('owner',)   
 
 class InviteScientistForm(forms.Form):
     email = forms.EmailField(required=True)
@@ -38,3 +34,8 @@ class InviteScientistForm(forms.Form):
         except ObjectDoesNotExist:
             raise forms.ValidationError("No existe un usuario con ese email")
         return email
+
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(widget= forms.TextInput(attrs={'class':'input100','name':'username'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input100','type':'password','name':'pass'}))
+

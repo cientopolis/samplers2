@@ -18,11 +18,13 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
 from webpage import views as webpage_views
+from webpage.forms import LoginForm
+
 
 urlpatterns = [
     url(r'^webpage/', include('webpage.urls')),
     url(r'^$', webpage_views.home, name='home'),
-    url(r'^login/$', auth_views.login, name='login'),
+    url(r'^login/$', auth_views.login,{'authentication_form':LoginForm},name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
     url(r'^admin/', admin.site.urls),
     url(r'^oauth/', include('social_django.urls', namespace='social')),

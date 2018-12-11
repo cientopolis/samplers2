@@ -41,8 +41,14 @@
               {% else %}
               -
               {% endif %}
+        </td> 
+
+        <td> {% if project.workflow.workflow_results.count > 0 %}
+              -
+              {% else %}
+              <a href="{% url 'webpage:createWorkflow' project.id %}"> Crear Workflow</a>
+              {% endif %}
         </td>
-        <td> <a href="{% url 'webpage:createWorkflow' project.id %}"> Crear Workflow</a></td>
        </tr>
     {% endfor %}
   </table>
