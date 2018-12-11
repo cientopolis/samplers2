@@ -430,7 +430,7 @@ class Simple extends Step {
 			"step_id" : this.id,
 			"step_type": "TextStep",
 			"text_to_show": this.nodeType.spect.text_to_show,
-			"sample_test": this.nodeType.spect.example_text,
+			"sample_text": this.nodeType.spect.example_text,
 			"max_length": this.nodeType.spect.long_text,
 			"input_type": this.nodeType.spect.data_type,
 			"next_step_id": this.getNext() ? this.getNext().id : null,
