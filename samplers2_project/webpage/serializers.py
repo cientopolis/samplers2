@@ -19,9 +19,10 @@ class OptionToShowSerializer(serializers.ModelSerializer):
 
 
 class StepSerializer (serializers.ModelSerializer):
+    id = serializers.SerializerMethodField('get_step_id_name')
     class Meta:
         model = Step
-        fields = ('step_type', 'next_step_id', 'step_id', 'text_to_show', 'sample_text', 'max_length', 'optional',
+        fields = ('step_type', 'next_step_id', 'id', 'text_to_show', 'sample_text', 'max_length', 'optional',
                   'title', 'options_to_show')
 
     def to_representation(self, obj):
@@ -35,6 +36,9 @@ class StepSerializer (serializers.ModelSerializer):
             ret.pop('options_to_show')  
         return ret
     options_to_show = serializers.SerializerMethodField()
+
+    def get_step_id_name(self,obj):
+        return obj.step_id
 
     def get_options_to_show(self, instance):
         options_to_show = instance.options_to_show.all().order_by('order_in_steps')
