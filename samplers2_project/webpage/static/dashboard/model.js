@@ -315,7 +315,7 @@ class Multiple extends Step {
 		}
 
 		return {
-			"step_id" : this.id,
+			"id" : this.id,
 			"step_type": "SelectOneStep",
 			"title": this.nodeType.spect.text_to_show,
 			"options_to_show": jsonOptions
