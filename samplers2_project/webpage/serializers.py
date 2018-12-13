@@ -48,10 +48,10 @@ class StepSerializer (serializers.ModelSerializer):
 
 class StepSerializerPost (serializers.ModelSerializer):
     options_to_show = OptionToShowSerializer(many=True, required=False)
-
+    id = id = serializers.CharField(source='step_id')
     class Meta:
         model = Step
-        fields = ('step_type', 'next_step_id','step_id','text_to_show', 'sample_text', 'max_length', 'input_type', 'optional',
+        fields = ('step_type', 'next_step_id','id','text_to_show', 'sample_text', 'max_length', 'input_type', 'optional',
                   'title', 'options_to_show')
         #read_only_fields = ('next_step_id',)
 
