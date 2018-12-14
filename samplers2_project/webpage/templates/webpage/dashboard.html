@@ -302,7 +302,7 @@
 			case "SelectOneStep":
 			spect = getSelectOneStepSpect(step);
 			var selectNodeType = new NodeType('SELECT',"{% static "dashboard/select.png" %}",spect);
-			var multipleStep = new Multiple(selectNodeType,step.step_id, step.step_id);
+			var multipleStep = new Multiple(selectNodeType,step.id, step.id);
 			wf.addStep(multipleStep);
 			break;
 
@@ -310,7 +310,7 @@
 
 			spect = getCommonStepSpect(step);
 			var gpsNodeType = new NodeType('GPS',"{% static "dashboard/gps.png" %}",spect);
-			var step = new Simple(gpsNodeType,step.step_id, step.step_id);
+			var step = new Simple(gpsNodeType,step.id, step.id);
 			wf.addStep(step);
 			break;
 
@@ -318,7 +318,7 @@
 
 			spect = getCommonStepSpect(step);
 			var camaraNodeType = new NodeType('CAMARA',"{% static "dashboard/camara.png" %}",spect);
-			var step = new Simple(camaraNodeType,step.step_id, step.step_id);
+			var step = new Simple(camaraNodeType,step.id, step.id);
 			wf.addStep(step);
 			break;
 
@@ -326,7 +326,7 @@
 
 			spect = getCommonStepSpect(step);
 			var infoNodeType = new NodeType('INFO',"{% static "dashboard/info.png" %}",step);
-			var step = new Simple(infoNodeType,step.step_id, step.step_id);
+			var step = new Simple(infoNodeType,step.id, step.id);
 			wf.addStep(step);
 			break;
 
@@ -334,14 +334,14 @@
 
 			spect = getCommonStepSpect(step);
 			var questionNodeType = new NodeType('QUESTION',"{% static "dashboard/question.png" %}",spect);
-			var step = new Simple(questionNodeType,step.step_id, step.step_id);
+			var step = new Simple(questionNodeType,step.id, step.id);
 			wf.addStep(step);
 			break;
 
 			case "SoundRecordStep": 
 			spect = getCommonStepSpect(step);
 			var voiceNodeType = new NodeType('VOICE',"{% static "dashboard/voice.png" %}",spect);
-			var step = new Simple(voiceNodeType,step.step_id, step.step_id);
+			var step = new Simple(voiceNodeType,step.id, step.id);
 			wf.addStep(step);	
 			break;
 
@@ -349,28 +349,28 @@
 
 			spect = getCommonStepSpect(step);
 			var hourNodeType = new NodeType('HOUR',"{% static "dashboard/hour.png" %}",spect);
-			var step = new Simple(hourNodeType,step.step_id, step.step_id);
+			var step = new Simple(hourNodeType,step.id, step.id);
 			wf.addStep(step);
 			break;
 
 			case "DateStep": 
 			spect = getCommonStepSpect(step);
 			var dateNodeType = new NodeType('DATE',"{% static "dashboard/date.png" %}",spect);
-			var step = new Simple(dateNodeType,step.step_id, step.step_id);
+			var step = new Simple(dateNodeType,step.id, step.id);
 			wf.addStep(step);
 			break;
 
 			case "SelectMultipleStep":
 			spect = getMultipleSelectStepSpect(step);
 			var multipleNodeType = new NodeType('MULTIPLE',"{% static "dashboard/multipleSelection.png" %}",spect);
-			var step = new Simple(multipleNodeType,step.step_id, step.step_id);
+			var step = new Simple(multipleNodeType,step.id, step.id);
 			wf.addStep(step);
 			break;
 
 			case "TextStep":
 			spect = getTextStepSpect(step);
 			var textNodeType = new NodeType('TEXT',"{% static "dashboard/text.png" %}",spect);
-			var step = new Simple(textNodeType,step.step_id, step.step_id);
+			var step = new Simple(textNodeType,step.id, step.id);
 			wf.addStep(step);
 			break;
 
@@ -378,14 +378,14 @@
 
 			spect = getCommonStepSpect(step);
 			var gpsNodeType = new NodeType('GPS',"{% static "dashboard/gps.png" %}",spect);
-			var step = new Simple(gpsNodeType,step.step_id, step.step_id);
+			var step = new Simple(gpsNodeType,step.id, step.id);
 			wf.addStep(step);
 			break;
 		}
 	}
 
 	function addChildsToSelectStep(step){
-		var fatherStep = wf.getStepByNodeId(step.step_id);
+		var fatherStep = wf.getStepByNodeId(step.id);
 		for (var i = 0; i < step.options_to_show.length; i++) {
 			var childStep = wf.getStepByNodeId(step.options_to_show[i].next_step_id);
 			fatherStep.addChildStep(childStep, step.options_to_show[i].text_to_show );
@@ -399,7 +399,7 @@
 			break;
 
 			default:
-			var fatherStep = wf.getStepByNodeId(step.step_id);
+			var fatherStep = wf.getStepByNodeId(step.id);
 			var childStep = wf.getStepByNodeId(step.next_step_id);
 			fatherStep.addChildStep(childStep);
 
@@ -605,7 +605,7 @@
 		if (clickedStep.canAddChildStep()){
 				//TODO: chequear que id ponerle
 
-				var multipleStep = new Multiple(ntSelect,wf.getStepCount()+1, clickedStep.level+1);
+				var multipleStep = new Multiple(ntSelect,wf.getNewStepId()+1, clickedStep.level+1);
 				clickedStep.addChildStep(multipleStep);
 				wf.addStep(multipleStep);
 			} else {
@@ -774,7 +774,7 @@ function addStep() {
 
 	if (clickedStep.canAddChildStep()){
 				//TODO: chequear que id ponerle
-				var infoStep = new Simple(new NodeType('INFO',"{% static "dashboard/info.png" %}",spect),wf.getStepCount()+1, clickedStep.level+1);
+				var infoStep = new Simple(new NodeType('INFO',"{% static "dashboard/info.png" %}",spect),wf.getNewStepId()+1, clickedStep.level+1);
 				clickedStep.addChildStep(infoStep);
 				wf.addStep(infoStep);
 			} else {
@@ -1006,6 +1006,7 @@ function edgeClicked(edgeId){
 	 */
 
 	function doRequest(path, params, method) {
+		console.log(params);
 		var token = '{{ csrf_token }}';
 		$.ajax({
 		    type: method,
@@ -1074,7 +1075,9 @@ function edgeClicked(edgeId){
         }
         $(document).ready(function(){
         	$("#save").click(function(){
-        		if (wf.isValid()){
+        		var errors = wf.isValid();
+        		console.log(errors);
+        		if (errors.length == 0){
 				var workflowName = document.getElementById('workflowName').value;
 				if (workflowName) {
 					method = dataView.steps ? 'PUT': 'POST';
@@ -1086,7 +1089,7 @@ function edgeClicked(edgeId){
 				}
 		
 				} else {
-					alert("JSON Invalido");
+					alert(errors);
 				}
 
 		        });

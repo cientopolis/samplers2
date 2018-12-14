@@ -6,6 +6,15 @@ class Workflow {
 		this.nodestypes = nodestypes;
 	}
 
+	getNewStepId(){
+		var maxId = -99999;
+		for (var i = 0; i < steps.length; i++) {
+			var currentStep = steps[i];
+			maxId = currentStep.id > maxId ? currentStep.id : maxId;
+		}
+		return maxId;
+	}
+
 	getOptionById(nodeId) {
 		for (var i = 0; i < steps.length; i++) {
 			var currentStep = steps[i];
@@ -46,37 +55,41 @@ class Workflow {
 	}
 
 	isValid() {
-		return (this.hasNotCicle() && this.isConext() && this.isFillUp());
+		var errors = [];
+		this.hasNotCicle(errors);
+		this.isConext(errors);
+		this.isFillUp(errors);
+		return errors;
 	}
 
-	hasNotCicle(){
+	hasNotCicle(errors){
 		return true;
 	}
 
-	isConext(){
+	isConext(errors){
 		var level0 = 0;
 		for (var i = 0; i < steps.length; i++) {
 			var actualStep = steps[i];
 			if (actualStep.level == 0){
 				level0++;
 				if (level0 > 1){
-					return false;
+					return errors.push("El nodo "+ actualStep.id + " no es conexo");
 				}
 			}
 
 		}
-		return true;
+		return;
 	}
 
-	isFillUp(){
+	isFillUp(errors){
 		for (var i = 0; i < steps.length; i++) {
 			var actualStep = steps[i];
 			if (!actualStep.isFillUp()){
-				return false
+				return errors.push("El nodo "+ actualStep.id + " no está completo");
 			}
 
 		}
-		return true;
+		return;
 	}
 
 	getJsonToServer() {
@@ -427,7 +440,7 @@ class Simple extends Step {
 
 	jsonTextToServer(){
 		return {
-			"step_id" : this.id,
+			"id" : this.id,
 			"step_type": "TextStep",
 			"text_to_show": this.nodeType.spect.text_to_show,
 			"sample_text": this.nodeType.spect.example_text,
@@ -453,7 +466,7 @@ class Simple extends Step {
 		}
 
 		return {
-			"step_id" : this.id,
+			"id" : this.id,
 			"step_type": "SelectMultipleStep",
 			"title": this.nodeType.spect.text_to_show,
 			"next_step_id": this.getNext() ? this.getNext().id : null,
@@ -464,7 +477,7 @@ class Simple extends Step {
 	jsonRouteToServer(){
 
 		return {
-			"step_id" : this.id,
+			"id" : this.id,
 			"step_type": "RouteStep",
 			"text_to_show": this.nodeType.spect.text_to_show,
 			"next_step_id": this.getNext() ? this.getNext().id : null,
@@ -514,7 +527,7 @@ class Simple extends Step {
 			break;
 		}
 		return {
-			"step_id" : this.id,
+			"id" : this.id,
 			"step_type": type,
 			"text_to_show": this.nodeType.spect.text_to_show,
 			"next_step_id": this.getNext() ? this.getNext().id : null,
