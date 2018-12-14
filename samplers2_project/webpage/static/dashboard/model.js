@@ -320,6 +320,7 @@ class Multiple extends Step {
 		for (var i = 0; i < this.options.length; i++) {
 			if(this.options[i]){
 				var jsonActualOption = {
+					"id": i+1,
 					"text_to_show": this.options[i].text,
 					"next_step_id": this.options[i].getNext().id
 				}
@@ -459,6 +460,7 @@ class Simple extends Step {
 		for (var i = 0; i < this.nodeType.spect.options.length; i++) {
 			if(this.nodeType.spect.options[i]){
 				var jsonActualOption = {
+					"id":i+1,
 					"text_to_show": this.nodeType.spect.options[i]
 				}
 				jsonOptions.push(jsonActualOption);
