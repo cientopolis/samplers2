@@ -7,9 +7,10 @@ import pdb
 
 
 class OptionToShowSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(source='option_id')
     class Meta:
         model = OptionToShow
-        fields = ('text_to_show','next_step_id')
+        fields = ('text_to_show','next_step_id','id')
         
     def to_representation(self, obj):
         ret = super(OptionToShowSerializer, self).to_representation(obj)         
@@ -41,7 +42,7 @@ class StepSerializer (serializers.ModelSerializer):
         return obj.step_id
 
     def get_options_to_show(self, instance):
-        options_to_show = instance.options_to_show.all().order_by('order_in_steps')
+        options_to_show = instance.options_to_show.all().order_by('option_id')
         return OptionToShowSerializer(options_to_show, many=True).data
 
 
@@ -91,7 +92,6 @@ class WorkflowSerializerPost(serializers.ModelSerializer):
 
 def createWorkflowWithSteps(steps, workflow):
         for index, step in enumerate(steps):
-            #step["order_in_workflow"] = index + 1
             step_dictionary = steps[index]
             step_type = step_dictionary['step_type']
             options_to_show_data = []
@@ -102,7 +102,6 @@ def createWorkflowWithSteps(steps, workflow):
                 workflow=workflow, **step_dictionary)
                 # Creo los options to show para cada step, si corresponde
             for idx, options_to_show in enumerate(options_to_show_data, start =1):
-                options_to_show["order_in_steps"] = idx
                 OptionToShow.objects.create(
                     step=step_saved, **options_to_show)
         return workflow

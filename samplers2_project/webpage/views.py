@@ -308,11 +308,6 @@ class WorkflowDetail(APIView):
         workflow = self.get_object(pk)
         serializer = WorkflowSerializer(workflow)
         data = serializer.data
-        for index, obj in enumerate(data['steps'],start=1):
-            obj["id"] = index
-            if (obj['step_type'] == StepType.SELECTONESTEP.value) | (obj['step_type'] == StepType.SELECTMULTIPLESTEP.value):
-                for idx, option in enumerate(obj['options_to_show'],start =1):
-                    option["id"] = idx
         return Response({"data":data, "status_code": 200}, status= 200)
 
     def put(self, request, pk, format=None):
