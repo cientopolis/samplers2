@@ -48,7 +48,7 @@ class StepAdmin(admin.ModelAdmin):
 
 
 class OptionToShowAdmin(admin.ModelAdmin):
-    list_display = ['id', 'text_to_show', 'id_step', 'order_in_steps','next_step_id']
+    list_display = ['id', 'text_to_show', 'id_step', 'option_id','next_step_id']
 
     def id_step(self, instance):
         return instance.step.id
