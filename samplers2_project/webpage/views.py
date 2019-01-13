@@ -31,6 +31,10 @@ from itertools import chain
 import csv
 #import simplejson as json
 from django.core.exceptions import ObjectDoesNotExist
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 
@@ -38,7 +42,7 @@ from django.core.exceptions import ObjectDoesNotExist
 def home(request):
     projects_list = Project.objects.filter(
         participants__id=request.user.profile.id, deleted=False)
-
+    logger.info("Returning projects list: %s with size : %s",projects_list,projects_list.count())
     context = {'projects_list': projects_list}
     return render(request, 'webpage/home.html', context)
 
