@@ -37,30 +37,32 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
+#View encargado de devolver la home
 @login_required
 def home(request):
     projects_list = Project.objects.filter(
         participants__id=request.user.profile.id, deleted=False)
-    logger.info("Returning projects list: %s with size : %s",projects_list,projects_list.count())
+    logger.info("Returning  [%s] projects list: %s",projects_list.count(),projects_list)
     context = {'projects_list': projects_list}
     return render(request, 'webpage/home.html', context)
 
-
+#View encargado de borrar un proyecto (de manera logica)
 @login_required
 def deleteProject(request, id=None):
     if id:
         project = get_object_or_404(Project, pk=id)
         #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
         if not(project.participants.filter(pk=request.user.profile.id).exists()):
+            logger.error("User id: %s hasnt permissons to perform this operation",id)
             return HttpResponseForbidden()
     else:
         project = Project(owner=request.user.profile)
     project.deleted = True
     project.save()
+    logger.info("Project with id: %s deleted succesfull",id)
     return redirect('home')
 
-
+#View encargado de servir o guardar un registro de forma manual
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -75,12 +77,13 @@ def signup(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
+            logger.info("User saved succesfull %s", user)
             return redirect('home')
     else:
         form = SignUpForm()
     return render(request, 'webpage/signup.html', {'form': form})
 
-
+#Viiew encargado de crear un proyecto y guardarlo
 @login_required
 def createProject(request, id=None):
     project = Project()
@@ -89,12 +92,15 @@ def createProject(request, id=None):
         project = form.save(commit=False)
         project.owner = request.user.profile.user.username
         project.save()
+        #Creo un nuevo participante del proyecto como owner 
         pg = ParticipantsGroup.objects.create(project = project, profile = request.user.profile)
         pg.is_owner = True
         pg.save()
+        logger.info("Project created succesfull: %s",project)
         return redirect('home')
     return render(request, 'webpage/projectForm.html', {'form': form})
 
+#View encargado de crear un nuevo workflow o editarlo. Este view se invoca desde la pantalla al momento de clickear en crear nuevo workflow
 @login_required
 def createWorkflow(request, id=None):
     project = Project.objects.get(pk=id)
@@ -104,18 +110,21 @@ def createWorkflow(request, id=None):
         serializer = WorkflowSerializer(workflow)
         response = serializer.data
     except ObjectDoesNotExist:
+        logger.info("The project with id: %s doesnt have workflow associate",id)
         response["project"] = id
         response["steps"] = None
     response_in_json = json.dumps(response)
     ctx = { "data":response_in_json}
     return render(request, 'webpage/dashboard.html', ctx)
 
+#View encargada de editar o servir (el form) de un proyecto
 @login_required
 def editProject(request, id=None):
     if id:
         project = get_object_or_404(Project, pk=id)
         #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
         if not(project.participants.filter(pk=request.user.profile.id).exists()):
+            logger.error("User id: %s hasnt permissons to perform this operation",id)
             return HttpResponseForbidden()
     form = ProjectForm(request.POST or None, instance=project)
     if form.is_valid():
@@ -123,6 +132,7 @@ def editProject(request, id=None):
         return redirect('home')
     return render(request, 'webpage/projectForm.html', {'form': form})
 
+#View encargado de invitar a un cientifico o servir el formulario 
 @login_required
 def inviteScientist(request, id=None):
     if request.method == 'POST':
@@ -130,28 +140,40 @@ def inviteScientist(request, id=None):
             project = get_object_or_404(Project, pk=id)
             #Si el id del usuario no coincide con un id de la lista de usuarios del proyecto, devuelvo Forbidden
             if not(project.participants.filter(pk=request.user.profile.id).exists()):
+                logger.error("User id: %s hasnt permissons to perform this operation",id)
                 return HttpResponseForbidden()
             form = InviteScientistForm(request.POST)
             if form.is_valid():
                 email = form.cleaned_data.get('email')
                 user = User.objects.get(email = email)
                 if ParticipantsGroup.objects.filter(project=project,profile = user.profile).exists():
+                    logger.error("User with id: %s is already part of this project ")
                     messages.error(request, "Este cientifico ya forma parte de este proyecto")
+
                 else:
                     pg = ParticipantsGroup.objects.create(project = project, profile = user.profile)
                     pg.save()
+                    logger.info("Scientist with email : %s was invited succesfull",email)
                     return redirect('home')
     else:
         form = InviteScientistForm()
     return render(request, 'webpage/inviteScientistForm.html', {'form': form})
 
+#View encargado de mostrar los resultados del workflow
 @login_required
 def showResults(request, id=None):
-    if id:
-        workflow = Workflow.objects.get(id=id)
+    logger.info("Getting results for workflow with id : %s", id)
+    workflow = Workflow.objects.get(id=id)
     steps_information = getStepsInformation(workflow)
+    wf_results = getWfResults(workflow,request,steps_information)
+    ctx = { 'steps_information': steps_information, 'wf_results' : wf_results, "wf_id": workflow.id}
+    return render(request, 'webpage/showWorkflowResults.html', ctx)
+
+#Metodo auxiliar para obtener los resultados de un workflow
+def getWfResults(workflow,request,steps_information):
     wf_results = []
     media_url = request.get_host() + "/webpage" + settings.MEDIA_URL
+    logger.info("Founded [%s] results for workflow", workflow.workflow_results.count())
     for wf in workflow.workflow_results.all():
         wf_result = {}
         wf_result["start_time"] = wf.start_date_time.strftime("%d-%m-%Y")
@@ -231,32 +253,37 @@ def showResults(request, id=None):
                         wf_result[step_id] = result_location_object
             '''
         wf_results.append(wf_result)
+    return wf_results
 
-    isCsvDownload = request.GET.get('csv', None)
-    if isCsvDownload:
-        file_name = workflow.name + "_" +datetime.datetime.today().strftime('%d-%m-%Y %H:%M:%S')
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % file_name + ".csv"
-
-        writer = csv.writer(response,delimiter=';')
-        csvHeaders = getCsvHeaders(workflow)
-        writer.writerow(csvHeaders) 
-        writer = buildTableContent(wf_results,steps_information,writer)
-        return response
-    ctx = { 'steps_information': steps_information, 'wf_results' : wf_results, "wf_id": workflow.id}
-    return render(request, 'webpage/showWorkflowResults.html', ctx)
+#View encargado de descargar los resultados del workflow en csv
+@login_required
+def downloadCsv(request,id=None):
+    workflow = Workflow.objects.get(id=id)
+    logger.info("Getting Csv for workflow results of workflow with id : %s", id)
+    steps_information = getStepsInformation(workflow)
+    wf_results = getWfResults(workflow,request,steps_information)
+    file_name = workflow.name + "_" +datetime.datetime.today().strftime('%d-%m-%Y %H:%M:%S')
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % file_name + ".csv"
+    writer = csv.writer(response,delimiter=';')
+    csvHeaders = getCsvHeaders(workflow)
+    writer.writerow(csvHeaders) 
+    writer = buildTableContent(wf_results,steps_information,writer)
+    return response
 
 def getCsvHeaders(workflow):
     result = []
     result.append("Inicio")
     result.append("Fin")
     result.append("Id")
+    logger.info("Getting csv headers....")
     for step in workflow.steps.all():
         if step.step_type != StepType.INFORMATIONSTEP.value:
             result.append(step.step_type)
     return result
 
 def buildTableContent(wf_results,steps_information,writer):
+    logger.info("Building table content....")
     for wf_result in wf_results:
         values = []
         values.append(wf_result['start_time'])
@@ -272,6 +299,7 @@ def buildTableContent(wf_results,steps_information,writer):
     return writer
 
 def getStepsInformation(workflow):
+    logger.info("Getting steps information")
     result = []
     for step in workflow.steps.all():
         step_information = {}
@@ -282,21 +310,23 @@ def getStepsInformation(workflow):
             result.append(step_information)
     return result
 
-class WorkflowList(APIView):
-    """
-    List all workflow, or create a new workflow.
-    """
 
+class WorkflowList(APIView):
+    #Servicio API encargado de devolver listado de todos los workflows (no se si se usa)
     def get(self, request, format=None):
         workflows = Workflow.objects.all()
+        logger.info("Founded [%s] workflows", workflows.count())
         serializer = WorkflowSerializer(Workflows, many=True)
         return Response({"data":serializer.data, "status_code": 200}, status = 200)
 
+    #Servicio API encargado de crear un workflow (llamado desde el dashboard)
     def post(self, request, format=None):
         serializer = WorkflowSerializerPost(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            logger.info("Workflow succesfully created")
             return Response({"data": serializer.data, "status_code":status.HTTP_201_CREATED}, status=status.HTTP_201_CREATED)
+        logger.error("Workflow couldnt create with errors : %s", serializer.errors)
         return Response({"data":serializer.errors, "status_code": status.HTTP_400_BAD_REQUEST}, status = status.HTTP_400_BAD_REQUEST)
 
 
@@ -308,31 +338,41 @@ class WorkflowDetail(APIView):
         except Workflow.DoesNotExist:
             raise Http404
 
+    #Servicio API encargado de devolver un workflow (llamado desde Samplers)
     def get(self, request, pk, format=None):
+        logger.info("Getting workflow with id: %s",pk)
         workflow = self.get_object(pk)
         serializer = WorkflowSerializer(workflow)
         data = serializer.data
         return Response({"data":data, "status_code": 200}, status= 200)
 
+    #Servicio API encargado de actualizar un workflow (llamado desde el dashboard)
     def put(self, request, pk, format=None):
+        logger.info("Updating workflow with id: %s",pk)
         workflow = self.get_object(pk)
         if  workflow.workflow_results.all().count() > 0:
+            logger.info("Couldnt update worfklow because this wf has already results")
             return Response({"msj":"Cant do this operation, workflow has already results"},status = 409)
         serializer = WorkflowSerializerPost(workflow, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            logger.info("Updated wowkflow succesfully")
             return Response({"data": serializer.data, "status_code":status.HTTP_201_CREATED}, status = status.HTTP_201_CREATED)
+        logger.error("The workflow could not be updated with errors : %s",serializer.errors)
         return Response({"data":serializer.errors, "status_code": status.HTTP_400_BAD_REQUEST}, status = status.HTTP_400_BAD_REQUEST)
 
+    #Este no se si se usa
     def delete(self, request, pk, format=None):
         workflow = self.get_object(pk)
         workflow.delete()
+        logger.info("Workflow with id: %s was succesfully deleted")
         return Response({"status_code": status.HTTP_204_NO_CONTENT}, status = status.HTTP_204_NO_CONTENT)
 
 
 class ProjectList(APIView):
-
+    #Servicio de API encargado de devolver tods los proyectos
     def get(self, request, format=None):
+        logger.info("Getting all projects...")
         projects = Project.objects.filter(deleted=False)
         serializer = ProjectSerializer(projects, many=True)
         return Response({"data":serializer.data, "status_code": 200}, status= 200)
@@ -345,18 +385,19 @@ class ProjectDetail(APIView):
         except Project.DoesNotExist:
             raise Http404
 
+    #Servicio de API encargado de devolver el detalle de un proyecto
     def get(self, request, pk, format=None):
+        logger.info("Getting project detail with id: %s",pk)
         project = self.get_object(pk)
         serializer = ProjectDetailSerializer(project)
         data = serializer.data
         return Response({"data":data, "status_code": 200}, status= 200)
 
-
+#Servicio encargado de postear el resultado de un workflow (se llama desde Samplers al terminar de completar los resultados del wf)
 class WorkflowResult(APIView):
-    """
-    List all workflow, or create a new workflow.
-    """
+    
     def post(self, request, pk, format=None):
+        logger.info("Saving workflow results for workflow with id: %s",pk)
         content = request.FILES['sample']
         unzipped = zipfile.ZipFile(content)
         list_name = unzipped.namelist()
@@ -376,8 +417,10 @@ class WorkflowResult(APIView):
             #Chequera si es Profile.objects.get(pk=user_id) o Profile.objects.get(user=user_id)
             profile = Profile.objects.get(pk=user_id)
             workflow_result.profile = profile
+            logger.info("Workflow has user_id: %s", user_id)
         workflow_result.save()
         steps = data['steps']
+        logger.info("The workflow result has [%s] steps",steps.count())
         for step in steps: 
             step_type = step['type']
             step_data = step['data']
@@ -486,7 +529,7 @@ class WorkflowResult(APIView):
                             route_information_result.native_size = parcelledData['mNativeSize']
                             route_information_result.owns_native_parcel_object = parcelledData['mOwnsNativeParcelObject']
                     route_information_result.save()
-
+        logger.info("Workflow result was succesfully saved")
         return Response({"status_code": 200}, status= 200)
 
 
