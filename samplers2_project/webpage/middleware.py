@@ -5,16 +5,24 @@ from webpage.models import Project
 from django.http import HttpResponse
 from django.contrib import messages
 import pdb
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 class WebpageExceptionMiddleware(SocialAuthExceptionMiddleware):
 	def process_exception(self, request, exception):
+		pdb.set_trace()
 		if type(exception) == AuthCanceled:
+			logger.info("User cancel the authentication")
 			return redirect('login')
 		if type(exception) == AuthStateForbidden:
 			messages.error(request, "Debe registrarse primero")
+			logger.error("User must register first")
 			return redirect('/webpage/signup')
 		if type(exception) == AuthAlreadyAssociated:
 			messages.error(request, "Esta cuenta ya se encuentra asociada")
+			logger.error("This account is already associated")
 			return redirect('/webpage/')
 		else:
 			pass
