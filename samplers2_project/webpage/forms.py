@@ -6,7 +6,14 @@ from webpage.models import Profile, Project
 from django.forms import ModelForm
 from webpage.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
 import pdb
+import smtplib
+from email.mime.text import MIMEText as text
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=254)
@@ -32,8 +39,26 @@ class InviteScientistForm(forms.Form):
         try:
             user = User.objects.get(email = email)
         except ObjectDoesNotExist:
+            logger.info("User with email %s doenst exist", email)
+            send_email('Invitacion', 'Forma parte de Centopolis! Dirigete a la url y registrate :)', 'cientopolis@cientopolis.com', ['alextripero@gmail.com'])
             raise forms.ValidationError("No existe un usuario con ese email")
         return email
+
+def send_email(message,subject,sender,receiver):
+        #to = 'alexrl_lp@hotmail.com'
+        #gmail_user = 'alextripero@gmail.com'
+        #gmail_pwd = '****'
+        #smtpserver = smtplib.SMTP("smtp.gmail.com",587)
+        #smtpserver.ehlo()
+        #smtpserver.starttls()
+        #smtpserver.ehlo
+        #smtpserver.login(gmail_user, gmail_pwd)
+        #header = 'To:' + to + '\n' + 'From: ' + gmail_user + '\n' + 'Subject:testing \n'
+        #msg = header + '\n this is test msg from mkyong.com \n\n'
+        #smtpserver.sendmail(gmail_user, to, msg)
+        #print ('done!')
+        #smtpserver.close()
+        send_mail(subject,message,sender,receiver,fail_silently=False)
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget= forms.TextInput(attrs={'class':'input100','name':'username'}))

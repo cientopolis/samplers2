@@ -186,6 +186,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
+#EMAIL_HOST = 'smtp.sendgrid.net'
+#EMAIL_HOST_USER = 'sendgrid_username'
+#EMAIL_HOST_PASSWORD = 'sendgrid_password'
+#EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
+
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+
 STATIC_URL = '/static/'
 
 #Configuracion sacada de https://stackoverflow.com/questions/5739830/simple-log-to-file-example-for-django-1-3
@@ -235,3 +244,4 @@ LOGGING = {
         },
     }
 }
+
