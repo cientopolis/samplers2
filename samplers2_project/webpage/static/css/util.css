@@ -2217,6 +2217,7 @@
 .m-r-248 {margin-right: 248px;}
 .m-r-249 {margin-right: 249px;}
 .m-r-250 {margin-right: 250px;}
+.m-r-260 {margin-right: 260px;}
 .m-l-r-auto {margin-left: auto;	margin-right: auto;}
 .m-l-auto {margin-left: auto;}
 .m-r-auto {margin-right: auto;}
@@ -2363,7 +2364,7 @@
 
 /* ------------------------------------ */
 .wrap-pic-cir {
-	border-radius: 50%;
+	border-radius: 50%;image-rendering: 
 	overflow: hidden;
 }
 .wrap-pic-cir img {

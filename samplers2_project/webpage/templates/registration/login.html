@@ -1,92 +1,132 @@
 {% extends 'webpage/base.html' %}
 
 {% block content %}
-
-
 <head>
-  {% load static %}
-  <title>Login V5</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+	{% load static %}
+	<title>muestr.ar - inicio</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+    
+	<link rel="stylesheet" type="text/css" href="{% static "css/util.css" %}">
+	<link rel="stylesheet" type="text/css" href="{% static "css/main.css" %}">
+	<link rel="stylesheet" type="text/css" href="{% static "css/form.css" %}">
 
-  <link rel="stylesheet" type="text/css" href="{% static "login/css/util.css" %}">
-  <link rel="stylesheet" type="text/css" href="{% static "login/css/main.css" %}">
+	<!--- formulario contacto--->
+	 <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" >
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- <script src="form.js"></script>
+
 <!--===============================================================================================-->
-
 </head>
-<body>
-  
-  <div class="limiter">
-    <div class="container-login100">
-      <div class="wrap-login100 p-l-110 p-r-110 p-t-62 p-b-23">
-        <form method="post" class="login100-form validate-form flex-sb flex-w">
-          {% csrf_token %}
-          
-          <span class="login100-form-title p-b-20">
-            SAMPLERS 2 <br>Hola, podés ingresar con
-          </span>
+<body>	
+	<header>
+		<nav class="container-login1002 m-b-57">
+			<div class="container-login10022 m-l-160">
+				<img class="imagen" src="{% static "images/logo1muestrar2.png" %}">
+			</div>
+		
+			<a href="#" class="btn-play m-b-7 m-l-300">
+						<img src="{% static "images/icons/UIHere.png" %}" alt="PLAYSTORE">
+						
+					</a>	
 
-          <a href="{% url 'social:begin' 'facebook' %}" class="btn-face m-b-7">
-            <i class="fa fa-facebook-official"></i>
-            Facebook
-          </a>
+		</nav>
+	</header>
+	<div class="limiter">
+		<!--<div class="container-login100 m-b-15 p-t-13 m-t-17">-->
+			<div class="wrap-login100 p-l-30 p-r-30 p-t-12 p-b-23">
+			<span class="login100-form-title p-b-10 m-l-10">
+						MUESTRA.AR es un proyecto de Ciencia Ciudadana. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean bibendum lacus non varius facilisis. In hac habitasse platea dictumst. Aenean est velit, molestie eu augue vitae, venenatis efficitur diam. Fusce fringilla lorem in orci bibendum rhoncus. Etiam molestie est at pretium tempor. Suspendisse potenti. Vestibulum ornare, urna feugiat blandit tincidunt, ligula elit euismod ligula, et lacinia nisi augue ac ligula.<br><br>  
+			
+			 <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Hola, podés ingresar aquí</button>		
+<br><br>
+ <a href="{% url 'webpage:signup' %}"><button type="button" class="btn btn-info btn-lg" >¿ Aún no tenés usuario? Registrate ahora</button></a>		
+					
+				</span>
+				<div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">
+                                Ingreso usuario
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                        	<form class="login100-form validate-form flex-sb flex-w">
+                            {% csrf_token %}
+					<a href="{% url 'social:begin' 'facebook' %}" class="btn-face m-b-7">
+						<i class="fa fa-facebook-official"></i>
+						Facebook
+					</a>
 
-          <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn-google m-b-7">
-            <img src="{% static "login/images/icons/icon-google.png" %}" alt="GOOGLE">
-            Google
-          </a>
+					<a href="{% url 'social:begin' 'google-oauth2' %}" class="btn-google m-b-7">
+						<img src="{% static "images/icons/icon-google.png" %}" alt="GOOGLE">
+						Google
+					</a>
+									
+					<div class="p-t-20 p-b-9">
+						<span class="txt3">
+							Nombre de usuario
+						</span>
+					</div>
+					<div class="wrap-input100 validate-input" data-validate = "Username is required">
+						{{ form.username }}
+						<input class="input100" type="text" name="username" >
+						<span class="focus-input100"></span>
+					</div>
+					{{form.username.errors}}
+					<div class="p-t-13 p-b-9">
+						<span class="txt3">
+							Contraseña
+						</span>
 
-          <div class="p-t-20 p-b-9">
-            <span class="txt1">
-              Nombre de usuario
-            </span>
-          </div>
-          <div class="wrap-input100 validate-input" data-validate = "Username is required">
-            {{ form.username }}
-            <span class="focus-input100"></span>
-          </div>
-          {{form.username.errors}}
+					</div>
+					<div class="wrap-input100 validate-input" data-validate = "Password is required">
+					{{ form.password}}
+						<input class="input100" type="password" name="pass" >
+						<span class="focus-input100"></span>
+					</div>
+					{{form.password.errors}}
 
+           			{{ form.non_field_errors }}
 
-          <div class="p-t-13 p-b-9">
-            <span class="txt1">
-              Contraseña
-            </span>
+					<div class="container-login100-form-btn m-t-17">
+						<button class="login100-form-btn">
+							Login
+						</button>
+					</div>
 
+					<div class="w-full text-center p-t-35">
+						<span class="txt2">
+							¿Aún no tenés usuario?
+						</span>
 
-          </div>
-          <div class="wrap-input100 validate-input" data-validate = "Password is required">
-            {{ form.password}}
-            <span class="focus-input100"></span>
-          </div>
-            {{form.password.errors}}
+						<a href="{% url 'webpage:signup' %}" class="txt2 bo1">
+							Registrarse ahora
+						</a>
+					</div>
+				</form>
 
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>	
 
-
-           {{ form.non_field_errors }}
-
-          <div class="container-login100-form-btn m-t-17">
-            <button type="submit" class="login100-form-btn">
-              Login
-            </button>
-          </div>
-
-          <div class="w-full text-center p-t-35">
-            <span class="txt2">
-              ¿Aún tenés usuario?
-            </span>
-
-            <a href="{% url 'webpage:signup' %}" class="txt2 bo1">
-              Registrarse ahora
-            </a>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  
-
-  <div id="dropDownSelect1"></div>
-  
+				
+			</div>
+			
+		</div>
 
 {% endblock %}
+
+	
+	
+
