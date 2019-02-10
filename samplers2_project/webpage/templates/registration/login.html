@@ -12,6 +12,7 @@
 	<link rel="stylesheet" type="text/css" href="{% static "css/main.css" %}">
 	<link rel="stylesheet" type="text/css" href="{% static "css/form.css" %}">
 
+
 	<!--- formulario contacto--->
 	 <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
@@ -19,7 +20,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" >
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-        <!-- <script src="form.js"></script>
+       <!--- <script src="{% static "form.js" %}"></script>
 
 <!--===============================================================================================-->
 </head>
@@ -59,7 +60,7 @@
                             </h4>
                         </div>
                         <div class="modal-body">
-                        	<form class="login100-form validate-form flex-sb flex-w">
+                        	<form method="post" id="login_form" action="{% url 'login' %}" class="login100-form validate-form flex-sb flex-w">
                             {% csrf_token %}
 					<a href="{% url 'social:begin' 'facebook' %}" class="btn-face m-b-7">
 						<i class="fa fa-facebook-official"></i>
@@ -77,8 +78,7 @@
 						</span>
 					</div>
 					<div class="wrap-input100 validate-input" data-validate = "Username is required">
-						{{ form.username }}
-						<input class="input100" type="text" name="username" >
+            {{ form.username }}
 						<span class="focus-input100"></span>
 					</div>
 					{{form.username.errors}}
@@ -89,8 +89,7 @@
 
 					</div>
 					<div class="wrap-input100 validate-input" data-validate = "Password is required">
-					{{ form.password}}
-						<input class="input100" type="password" name="pass" >
+            {{ form.password}}
 						<span class="focus-input100"></span>
 					</div>
 					{{form.password.errors}}
@@ -98,10 +97,13 @@
            			{{ form.non_field_errors }}
 
 					<div class="container-login100-form-btn m-t-17">
-						<button class="login100-form-btn">
+						<button type="submit" class="login100-form-btn">
 							Login
 						</button>
 					</div>
+
+          </div>  
+
 
 					<div class="w-full text-center p-t-35">
 						<span class="txt2">
@@ -118,12 +120,46 @@
                         </div>
                     </div>
                 </div>
-            </div>	
 
 				
 			</div>
 			
 		</div>
+
+    
+
+    <script type="text/javascript">
+      $(document).on('submit','#login_form', function(e){
+    e.preventDefault();
+    var login_form = $('#login_form');
+    var action = login_form.attr('action');
+    var method = login_form.attr('method');
+    var data_ = login_form.serialize();
+
+    $.ajax({
+        type: method,
+        url: action,
+        data: data_,
+        success: function(data, status) {
+            if ($(data).find('.errorlist').length > 0) {
+                var modal_html = ($(data).find('#myModal')).html()
+                $('.modal-dialog').html(modal_html);
+                e.preventDefault();
+
+            }else{
+                console.log('Log In Form Successfuly Summited')
+                $('#myModal').modal('hide')
+                location.reload();
+                 //Reload the current document page on success
+
+            }
+        }
+    });
+
+    return false;
+});
+
+    </script>
 
 {% endblock %}
 
