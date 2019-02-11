@@ -1,23 +1,23 @@
-{% extends 'webpage/base.html' %}
-
-{% block content %}
+<!DOCTYPE html>
+<html>
 <head>
-	{% load static %}
 	<title>MUESTR.AR - HOME</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{% static "css/util.css" %}">
-	<link rel="stylesheet" type="text/css" href="{% static "css/main.css" %}">
-	<link rel="stylesheet" type="text/css" href="{% static "css/form.css" %}">
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link rel="stylesheet" type="text/css" href="css/tabla.css">
 <!--===============================================================================================-->
 </head>
 <body>
 	<header>
 		<nav class="container-login1002 m-b-57">
 			<div class="container-login10022">
-				<img class="imagen" src="{% static "images/logo1muestrar2.png" %}">
+				<img class="imagen" src="images/logo1muestrar2.png">
 			</div>
+			
+			
 		</nav>
 	</header>
 	<div class="limiter">		
@@ -26,69 +26,72 @@
 			<span class="login100-form-title p-b-10 m-l-10">
 						Registro nuevo usuario
 					</span>
-		      	<form id= "sign_up_form" method= "POST" class="login100-form validate-form flex-sb flex-w">
-					{% csrf_token %}	
+		      	<form class="login100-form validate-form flex-sb flex-w">
+		<a href="#" class="btn-face m-b-7">
+						<i class="fa fa-facebook-official"></i>
+						Facebook
+					</a>
 
+					<a href="#" class="btn-google m-b-7">
+						<img src="images/icons/icon-google.png" alt="GOOGLE">
+						Google
+					</a>
+									
 					<div class="p-t-20 p-b-9">
 						<span class="txt1">
-							Nombre de usuario *
+							Nombre de usuario
 						</span>
 						<a  class="txt2 bo1 m-l-5">
 							Máximo 30 caracteres
 						</a>
 					</div>
 					<div class="wrap-input100 validate-input" data-validate = "Username is required">
-						{{ form.username }}
+						<input class="input100" type="text" name="username" >
 						<span class="focus-input100"></span>
 					</div>
-					{{form.username.errors}}
-
 					<div class="p-t-20 p-b-9">
 						<span class="txt1">
 							Institución
 						</span>
-            <!-- {{ form.institucion.help_text }} -->
 					</div>
 					<div class="wrap-input100 validate-input" data-validate = "Username is required">
-						{{ form.institucion }}
+						<input class="input100" type="text" name="username" >
 						<span class="focus-input100"></span>
 					</div>
-					{{form.institucion.errors}}
-
 					<div class="p-t-20 p-b-9">
 						<span class="txt1">
-							E-mail *
+							e-mail
 						</span>
 					</div>
 					<div class="wrap-input100 validate-input" data-validate = "Username is required">
-						{{ form.email }}
+						<input class="input100" type="text" name="username" >
 						<span class="focus-input100"></span>
 					</div>
-					{{form.email.errors}}
+					
 					
 					<div class="p-t-13 p-b-9">
 						<span class="txt1">
-							Contraseña *
+							Contraseña
 						</span>
 
+						
 					</div>
 					<div class="wrap-input100 validate-input" data-validate = "Password is required">
-						{{ form.password1 }}
+						<input class="input100" type="password" name="pass" >
 						<span class="focus-input100"></span>
 					</div>
-						{{ form.password1.errors }}
-
-					<div class="p-t-13 p-b-9">
+										<div class="p-t-13 p-b-9">
 						<span class="txt1">
-							Repetir Contraseña *
+							Repetir Contraseña
 						</span>
 
+						
 					</div>
 					<div class="wrap-input100 validate-input" data-validate = "Password is required">
-						{{ form.password2 }}
+						<input class="input100" type="password" name="pass" >
 						<span class="focus-input100"></span>
 					</div>
-						{{ form.password2.errors }}
+
 
 					<div class="container-login100-form-btn m-t-17">
 						<button class="login100-form-btn">
@@ -104,4 +107,5 @@
 </div>
 
 
-{% endblock %}
+</body>
+</html>

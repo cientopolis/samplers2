@@ -54,7 +54,7 @@
                     <!-- Modal content-->
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <button type="button" onclick="restoreModalOnClose()" class="close" data-dismiss="modal">&times;</button>
                             <h4 class="modal-title">
                                 Ingreso usuario
                             </h4>
@@ -126,8 +126,6 @@
 			
 		</div>
 
-    
-
     <script type="text/javascript">
       $(document).on('submit','#login_form', function(e){
     e.preventDefault();
@@ -145,13 +143,9 @@
                 var modal_html = ($(data).find('#myModal')).html()
                 $('.modal-dialog').html(modal_html);
                 e.preventDefault();
-
             }else{
-                console.log('Log In Form Successfuly Summited')
                 $('#myModal').modal('hide')
-                location.reload();
-                 //Reload the current document page on success
-
+                location.href="{% url 'home' %}";
             }
         }
     });
@@ -159,6 +153,14 @@
     return false;
 });
 
+
+var restoreModalOnClose = function(){
+    var error_fields = $('.errorlist')
+      $.each(error_fields, function(index, value){
+        $(value).remove();
+    })
+
+};
     </script>
 
 {% endblock %}

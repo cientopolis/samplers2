@@ -16,9 +16,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 class SignUpForm(UserCreationForm):
-    email = forms.EmailField(max_length=254)
+    username = forms.CharField(max_length=30,widget= forms.TextInput(attrs={'class':'input100','name':'username'}))
+    email = forms.EmailField(max_length=30,widget= forms.TextInput(attrs={'class':'input100','name':'email','placeholder': ('name@email.com')}))
     institucion = forms.CharField(
-        label="institucion", max_length=30, required=False, help_text='Opcional')
+        label="institucion", max_length=30, required=False, help_text='Opcional',widget= forms.TextInput(attrs={'class':'input100','name':'institucion'}))
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input100','type':'password','name':'password1'}))
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input100','type':'password','name':'password2'}))
+
 
     class Meta:
         model = User
