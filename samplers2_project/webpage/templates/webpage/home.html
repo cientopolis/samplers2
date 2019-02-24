@@ -9,13 +9,22 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <!-- Material Kit CSS -->
   <link rel="stylesheet" href="{% static "css/material-dashboard.css?v=2.1.1" %}"/>
   <link rel="stylesheet" type="text/css" href="{% static "css/util.css" %}">
   <link rel="stylesheet" type="text/css" href="{% static "css/main.css" %}">
+   <link rel="stylesheet" type="text/css" href="{% static "css/form.css" %}">
+
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" >
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
 </head>
 
 <body>
@@ -54,10 +63,10 @@
     </div>
     <div class="main-panel">
       <!-- Navbar -->
-      <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
-        <div class="container-fluid">
-          <div class="navbar-wrapper">
-            <a class="navbar-brand" >Hola {{ user.username }}!</a>
+      <nav class="navbar2 navbar-expand-lg2 navbar-transparent2 navbar-absolute2 fixed-top2 ">
+        <div class="container-fluid2">
+          <div class="navbar-wrapper2">
+            <a class="navbar-brand2" href="#pablo">Hola {{ user.username }} !</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
@@ -65,17 +74,16 @@
             <span class="navbar-toggler-icon icon-bar"></span>
             <span class="navbar-toggler-icon icon-bar"></span>
           </button>
-          <div class="collapse navbar-collapse justify-content-end">
+          <!--<div class="collapse navbar-collapse2 justify-content-end">
             <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" href="#pablo">
+              <li class="nav-item2">
+                <a class="nav-link2" href="#pablo">
                   <i class="material-icons">notifications</i> Novedades
                 </a>
               </li>
-              <!-- your navbar here -->
             </ul>
           </div>
-        </div>
+        </div> --> 
       </nav>
       <!-- End Navbar -->
       <div class="content">
@@ -104,10 +112,11 @@
                   	<ul>
                   		<li><i class="material-icons">contact_mail</i>
                         {% if user.username == project.owner %}
-                        <a href="{% url 'webpage:inviteScientist' project.id %}"> Invitar Científico</a>
+                        <a data-toggle="modal" class="open-AddModalDialog" data-id="{{ project.id }}" data-target="#myModal" href="#myModal2">Invitar científico</a>
                         {% else %}
                              -
                         {% endif %}
+                        </li>
                   		<li><i class="material-icons">visibility</i>
                   	<a href="#pablo">publicar</a></li>
                   	<li><i class="material-icons">settings</i>
@@ -119,6 +128,7 @@
                     {% else %}
                         -
                     {% endif %}
+                    </li>
                   	<li><i class="material-icons text-danger">delete_forever</i>
                     <a href="{% url 'webpage:deleteProject' project.id %}"> Eliminar proyecto</a></li>
                   	</ul>
@@ -135,6 +145,10 @@
           </div>
         </div>
       </div>
+
+      {% include 'webpage/inviteScientistForm.html' %}
+
+
       <footer class="footer">
         <div class="container-fluid">
           <nav class="float-left">
@@ -155,5 +169,64 @@
       </footer>
     </div>
   </div>
+</div>
+
+</body>
+
+   <script type="text/javascript">
+
+    $(document).on("click", ".open-AddModalDialog", function () {
+        var projectId = $(this).data('id');
+        $('#myModal').modal('show');
+        $.ajax({
+          type: 'GET',
+          url:  "/webpage/invite-scientist/"+projectId+"/",
+          success: function(res){  
+            var modal_html = ($(res).find('#myModal')).html()        
+            $("#myModal").html(modal_html);
+            $("#project_id").val(projectId);
+   
+          }
+
+        })
+
+    });
+
+    $(document).on('submit','#scientist_form', function(e){
+    e.preventDefault();
+    var scientist_form = $('#scientist_form');
+    var projectId = $("#project_id").val();
+
+    var action = "/webpage/invite-scientist/"+projectId+"/";
+    var method = scientist_form.attr('method');
+    var data_ = scientist_form.serialize();
+    $.ajax({
+        type: method,
+        url: action,
+        data: data_,
+        projectId: projectId,
+        success: function(data, status) {
+            if ($(data).find('.errorlist').length > 0) {
+                var modal_html = ($(data).find('#myModal')).html()
+                $('.modal-dialog').html(modal_html);
+                $("#project_id").val(projectId);
+                e.preventDefault();
+            }else{
+                $('#myModal').modal('hide')
+                location.href="{% url 'home' %}";
+            }
+        }
+    });
+   });
+
+    var restoreModalOnClose = function(){
+    var error_fields = $('.errorlist')
+      $.each(error_fields, function(index, value){
+        $(value).remove();
+    })
+
+    };
+
+   </script>
 
 {% endblock %}

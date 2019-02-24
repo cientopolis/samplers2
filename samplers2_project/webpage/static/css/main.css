@@ -404,6 +404,11 @@ box-shadow: 3px 13px 48px -9px rgba(16,17,23,1);
   text-align: center;
 }
 
+/*--------------placeholder----------------*/
+.input100::-webkit-input-placeholder {
+     opacity: 0.5; /*Change the opacity between 0 and 1*/
+}
+
 .errorlist 
     {   
 
@@ -421,8 +426,6 @@ box-shadow: 3px 13px 48px -9px rgba(16,17,23,1);
         width: 100%;
     
 }
-
-
 
 /*------------------------------------------------------------------
 [ Button sign in with ]*/
@@ -582,13 +585,6 @@ border-radius: 72px 72px 72px 72px;
   height: 60px;
   padding: 0 7px;
 }
-
-/*--------------placeholder----------------*/
-.input100::-webkit-input-placeholder {
-     opacity: 0.5; /*Change the opacity between 0 and 1*/
-}
-
-
 /*------------------------------------------------------------------
 [ Focus Input ]*/
 

@@ -36,15 +36,17 @@ class ProjectForm(ModelForm):
         exclude = ('owner',)   
 
 class InviteScientistForm(forms.Form):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(max_length=30,required=True,widget= forms.TextInput(attrs={'class':'input100','name':'email','placeholder': ('name@email.com')}))
+    message = forms.CharField(
+        required=False, help_text='Opcional',widget= forms.TextInput(attrs={'class':'input100','name':'message'}))
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
         try:
             user = User.objects.get(email = email)
         except ObjectDoesNotExist:
-            logger.info("User with email %s doenst exist", email)
-            send_email('Invitacion', 'Forma parte de Centopolis! Dirigete a la url y registrate :)', 'cientopolis@cientopolis.com', ['alextripero@gmail.com'])
+            logger.info("User with email %s doesnt exist", email)
+            #send_email('Invitacion', 'Forma parte de Centopolis! Dirigete a la url y registrate :)', 'cientopolis@cientopolis.com', ['alextripero@gmail.com'])
             raise forms.ValidationError("No existe un usuario con ese email")
         return email
 

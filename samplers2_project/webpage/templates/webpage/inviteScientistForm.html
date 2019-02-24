@@ -1,25 +1,58 @@
-{% extends 'webpage/base.html' %}
+<div>
+  <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                          <h4 class="modal-title">
+                                Invitar científico
+                            </h4>
+                            <button type="button" onclick="restoreModalOnClose()" class="close" data-dismiss="modal">&times;</button>
+                            
+                        </div>
+                        <div class="modal-body">
+                          <form id="scientist_form" method="POST" class="login100-form validate-form flex-sb flex-w">
+                          {% csrf_token %}
+          <div class="p-t-20 p-b-9">
+            <span class="txt3">
+              Email del científico
+            </span>
+          </div>
+          <div class="wrap-input100 validate-input" >
+            {{ form.email }}
+            <span class="focus-input100"></span>
+          </div>
+          {{ form.email.errors }}
+          <div class="p-t-13 p-b-9">
+            <span class="txt3">
+              Mensaje *
+            </span>
 
-{% block content %}
+            </div>
+          <div class="wrap-input100 validate-input" >
+            {{ form.message }}
+            <span class="focus-input100"></span>
+          </div>
 
-<form method="post">
-    {% csrf_token %}
-    {% for message in messages %}
-    	{{ message }}
-    {% endfor %}
-    {% for field in form %}
-      <p>
-        {{ field.label_tag }}<br>
-        {{ field }}
-        {% if field.help_text %}
-          <small style="color: grey">{{ field.help_text }}</small>
-        {% endif %}
-        {% for error in field.errors %}
-          <p style="color: red">{{ error }}</p>
-        {% endfor %}
-      </p>
-    {% endfor %}
-    <button type="submit">Enviar</button>
-</form>
+          {{ form.non_field_errors }}
+          {% for message in messages %}
+            <div class="errorlist">
+                {{ message }}
+              </div>
+            {% endfor %}
 
-{% endblock %}
+         
+          <div class="container-login100-form-btn m-t-17">
+            <button class="login100-form-btn">
+              Enviar
+            </button>
+          </div>
+
+           </form>
+           <input type="hidden" id="project_id" value="">
+                          
+                        </div>
+                    </div>
+                </div>
+            </div>
+  </div>

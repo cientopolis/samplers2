@@ -214,7 +214,7 @@ LOGGING = {
             'class':'logging.NullHandler',
         },
         'logfile': {
-            'level':'DEBUG',
+            'level':'ERROR',
             'class':'logging.handlers.RotatingFileHandler',
             'filename': SITE_ROOT + "/logfile",
             'maxBytes': 50000,
