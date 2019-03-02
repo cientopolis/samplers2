@@ -30,6 +30,9 @@ class SignUpForm(UserCreationForm):
 
 
 class ProjectForm(ModelForm):
+    name = forms.CharField(max_length=30,widget= forms.TextInput(attrs={'class':'input100','name':'name'}))
+    description = forms.CharField(required=False,widget= forms.TextInput(attrs={'class':'input100','name':'description'}))
+
     class Meta:
         model = Project
         fields = ('name','description')
@@ -39,16 +42,6 @@ class InviteScientistForm(forms.Form):
     email = forms.EmailField(max_length=30,required=True,widget= forms.TextInput(attrs={'class':'input100','name':'email','placeholder': ('name@email.com')}))
     message = forms.CharField(
         required=False, help_text='Opcional',widget= forms.TextInput(attrs={'class':'input100','name':'message'}))
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        try:
-            user = User.objects.get(email = email)
-        except ObjectDoesNotExist:
-            logger.info("User with email %s doesnt exist", email)
-            #send_email('Invitacion', 'Forma parte de Centopolis! Dirigete a la url y registrate :)', 'cientopolis@cientopolis.com', ['alextripero@gmail.com'])
-            raise forms.ValidationError("No existe un usuario con ese email")
-        return email
 
 def send_email(message,subject,sender,receiver):
         #to = 'alexrl_lp@hotmail.com'

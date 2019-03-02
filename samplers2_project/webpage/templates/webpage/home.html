@@ -42,17 +42,22 @@
           <li class="nav-item active  ">
             <a class="nav-link" href="{% url 'home' %}">
               <i class="material-icons">dashboard</i>
-              <p class="txt2">Panel de Proyectos</p>
+              <p class="txt2">Mis Proyectos</p>
             </a>
           </li>
+          <li class="nav-item active m-t-10">
+            <a class="nav-link" href="{% url 'home' %}?others">
+              <i class="material-icons">dashboard</i>
+              <p class="txt2">Proyectos colaborativos</p>
+            </a>
+          </li>
+          
           <li class="nav-item active  ">
-            
           <button class="login100-form-btn m-t-10" onclick="window.location.href='{% url 'webpage:createProject' %}'">
 							Nuevo Proyecto
 						</button>
 					</li>
 					 <li class="nav-item active  ">
-            
           <button class="login100-form-btn m-t-10"  onclick="window.location.href='{% url 'logout' %}'" >
 							Salir
 						</button>
@@ -68,6 +73,16 @@
           <div class="navbar-wrapper2">
             <a class="navbar-brand2" href="#pablo">Hola {{ user.username }} !</a>
           </div>
+          Aca iriaaa
+          <div id="message">
+          {% if messages %}
+            <ul class="messages">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+         </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
             <span class="navbar-toggler-icon icon-bar"></span>
@@ -177,7 +192,6 @@
 
     $(document).on("click", ".open-AddModalDialog", function () {
         var projectId = $(this).data('id');
-        $('#myModal').modal('show');
         $.ajax({
           type: 'GET',
           url:  "/webpage/invite-scientist/"+projectId+"/",
@@ -185,7 +199,8 @@
             var modal_html = ($(res).find('#myModal')).html()        
             $("#myModal").html(modal_html);
             $("#project_id").val(projectId);
-   
+            $('#myModal').modal('show');
+
           }
 
         })
@@ -212,9 +227,10 @@
                 $("#project_id").val(projectId);
                 e.preventDefault();
             }else{
+                var message = ($(data).find('#message')).html()
+                $("#message").html(message)         }
                 $('#myModal').modal('hide')
-                location.href="{% url 'home' %}";
-            }
+
         }
     });
    });

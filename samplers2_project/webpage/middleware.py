@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 class WebpageExceptionMiddleware(SocialAuthExceptionMiddleware):
 	def process_exception(self, request, exception):
-		pdb.set_trace()
 		if type(exception) == AuthCanceled:
 			logger.info("User cancel the authentication")
 			return redirect('login')

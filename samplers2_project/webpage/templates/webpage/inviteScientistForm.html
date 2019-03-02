@@ -15,7 +15,7 @@
                           {% csrf_token %}
           <div class="p-t-20 p-b-9">
             <span class="txt3">
-              Email del científico
+              Email del científico *
             </span>
           </div>
           <div class="wrap-input100 validate-input" >
@@ -25,7 +25,7 @@
           {{ form.email.errors }}
           <div class="p-t-13 p-b-9">
             <span class="txt3">
-              Mensaje *
+              Mensaje
             </span>
 
             </div>
@@ -35,13 +35,7 @@
           </div>
 
           {{ form.non_field_errors }}
-          {% for message in messages %}
-            <div class="errorlist">
-                {{ message }}
-              </div>
-            {% endfor %}
-
-         
+                   
           <div class="container-login100-form-btn m-t-17">
             <button class="login100-form-btn">
               Enviar

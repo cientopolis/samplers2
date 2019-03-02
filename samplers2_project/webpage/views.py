@@ -36,11 +36,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-#View encargado de devolver la home
+#View encargado de devolver la home con los proyectos propios o a los que fui invitado
 @login_required
 def home(request):
-    projects_list = Project.objects.filter(
-        participants__id=request.user.profile.id, deleted=False)
+    others = request.GET.get("others")
+    if others != "":
+        projects_list = Project.objects.filter(
+        participants__id=request.user.profile.id, deleted=False, owner=request.user.profile.user)
+    else:
+        projects_list = Project.objects.filter(
+            participants__id=request.user.profile.id, deleted=False).exclude(owner=request.user.profile.user)
     logger.info("Returning  [%s] projects list: %s",projects_list.count(),projects_list)
     context = {'projects_list': projects_list}
     return render(request, 'webpage/home.html', context)
@@ -59,6 +64,7 @@ def deleteProject(request, id=None):
     project.deleted = True
     project.save()
     logger.info("Project with id: %s deleted succesfull",id)
+    messages.success(request,"Eliminacion proyecto exitoso")
     return redirect('home')
 
 #View encargado de servir o guardar un registro de forma manual
@@ -96,8 +102,11 @@ def createProject(request, id=None):
         pg.is_owner = True
         pg.save()
         logger.info("Project created succesfull: %s",project)
+        messages.success(request, "Creacion proyecto exitoso")
         return redirect('home')
-    return render(request, 'webpage/projectForm.html', {'form': form})
+    context = {'isCreation':True}
+    context['form'] = form
+    return render(request, 'webpage/projectForm.html', context)
 
 #View encargado de crear un nuevo workflow o editarlo. Este view se invoca desde la pantalla al momento de clickear en crear nuevo workflow
 @login_required
@@ -129,7 +138,9 @@ def editProject(request, id=None):
     if form.is_valid():
         project = form.save()
         return redirect('home')
-    return render(request, 'webpage/projectForm.html', {'form': form})
+    context = {'isCreation':False}
+    context['form'] = form
+    return render(request, 'webpage/projectForm.html', context)
 
 #View encargado de invitar a un cientifico o servir el formulario 
 @login_required
@@ -144,19 +155,41 @@ def inviteScientist(request, id=None):
             form = InviteScientistForm(request.POST)
             if form.is_valid():
                 email = form.cleaned_data.get('email')
-                user = User.objects.get(email = email)
-                if ParticipantsGroup.objects.filter(project=project,profile = user.profile).exists():
-                    logger.error("User with id: %s is already part of this project ")
-                    messages.error(request, "Este cientifico ya forma parte de este proyecto")
+                try:
+                    user = User.objects.get(email = email)
+                    if ParticipantsGroup.objects.filter(project=project,profile = user.profile).exists():
+                        logger.error("User with id: %s is already part of this project ",id)
+                        form.add_error("email", "Este cientifico ya forma parte de este proyecto")
+                    else:
+                        pg = ParticipantsGroup.objects.create(project = project, profile = user.profile)
+                        pg.save()
+                        messages.success(request,'Científico invitado exitosamente')
+                        logger.info("Scientist with email : %s was invited succesfull",email)
+                        return redirect('home')
+                except ObjectDoesNotExist:
+                    logger.info("User with email %s doesnt exist", email)
+                    #send_email('Invitacion', 'Forma parte de Centopolis! Dirigete a la url y registrate :)', 'cientopolis@cientopolis.com', ['alextripero@gmail.com'])
+                    form.add_error("email", "No existe un usuario con ese email. Se mandará un email para invitarlo a unirse")
 
-                else:
-                    pg = ParticipantsGroup.objects.create(project = project, profile = user.profile)
-                    pg.save()
-                    logger.info("Scientist with email : %s was invited succesfull",email)
-                    return redirect('home')
     else:
         form = InviteScientistForm()
     return render(request, 'webpage/inviteScientistForm.html', {'form': form})
+
+def send_email(message,subject,sender,receiver):
+        #to = 'alexrl_lp@hotmail.com'
+        #gmail_user = 'alextripero@gmail.com'
+        #gmail_pwd = '****'
+        #smtpserver = smtplib.SMTP("smtp.gmail.com",587)
+        #smtpserver.ehlo()
+        #smtpserver.starttls()
+        #smtpserver.ehlo
+        #smtpserver.login(gmail_user, gmail_pwd)
+        #header = 'To:' + to + '\n' + 'From: ' + gmail_user + '\n' + 'Subject:testing \n'
+        #msg = header + '\n this is test msg from mkyong.com \n\n'
+        #smtpserver.sendmail(gmail_user, to, msg)
+        #print ('done!')
+        #smtpserver.close()
+        send_mail(subject,message,sender,receiver,fail_silently=False)
 
 #View encargado de mostrar los resultados del workflow
 @login_required

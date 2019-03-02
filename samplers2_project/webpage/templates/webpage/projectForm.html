@@ -1,21 +1,82 @@
 {% extends 'webpage/base.html' %}
 
 {% block content %}
-  <h2>Nuevo Proyecto</h2>
-  <form method="post">
-    {% csrf_token %}
-    {% for field in form %}
-      <p>
-        {{ field.label_tag }}<br>
-        {{ field }}
-        {% if field.help_text %}
-          <small style="color: grey">{{ field.help_text }}</small>
-        {% endif %}
-        {% for error in field.errors %}
-          <p style="color: red">{{ error }}</p>
-        {% endfor %}
-      </p>
-    {% endfor %}
-    <button type="submit">Enviar</button>
-  </form>
+<head>
+	{% load static %}
+	<title>MUESTR.AR - Nuevo Proyecto</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static "css/util.css" %}">
+	<link rel="stylesheet" type="text/css" href="{% static "css/main.css" %}">
+
+<!--===============================================================================================-->
+</head>
+<body>
+	<header>
+		<nav class="container-login1002 m-b-57">
+			<div class="container-login10022">
+				<img class="imagen" src="{% static "images/logo1muestrar2.png" %}">
+			</div>
+			
+			
+		</nav>
+	</header>
+	<div class="limiter">		
+		<div id="main-container">
+			<div class="wrap-login100 p-l-30 p-r-30 p-t-12 p-b-23">
+			<span class="login100-form-title p-b-10 m-l-10">
+            {% if isCreation %}
+						  Registro nuevo Proyecto
+            {% else %}
+              Edición de Proyecto
+            {% endif %}
+					</span>
+		      	<form id="sign_up_form" method= "POST" class="login100-form validate-form flex-sb flex-w">
+		      		{% csrf_token %}
+						<div class="p-t-20 p-b-9">
+						<span class="txt1">
+							Nombre de Proyecto *
+						</span>
+						<a  class="txt2 bo1 m-l-5">
+							Máximo 30 caracteres
+						</a>
+					</div>
+					<div class="wrap-input100 validate-input" >
+						{{ form.name }}
+						<span class="focus-input100"></span>
+					</div>
+						{{ form.name.errors }}
+					<div class="p-t-20 p-b-9">
+						<span class="txt1">
+							Descripción
+						</span>
+					</div>
+					<div class="wrap-input100 validate-input">
+						{{ form.description }}
+						<span class="focus-input100"></span>
+					</div>
+						{{ form.description.errors }}
+					
+	
+					<div class="container-login100-form-btn m-t-17">
+						<button class="login100-form-btn">
+							{% if isCreation %}
+                Crear Proyecto
+              {% else %}
+                Editar Proyecto
+              {% endif %}
+						</button>
+					</div>
+
+					
+				</form>
+		
+	</div>
+
+</div>
+
+
+</body>
+
 {% endblock %}

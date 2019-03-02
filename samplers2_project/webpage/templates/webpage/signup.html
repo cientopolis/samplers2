@@ -27,7 +27,13 @@
 						Registro nuevo usuario
 					</span>
 		      	<form id= "sign_up_form" method= "POST" class="login100-form validate-form flex-sb flex-w">
-					{% csrf_token %}	
+					{% csrf_token %}
+						
+					{% for message in messages %}
+           				 <div class="errorlist">
+                			{{ message }}
+              			</div>
+            		{% endfor %}
 
 					<div class="p-t-20 p-b-9">
 						<span class="txt1">
