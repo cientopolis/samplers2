@@ -16,7 +16,7 @@
 /*     brand Colors              */
 
 .card {
-  font-size: .875rem;
+  font-size: 1.295rem;
 }
 
 *,
@@ -4101,17 +4101,29 @@ tbody.collapse.show {
 
 .nav-tabs .nav-link .nav-link2 {
   border: 1px solid transparent;
-  border-top-left-radius: 0.25rem;
-  border-top-right-radius: 0.25rem;
+  border-top-left-radius: 0.55rem;
+  border-top-right-radius: 0.55rem;
 }
 
 .nav-tabs .nav-link2 .nav-link:hover,
 .nav-tabs .nav-link2 .nav-link:focus {
   border-color: #e9ecef #e9ecef #dee2e6;
+  background: #DF9908;
+    background-image: initial;
+    background-position-x: initial;
+    background-position-y: initial;
+    background-size: initial;
+    background-repeat-x: initial;
+    background-repeat-y: initial;
+    background-attachment: initial;
+    background-origin: initial;
+    background-clip: initial;
+    background-color: rgb(223, 153, 8);
 }
 
 .nav-tabs .nav-link.disabled {
-  color: #6c757d;
+  color: #50B955;
+ /* color: #6c757d;*/
   background-color: transparent;
   border-color: transparent;
 }
@@ -4130,7 +4142,7 @@ tbody.collapse.show {
 }
 
 .nav-pills .nav-link {
-  border-radius: 0.25rem;
+  border-radius: 1.5rem;
 }
 
 .nav-pills .nav-link.active .nav-link2.active,
@@ -13223,7 +13235,7 @@ fieldset[disabled] .form-group .form-control {
   position: relative;
   color: inherit;
   height: 50px;
-  font-size: 1.125rem;
+  font-size: 2.125rem;
   line-height: 30px;
   padding: 0.625rem 0;
   font-weight: 300;
@@ -13856,7 +13868,8 @@ h2.title {
 }
 
 .text-primary {
-  color: #9c27b0 !important;
+  color: #00507C !important;
+  font-size: 1.395rem;
 }
 
 .text-danger {
@@ -14692,9 +14705,6 @@ background-color:  linear-gradient(to bottom, #363795, #005C97); /* W3C, IE 10+/
   outline: none;
 }
 
-.sidebar .nav li:first-child>a {
-  margin: 0 15px;
-}
 
 .sidebar .nav li:hover>a,
 .sidebar .nav li .dropdown-menu a:hover,
@@ -14753,8 +14763,8 @@ background-color:  linear-gradient(to bottom, #363795, #005C97); /* W3C, IE 10+/
 
 .sidebar .nav li a,
 .sidebar .nav li .dropdown-menu a {
-  margin: 0px 0px 0;
-  border-radius: 20px;
+  margin: 0 15px;
+  border-radius: 30px;
   padding-left: 10px;
   padding-right: 10px;
   font-family: Poppins-Medium;
@@ -14883,10 +14893,24 @@ background-color:  linear-gradient(to bottom, #363795, #005C97); /* W3C, IE 10+/
 }
 
 .sidebar[data-color="azure"] li.active>a {
-  background-color: #00bcd4;
+ background-color: #50B955;
+  /*background-color: #00bcd4;*/
   box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 188, 212, 0.4);
-}
 
+}
+.sidebar[data-color="azure"] .nav-link:hover {
+background: #DF9908;
+    background-image: initial;
+    background-position-x: initial;
+    background-position-y: initial;
+    background-size: initial;
+    background-repeat-x: initial;
+    background-repeat-y: initial;
+    background-attachment: initial;
+    background-origin: initial;
+    background-clip: initial;
+    background-color: rgb(223, 153, 8);
+  }
 .sidebar[data-color="green"] li.active>a {
   background-color: #4caf50;
   box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(76, 175, 80, 0.4);
@@ -16519,6 +16543,7 @@ label {
 
 .offline-doc .page-header .content-center .brand .title {
   color: #fff;
+  font-size: 14px;
 }
 
 .offline-doc .page-header:after {
@@ -16889,7 +16914,7 @@ label {
 .card.bg-primary,
 .card.card-rotate.bg-primary .front,
 .card.card-rotate.bg-primary .back {
-  background: linear-gradient(60deg, #ab47bc, #8e24aa);
+  background: linear-gradient(60deg, #005C97, #00507C);
 }
 
 .card .card-header-info .card-icon,

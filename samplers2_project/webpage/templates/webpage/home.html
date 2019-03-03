@@ -39,28 +39,30 @@
       </div>
       <div class="sidebar-wrapper">
         <ul class="nav">
-          <li class="nav-item active  ">
+          <li class="nav-item active ">
             <a class="nav-link" href="{% url 'home' %}">
               <i class="material-icons">dashboard</i>
               <p class="txt2">Mis Proyectos</p>
             </a>
           </li>
-          <li class="nav-item active m-t-10">
+          <li class="nav-item active m-t-20">
             <a class="nav-link" href="{% url 'home' %}?others">
               <i class="material-icons">dashboard</i>
               <p class="txt2">Proyectos colaborativos</p>
             </a>
           </li>
           
-          <li class="nav-item active  ">
-          <button class="login100-form-btn m-t-10" onclick="window.location.href='{% url 'webpage:createProject' %}'">
-							Nuevo Proyecto
-						</button>
+          <li class="nav-item active m-t-20">
+            <a class="nav-link" href="{% url 'webpage:createProject' %}">
+              <i class="material-icons">library_add</i>
+              <p class="txt2">Nuevo Proyecto</p>
+            </a>
 					</li>
-					 <li class="nav-item active  ">
-          <button class="login100-form-btn m-t-10"  onclick="window.location.href='{% url 'logout' %}'" >
-							Salir
-						</button>
+					 <li class="nav-item active m-t-20">
+            <a class="nav-link" href="{% url 'logout' %}">
+              <i class="material-icons">cancel</i>
+              <p class="txt2">Salir</p>
+            </a>y
 					</li>
           <!-- your sidebar here -->
         </ul>
@@ -71,9 +73,8 @@
       <nav class="navbar2 navbar-expand-lg2 navbar-transparent2 navbar-absolute2 fixed-top2 ">
         <div class="container-fluid2">
           <div class="navbar-wrapper2">
-            <a class="navbar-brand2" href="#pablo">Hola {{ user.username }} !</a>
+            <a class="navbar-brand2">Hola {{ user.username }} !</a>
           </div>
-          Aca iriaaa
           <div id="message">
           {% if messages %}
             <ul class="messages">
@@ -83,22 +84,17 @@
             </ul>
         {% endif %}
          </div>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="navbar-toggler-icon icon-bar"></span>
-            <span class="navbar-toggler-icon icon-bar"></span>
-            <span class="navbar-toggler-icon icon-bar"></span>
-          </button>
-          <!--<div class="collapse navbar-collapse2 justify-content-end">
-            <ul class="navbar-nav">
-              <li class="nav-item2">
-                <a class="nav-link2" href="#pablo">
-                  <i class="material-icons">notifications</i> Novedades
-                </a>
-              </li>
-            </ul>
+          <div class="navbar-wrapper2 m-l-50">
+           <p>Asociar cuenta</p>
+            <a href="{% url 'social:begin' 'facebook' %}" class="btn-face m-b-7">
+            <i class="fa fa-facebook-official"></i>
+          </a>
+          <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn-google m-b-7 m-l-10">
+            <img src="{% static "images/icons/icon-google.png" %}" alt="GOOGLE">
+            
+          </a>
           </div>
-        </div> --> 
+        </div>
       </nav>
       <!-- End Navbar -->
       <div class="content">
@@ -125,6 +121,9 @@
                 <div class="card-footer">
                   <div class="stats">
                   	<ul>
+                      <li><i class="material-icons">device_hub</i>
+                        <a href="#pablo">Crear workflow</a>
+                      </li>
                   		<li><i class="material-icons">contact_mail</i>
                         {% if user.username == project.owner %}
                         <a data-toggle="modal" class="open-AddModalDialog" data-id="{{ project.id }}" data-target="#myModal" href="#myModal2">Invitar científico</a>
@@ -132,10 +131,8 @@
                              -
                         {% endif %}
                         </li>
-                  		<li><i class="material-icons">visibility</i>
-                  	<a href="#pablo">publicar</a></li>
+            
                   	<li><i class="material-icons">settings</i>
-
                   	<a href="{% url 'webpage:editProject' project.id %}"> Editar proyecto</a></li>
                   	<li><i class="material-icons">list_alt</i>
                     {% if project.workflow %}
@@ -228,8 +225,9 @@
                 e.preventDefault();
             }else{
                 var message = ($(data).find('#message')).html()
-                $("#message").html(message)         }
+                $("#message").html(message)         
                 $('#myModal').modal('hide')
+              }
 
         }
     });
