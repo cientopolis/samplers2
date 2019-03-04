@@ -47,7 +47,18 @@ def home(request):
         projects_list = Project.objects.filter(
             participants__id=request.user.profile.id, deleted=False).exclude(owner=request.user.profile.user)
     logger.info("Returning  [%s] projects list: %s",projects_list.count(),projects_list)
-    context = {'projects_list': projects_list}
+    has_facebook_associated = False
+    has_gmail_associated = False
+    user_associateds = UserSocialAuth.objects.filter(user_id=request.user.id)
+    if user_associateds.count() == 1:
+        if user_associateds[0].provider == "facebook":
+            has_facebook_associated = True
+        else: 
+            has_gmail_associated = True
+    if user_associateds.count() == 2:
+        has_gmail_associated = True
+        has_facebook_associated = True
+    context = {'projects_list': projects_list,"has_facebook":has_facebook_associated,"has_gmail":has_gmail_associated}
     return render(request, 'webpage/home.html', context)
 
 #View encargado de borrar un proyecto (de manera logica)
@@ -198,7 +209,7 @@ def showResults(request, id=None):
     workflow = Workflow.objects.get(id=id)
     steps_information = getStepsInformation(workflow)
     wf_results = getWfResults(workflow,request,steps_information)
-    ctx = { 'steps_information': steps_information, 'wf_results' : wf_results, "wf_id": workflow.id}
+    ctx = { 'steps_information': steps_information, 'wf_results' : wf_results, "wf": workflow}
     return render(request, 'webpage/showWorkflowResults.html', ctx)
 
 #Metodo auxiliar para obtener los resultados de un workflow
@@ -208,8 +219,8 @@ def getWfResults(workflow,request,steps_information):
     logger.info("Founded [%s] results for workflow", workflow.workflow_results.count())
     for wf in workflow.workflow_results.all():
         wf_result = {}
-        wf_result["start_time"] = wf.start_date_time.strftime("%d-%m-%Y")
-        wf_result["end_time"] = wf.end_date_time.strftime("%d-%m-%Y")
+        wf_result["start_time"] = wf.start_date_time.strftime("%d-%m-%Y %H:%M:%S")
+        wf_result["end_time"] = wf.end_date_time.strftime("%d-%m-%Y %H:%M:%S")
         wf_result["id"] = wf.id
         for step_information in steps_information:
             step_id = step_information['step_id'] 

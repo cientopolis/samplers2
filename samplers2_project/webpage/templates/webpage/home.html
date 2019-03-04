@@ -27,7 +27,12 @@
                   <div class="stats">
                     <ul>
                       <li><i class="material-icons">device_hub</i>
-                        <a href="#pablo">Crear workflow</a>
+                        {% if project.workflow.workflow_results.count > 0 %}
+                            -
+                        {% else %}
+                          <a href="#pablo">Crear workflow</a>
+
+                        {% endif %}
                       </li>
                       <li><i class="material-icons">contact_mail</i>
                         {% if user.username == project.owner %}
@@ -40,7 +45,7 @@
                     <li><i class="material-icons">settings</i>
                     <a href="{% url 'webpage:editProject' project.id %}"> Editar proyecto</a></li>
                     <li><i class="material-icons">list_alt</i>
-                    {% if project.workflow %}
+                    {% if project.workflow.workflow_results.count > 0 %}
                     <a href="{% url 'webpage:showResults' project.workflow.id %}"> Ver resultados</a>
                     {% else %}
                         -

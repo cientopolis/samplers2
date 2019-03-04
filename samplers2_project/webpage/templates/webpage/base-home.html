@@ -65,14 +65,19 @@
         {% endif %}
          </div>
           <div class="navbar-wrapper2 m-l-50">
-           <p>Asociar cuenta</p>
+           {% if not has_facebook or not has_gmail %}
+              <p>Asociar cuenta</p>
+           {% endif %}
+           {% if not has_facebook %}
             <a href="{% url 'social:begin' 'facebook' %}" class="btn-face m-b-7">
             <i class="fa fa-facebook-official"></i>
-          </a>
+            </a>
+          {% endif %}
+          {% if not has_gmail %}
           <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn-google m-b-7 m-l-10">
             <img src="{% static "images/icons/icon-google.png" %}" alt="GOOGLE">
-            
           </a>
+          {% endif %}
           </div>
         </div>
       </nav>

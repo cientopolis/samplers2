@@ -33,7 +33,7 @@
     {% endfor %}
   </table>
 
-  <a href="{% url 'webpage:downloadCsv' wf_id %}"> Descargar CSV</a>
+  <a href="{% url 'webpage:downloadCsv' wf.id %}"> Descargar CSV</a>
 
  {% else %}
   <p>No posee resultados</p>

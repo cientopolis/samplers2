@@ -5,11 +5,12 @@
       <div class="content">
         <div class="container-fluid">
           <div class="row">
+
             <div class="col-md-12">
               <div class="card">
                 <div class="card-header card-header-primary">
-                  <h4 class="card-title ">Proyecto AAA</h4>
-                  <p class="card-category"> Posible subtitulo</p>
+                  <h4 class="card-title ">Nombre de Proyecto: {{ wf.project.name }}</h4>
+                  <p class="card-category">Nombre de Workflow: {{ wf.name }} </p>
                 </div>
                 <div class="card-body">
                   <div class="table-responsive">
@@ -24,225 +25,30 @@
                         <th>
                           Fin
                         </th>
-                        <th>
-                          Text Step
-                        </th>
-                        <th>
-                          Photo Step
-                        </th>
-                        <th>
-                         Location Step
-                        </th>
-                        <th>
-                         Select Multiple Step
-                        </th>
-                        <th>
-                         Select One Step
-                        </th>
-                        <th>
-                         Time Step
-                        </th>
-                        <th>
-                         Route Step
-                        </th>
-                        <th>
-                         Sound Record Step
-                        </th>
-                        <th>
-                         Date Step
-                        </th>
+                        {% for step_information in steps_information %}
+                          <th>{{ step_information.step_type }}</th>
+                        {% endfor %}
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>
-                            1
-                          </td>
-                          <td>
-                            27-08-2018
-                          </td>
-                          <td>
-                            27-08-2018
-                          </td>
-                          <td>
-                            Completo
-                          </td>
-                          <td class="text-primary">
-                           <a href="#">ver foto</a> 
-                          </td>
-                           <td>
-                            Latitud 000000
-                          </td>
-                           <td>
-                            Texto01, texto02
-                          </td>
-                           <td>
-                            Va al siguiente step
-                          </td>
-                           <td>
-                            00:28:00
-                          </td>
-                           <td>
-                           ---
-                          </td>
-                           <td>
-                           <a href="#">Escuchar audio</a> 
-                          </td>
-                           <td>
-                            27-08-2018
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            2
-                          </td>
-                          <td>
-                            27-08-2018
-                          </td>
-                          <td>
-                            27-08-2018
-                          </td>
-                          <td>
-                            Completo
-                          </td>
-                          <td class="text-primary">
-                            ver foto
-                          </td>
-                           <td>
-                            Latitud 000000
-                          </td>
-                           <td>
-                            Texto01, texto02
-                          </td>
-                           <td>
-                            Va al siguiente step
-                          </td>
-                           <td>
-                            00:28:00
-                          </td>
-                           <td>
-                           ---
-                          </td>
-                           <td>
-                            Escuchar audio
-                          </td>
-                           <td>
-                            27-08-2018
-                          </td>
-                        </tr>
-                        <tr>
-                         <td>
-                            1
-                          </td>
-                          <td>
-                            27-08-2018
-                          </td>
-                          <td>
-                            27-08-2018
-                          </td>
-                          <td>
-                            Completo
-                          </td>
-                          <td class="text-primary">
-                            ver foto
-                          </td>
-                           <td>
-                            Latitud 000000
-                          </td>
-                           <td>
-                            Texto01, texto02
-                          </td>
-                           <td>
-                            Va al siguiente step
-                          </td>
-                           <td>
-                            00:28:00
-                          </td>
-                           <td>
-                           ---
-                          </td>
-                           <td>
-                            Escuchar audio
-                          </td>
-                           <td>
-                            27-08-2018
-                          </td>
-                        </tr>
-                        <tr>
-                         <td>
-                            1
-                          </td>
-                          <td>
-                            27-08-2018
-                          </td>
-                          <td>
-                            27-08-2018
-                          </td>
-                          <td>
-                            Completo
-                          </td>
-                          <td class="text-primary">
-                            ver foto
-                          </td>
-                           <td>
-                            Latitud 000000
-                          </td>
-                           <td>
-                            Texto01, texto02
-                          </td>
-                           <td>
-                            Va al siguiente step
-                          </td>
-                           <td>
-                            00:28:00
-                          </td>
-                           <td>
-                           ---
-                          </td>
-                           <td>
-                            Escuchar audio
-                          </td>
-                           <td>
-                            27-08-2018
-                          </td>
-                        </tr>
-                        <tr>
-                         <td>
-                            1
-                          </td>
-                          <td>
-                            27-08-2018
-                          </td>
-                          <td>
-                            27-08-2018
-                          </td>
-                          <td>
-                            Completo
-                          </td>
-                          <td class="text-primary">
-                            ver foto
-                          </td>
-                           <td>
-                            Latitud 000000
-                          </td>
-                           <td>
-                            Texto01, texto02
-                          </td>
-                           <td>
-                            Va al siguiente step
-                          </td>
-                           <td>
-                            00:28:00
-                          </td>
-                           <td>
-                           ---
-                          </td>
-                           <td>
-                            Escuchar audio
-                          </td>
-                           <td>
-                            27-08-2018
-                          </td>
-                        </tr>
+                      {% for wf_result in wf_results %}
+                       <tr>
+                         <td>{{ wf_result.id }}</td>
+                         <td>{{ wf_result.start_time }}</td>
+                         <td>{{ wf_result.end_time }}</td>
+                         {% for step_information in steps_information %}
+                            {% if wf_result|get_item:step_information.step_id and step_information.step_type == 'PhotoStep' %}
+                              <td><a href = "{{ wf_result|get_item:step_information.step_id }}" target="_blank" rel="noopener noreferrer"> Ver Foto </td>
+                              {% elif wf_result|get_item:step_information.step_id and step_information.step_type == 'SoundRecordStep' %}
+                                <td><a href = "{{ wf_result|get_item:step_information.step_id }}" target="_blank" rel="noopener noreferrer"> Escuchar Audio </td>
+                                {% elif wf_result|get_item:step_information.step_id %}
+                                    <td> {{ wf_result|get_item:step_information.step_id }} </td>
+                                {% else %}
+                                    <td> - </td>
+                            {% endif %}
+
+                         {% endfor %}
+                       </tr>
+                      {% endfor %}
                       </tbody>
                     </table>
                   </div>
@@ -252,7 +58,7 @@
            
              <div class="col-md-4">
                         <div class="form-group">
-      <button type="submit" class="login100-form-btn">Descargar CSV</button>
+      <button type="submit" onclick="window.location.href='{% url 'webpage:downloadCsv' wf.id %}'" class="login100-form-btn">Descargar CSV</button>
                     </div>
                   </div>
 
