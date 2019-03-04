@@ -1,103 +1,8 @@
-{% extends 'webpage/base.html' %}
+{% extends 'webpage/base-home.html' %}
 
-{% block content %}
+{% block content-home %}
 
-<head>
-  {% load static %}
- <title>MUESTR.AR - PROYECTOS</title>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-
-  <!--     Fonts and icons     -->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <!-- Material Kit CSS -->
-  <link rel="stylesheet" href="{% static "css/material-dashboard.css?v=2.1.1" %}"/>
-  <link rel="stylesheet" type="text/css" href="{% static "css/util.css" %}">
-  <link rel="stylesheet" type="text/css" href="{% static "css/main.css" %}">
-   <link rel="stylesheet" type="text/css" href="{% static "css/form.css" %}">
-
-   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
-   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" >
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-
-</head>
-
-<body>
-  <div class="wrapper ">
-    <div class="sidebar" data-color="azure" data-background-color="azure">
-      <div class="logo">
-        <a href="" class="simple-text logo-mini">
-
-         <img class="imagen" src="{% static "images/logo1muestrar3.png" %}">
-        </a>
-        
-      </div>
-      <div class="sidebar-wrapper">
-        <ul class="nav">
-          <li class="nav-item active ">
-            <a class="nav-link" href="{% url 'home' %}">
-              <i class="material-icons">dashboard</i>
-              <p class="txt2">Mis Proyectos</p>
-            </a>
-          </li>
-          <li class="nav-item active m-t-20">
-            <a class="nav-link" href="{% url 'home' %}?others">
-              <i class="material-icons">dashboard</i>
-              <p class="txt2">Proyectos colaborativos</p>
-            </a>
-          </li>
-          
-          <li class="nav-item active m-t-20">
-            <a class="nav-link" href="{% url 'webpage:createProject' %}">
-              <i class="material-icons">library_add</i>
-              <p class="txt2">Nuevo Proyecto</p>
-            </a>
-					</li>
-					 <li class="nav-item active m-t-20">
-            <a class="nav-link" href="{% url 'logout' %}">
-              <i class="material-icons">cancel</i>
-              <p class="txt2">Salir</p>
-            </a>y
-					</li>
-          <!-- your sidebar here -->
-        </ul>
-      </div>
-    </div>
-    <div class="main-panel">
-      <!-- Navbar -->
-      <nav class="navbar2 navbar-expand-lg2 navbar-transparent2 navbar-absolute2 fixed-top2 ">
-        <div class="container-fluid2">
-          <div class="navbar-wrapper2">
-            <a class="navbar-brand2">Hola {{ user.username }} !</a>
-          </div>
-          <div id="message">
-          {% if messages %}
-            <ul class="messages">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-         </div>
-          <div class="navbar-wrapper2 m-l-50">
-           <p>Asociar cuenta</p>
-            <a href="{% url 'social:begin' 'facebook' %}" class="btn-face m-b-7">
-            <i class="fa fa-facebook-official"></i>
-          </a>
-          <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn-google m-b-7 m-l-10">
-            <img src="{% static "images/icons/icon-google.png" %}" alt="GOOGLE">
-            
-          </a>
-          </div>
-        </div>
-      </nav>
-      <!-- End Navbar -->
-      <div class="content">
+<div class="content">
         <div class="container-fluid">
           <!-- your content here -->
           <div class="row">
@@ -120,11 +25,11 @@
                 </div>
                 <div class="card-footer">
                   <div class="stats">
-                  	<ul>
+                    <ul>
                       <li><i class="material-icons">device_hub</i>
                         <a href="#pablo">Crear workflow</a>
                       </li>
-                  		<li><i class="material-icons">contact_mail</i>
+                      <li><i class="material-icons">contact_mail</i>
                         {% if user.username == project.owner %}
                         <a data-toggle="modal" class="open-AddModalDialog" data-id="{{ project.id }}" data-target="#myModal" href="#myModal2">Invitar científico</a>
                         {% else %}
@@ -132,19 +37,19 @@
                         {% endif %}
                         </li>
             
-                  	<li><i class="material-icons">settings</i>
-                  	<a href="{% url 'webpage:editProject' project.id %}"> Editar proyecto</a></li>
-                  	<li><i class="material-icons">list_alt</i>
+                    <li><i class="material-icons">settings</i>
+                    <a href="{% url 'webpage:editProject' project.id %}"> Editar proyecto</a></li>
+                    <li><i class="material-icons">list_alt</i>
                     {% if project.workflow %}
                     <a href="{% url 'webpage:showResults' project.workflow.id %}"> Ver resultados</a>
                     {% else %}
                         -
                     {% endif %}
                     </li>
-                  	<li><i class="material-icons text-danger">delete_forever</i>
+                    <li><i class="material-icons text-danger">delete_forever</i>
                     <a href="{% url 'webpage:deleteProject' project.id %}"> Eliminar proyecto</a></li>
-                  	</ul>
-                  	
+                    </ul>
+                    
                   </div>
                 </div>
               </div>
@@ -160,87 +65,9 @@
 
       {% include 'webpage/inviteScientistForm.html' %}
 
+      {% include 'webpage/footer.html' %}
+      
 
-      <footer class="footer">
-        <div class="container-fluid">
-          <nav class="float-left">
-            <ul>
-              <li>
-                
-              </li>
-            </ul>
-          </nav>
-          <div class="copyright float-right">
-            &copy;
-            <script>
-              document.write(new Date().getFullYear())
-            </script>
-          </div>
-          <!-- your footer here -->
-        </div>
-      </footer>
     </div>
-  </div>
-</div>
-
-</body>
-
-   <script type="text/javascript">
-
-    $(document).on("click", ".open-AddModalDialog", function () {
-        var projectId = $(this).data('id');
-        $.ajax({
-          type: 'GET',
-          url:  "/webpage/invite-scientist/"+projectId+"/",
-          success: function(res){  
-            var modal_html = ($(res).find('#myModal')).html()        
-            $("#myModal").html(modal_html);
-            $("#project_id").val(projectId);
-            $('#myModal').modal('show');
-
-          }
-
-        })
-
-    });
-
-    $(document).on('submit','#scientist_form', function(e){
-    e.preventDefault();
-    var scientist_form = $('#scientist_form');
-    var projectId = $("#project_id").val();
-
-    var action = "/webpage/invite-scientist/"+projectId+"/";
-    var method = scientist_form.attr('method');
-    var data_ = scientist_form.serialize();
-    $.ajax({
-        type: method,
-        url: action,
-        data: data_,
-        projectId: projectId,
-        success: function(data, status) {
-            if ($(data).find('.errorlist').length > 0) {
-                var modal_html = ($(data).find('#myModal')).html()
-                $('.modal-dialog').html(modal_html);
-                $("#project_id").val(projectId);
-                e.preventDefault();
-            }else{
-                var message = ($(data).find('#message')).html()
-                $("#message").html(message)         
-                $('#myModal').modal('hide')
-              }
-
-        }
-    });
-   });
-
-    var restoreModalOnClose = function(){
-    var error_fields = $('.errorlist')
-      $.each(error_fields, function(index, value){
-        $(value).remove();
-    })
-
-    };
-
-   </script>
 
 {% endblock %}

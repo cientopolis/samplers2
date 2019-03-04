@@ -1,0 +1,151 @@
+{% extends 'webpage/base.html' %}
+{% load static %}
+{% block content %}
+
+<head>
+  <link rel="stylesheet" href="{% static "css/material-dashboard.css?v=2.1.1" %}"/>
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >  
+</head>
+
+<body>
+  <div class="wrapper ">
+    <div class="sidebar" data-color="azure" data-background-color="azure">
+      <div class="logo">
+        <a href="" class="simple-text logo-mini">
+
+         <img class="imagen" src="{% static "images/logo1muestrar3.png" %}">
+        </a>
+        
+      </div>
+      <div class="sidebar-wrapper">
+        <ul class="nav">
+          <li class="nav-item active ">
+            <a class="nav-link" href="{% url 'home' %}">
+              <i class="material-icons">dashboard</i>
+              <p class="txt2">Mis Proyectos</p>
+            </a>
+          </li>
+          <li class="nav-item active m-t-20">
+            <a class="nav-link" href="{% url 'home' %}?others">
+              <i class="material-icons">dashboard</i>
+              <p class="txt2">Proyectos colaborativos</p>
+            </a>
+          </li>
+          
+          <li class="nav-item active m-t-20">
+            <a class="nav-link" href="{% url 'webpage:createProject' %}">
+              <i class="material-icons">library_add</i>
+              <p class="txt2">Nuevo Proyecto</p>
+            </a>
+					</li>
+					 <li class="nav-item active m-t-20">
+            <a class="nav-link" href="{% url 'logout' %}">
+              <i class="material-icons">cancel</i>
+              <p class="txt2">Salir</p>
+            </a>y
+					</li>
+          <!-- your sidebar here -->
+        </ul>
+      </div>
+    </div>
+    <div class="main-panel">
+      <!-- Navbar -->
+      <nav class="navbar2 navbar-expand-lg2 navbar-transparent2 navbar-absolute2 fixed-top2 ">
+        <div class="container-fluid2">
+          <div class="navbar-wrapper2">
+            <a class="navbar-brand2">Hola {{ user.username }} !</a>
+          </div>
+          <div id="message">
+          {% if messages %}
+            <ul class="messages">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+         </div>
+          <div class="navbar-wrapper2 m-l-50">
+           <p>Asociar cuenta</p>
+            <a href="{% url 'social:begin' 'facebook' %}" class="btn-face m-b-7">
+            <i class="fa fa-facebook-official"></i>
+          </a>
+          <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn-google m-b-7 m-l-10">
+            <img src="{% static "images/icons/icon-google.png" %}" alt="GOOGLE">
+            
+          </a>
+          </div>
+        </div>
+      </nav>
+      <!-- End Navbar -->
+
+      {% block content-home %}
+
+      {% endblock %}
+      
+      
+
+
+  </div>
+</div>
+
+</body>
+
+   <script type="text/javascript">
+
+    $(document).on("click", ".open-AddModalDialog", function () {
+        var projectId = $(this).data('id');
+        $.ajax({
+          type: 'GET',
+          url:  "/webpage/invite-scientist/"+projectId+"/",
+          success: function(res){  
+            var modal_html = ($(res).find('#myModal')).html()        
+            $("#myModal").html(modal_html);
+            $("#project_id").val(projectId);
+            $('#myModal').modal('show');
+
+          }
+
+        })
+
+    });
+
+    $(document).on('submit','#scientist_form', function(e){
+    e.preventDefault();
+    var scientist_form = $('#scientist_form');
+    var projectId = $("#project_id").val();
+
+    var action = "/webpage/invite-scientist/"+projectId+"/";
+    var method = scientist_form.attr('method');
+    var data_ = scientist_form.serialize();
+    $.ajax({
+        type: method,
+        url: action,
+        data: data_,
+        projectId: projectId,
+        success: function(data, status) {
+            if ($(data).find('.errorlist').length > 0) {
+                var modal_html = ($(data).find('#myModal')).html()
+                $('.modal-dialog').html(modal_html);
+                $("#project_id").val(projectId);
+                e.preventDefault();
+            }else{
+                var message = ($(data).find('#message')).html()
+                $("#message").html(message)         
+                $('#myModal').modal('hide')
+              }
+
+        }
+    });
+   });
+
+    var restoreModalOnClose = function(){
+    var error_fields = $('.errorlist')
+      $.each(error_fields, function(index, value){
+        $(value).remove();
+    })
+
+    };
+
+   </script>
+
+{% endblock %}

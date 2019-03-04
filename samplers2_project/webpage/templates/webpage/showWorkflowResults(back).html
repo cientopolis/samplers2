@@ -1,0 +1,42 @@
+{% extends 'webpage/base.html' %}
+
+{% block content %}
+<h2>Workflow Results</h2>
+{% if wf_results %}
+  <table style="width:50%">
+    <tr>
+      <th>Id</th>
+      <th>Inicio</th>
+      <th>Fin</th>
+      {% for step_information in steps_information %}
+         <th>{{ step_information.step_type }}</th>
+      {% endfor %}
+    </tr>
+    {% for wf_result in wf_results %}
+       <tr>
+         <td>{{ wf_result.id }}</td>
+         <td>{{ wf_result.start_time }}</td>
+         <td>{{ wf_result.end_time }}</td>
+         {% for step_information in steps_information %}
+            {% if wf_result|get_item:step_information.step_id and step_information.step_type == 'PhotoStep' %}
+              <td><a href = "{{ wf_result|get_item:step_information.step_id }}"> Ver Foto </td>
+              {% elif wf_result|get_item:step_information.step_id and step_information.step_type == 'SoundRecordStep' %}
+                <td><a href = "{{ wf_result|get_item:step_information.step_id }}"> Escuchar Audio </td>
+                {% elif wf_result|get_item:step_information.step_id %}
+                    <td> {{ wf_result|get_item:step_information.step_id }} </td>
+                {% else %}
+                    <td> - </td>
+            {% endif %}
+
+         {% endfor %}
+       </tr>
+    {% endfor %}
+  </table>
+
+  <a href="{% url 'webpage:downloadCsv' wf_id %}"> Descargar CSV</a>
+
+ {% else %}
+  <p>No posee resultados</p>
+{% endif %}
+
+{% endblock %}
