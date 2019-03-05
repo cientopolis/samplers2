@@ -72,7 +72,6 @@ def home(request):
         social['gmail']['id'] = user_associateds[1].id
         social['gmail']['associated'] = True
         social['facebook']['associated'] = True
-    pdb.set_trace()
     context = {'projects_list': projects_list,'social':social}
     return render(request, 'webpage/home.html', context)
 
@@ -618,6 +617,7 @@ class Login(APIView):
             status_code = 404
             response["msg"] = "User not exists"
             response["exists"] = False
+            #TODO: arreglar esta url hardcodeada
             response["redirect_url"] = "http://localhost:8000/login/"
         return Response({"data":response, "status_code": status_code}, status= 200)
 
