@@ -65,18 +65,30 @@
         {% endif %}
          </div>
           <div class="navbar-wrapper2 m-l-50">
-           {% if not has_facebook or not has_gmail %}
+           {% if not social.facebook.associated or not social.gmail.associated %}
               <p>Asociar cuenta</p>
            {% endif %}
-           {% if not has_facebook %}
+           {% if not social.facebook.associated %}
             <a href="{% url 'social:begin' 'facebook' %}" class="btn-face m-b-7">
             <i class="fa fa-facebook-official"></i>
             </a>
           {% endif %}
-          {% if not has_gmail %}
+          {% if not social.gmail.associated %}
           <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn-google m-b-7 m-l-10">
             <img src="{% static "images/icons/icon-google.png" %}" alt="GOOGLE">
           </a>
+          {% endif %}
+          {% if social.facebook.associated %}
+            <form action="{% url 'social:disconnect_individual' 'facebook' social.facebook.id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">Disconnect Facebook</button>
+            </form>
+          {% endif %}
+          {% if social.gmail.associated %}
+            <form action="{% url 'social:disconnect_individual' 'google-oauth2' social.gmail.id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">Disconnect Gmail</button>
+            </form>
           {% endif %}
           </div>
         </div>
@@ -96,6 +108,19 @@
 </body>
 
    <script type="text/javascript">
+
+    $('#fb_disconect').click( function(e) {
+     var action = 'http://localhost:8000/oauth/disconnect/facebook/'
+        $.ajax({
+        type: 'POST',
+        url: action,
+        success: function(data, status) {
+            console.log(data)
+          }
+
+            })
+
+     } );
 
     $(document).on("click", ".open-AddModalDialog", function () {
         var projectId = $(this).data('id');

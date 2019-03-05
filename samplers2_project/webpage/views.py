@@ -47,18 +47,33 @@ def home(request):
         projects_list = Project.objects.filter(
             participants__id=request.user.profile.id, deleted=False).exclude(owner=request.user.profile.user)
     logger.info("Returning  [%s] projects list: %s",projects_list.count(),projects_list)
-    has_facebook_associated = False
-    has_gmail_associated = False
-    user_associateds = UserSocialAuth.objects.filter(user_id=request.user.id)
+    social = {}
+    facebook = {}
+    gmail = {}
+    #Inicializo en vacio asi no se rompe la vista
+    facebook['associated'] = False
+    facebook['id'] = ""
+    social['facebook'] = facebook
+    gmail['associated'] = False
+    gmail['id'] = ""
+    social['gmail'] = gmail
+    # Traigo las cuentas asociadas del usuario, si tiene las 2 cuentas asociadas, el primer lugar de la coleccion es facebook
+    user_associateds = UserSocialAuth.objects.filter(user_id=request.user.id).order_by('provider')
     if user_associateds.count() == 1:
         if user_associateds[0].provider == "facebook":
-            has_facebook_associated = True
+            social['facebook']['associated'] = True
+            social['facebook']['id'] = user_associateds[0].id
         else: 
-            has_gmail_associated = True
+            social['gmail']['associated'] = True
+            social['gmail']['id'] = user_associateds[0].id
     if user_associateds.count() == 2:
-        has_gmail_associated = True
-        has_facebook_associated = True
-    context = {'projects_list': projects_list,"has_facebook":has_facebook_associated,"has_gmail":has_gmail_associated}
+        #El primero siempre es facebook porque lo trae ordenado alfabeticamente de la BD
+        social['facebook']['id'] = user_associateds[0].id
+        social['gmail']['id'] = user_associateds[1].id
+        social['gmail']['associated'] = True
+        social['facebook']['associated'] = True
+    pdb.set_trace()
+    context = {'projects_list': projects_list,'social':social}
     return render(request, 'webpage/home.html', context)
 
 #View encargado de borrar un proyecto (de manera logica)
@@ -575,7 +590,7 @@ class WorkflowResult(APIView):
         logger.info("Workflow result was succesfully saved")
         return Response({"status_code": 200}, status= 200)
 
-
+#Servicio API encargado de validar si el usuario esta logueado (se llama desde el mobile)
 class Login(APIView):
     def get(self, request, format=None):
         user_id = request.GET.get("uid")
@@ -606,22 +621,7 @@ class Login(APIView):
             response["redirect_url"] = "http://localhost:8000/login/"
         return Response({"data":response, "status_code": status_code}, status= 200)
 
-    '''
-    def post(self, request, format=None):
-        serializer = UserSocialAuthSerializer(data=request.data)
-        if serializer.is_valid():
-            new_user = User()
-            username = serializer.validated_data['extra_data']['username']
-            email = serializer.validated_data['extra_data']['email']
-            new_user.username = username
-            new_user.email = email
-            new_user.save() 
-            pdb.set_trace()
-            serializer.validated_data['user_id'] = new_user.id
-            serializer.save()
-            return Response({"data": serializer.data, "status_code":status.HTTP_201_CREATED}, status=status.HTTP_201_CREATED)
-        return Response({"data":serializer.errors, "status_code": status.HTTP_400_BAD_REQUEST}, status = status.HTTP_400_BAD_REQUEST)
-    '''
+   
 
              
 

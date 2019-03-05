@@ -30,7 +30,7 @@
                         {% if project.workflow.workflow_results.count > 0 %}
                             -
                         {% else %}
-                          <a href="#pablo">Crear workflow</a>
+                          <a href="{% url 'webpage:createWorkflow' project.id %}">Crear workflow</a>
 
                         {% endif %}
                       </li>
