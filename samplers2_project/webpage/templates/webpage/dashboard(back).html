@@ -1,9 +1,12 @@
-{% extends 'webpage/base-home.html' %}
-{% load static %}
+<!DOCTYPE html>
+<html>
 
-{% block content-home %}
+<head>
+	<meta charset="utf-8">
+	<title>Dashboard</title>
 	
 
+{% load static %}
 <link rel="stylesheet" href="{% static "dashboard/style.css" %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
@@ -32,7 +35,7 @@
 			<div class="modal-body">
 				<h3>Ingrese el tipo de paso</h3>
 				<hr>
-				<select class="col-8 form-control" id="step-type">
+				<select class="col-sm-12 form-control" id="step-type">
 					<option value="1" disabled>Seleccion</option>
 					<option value="2">Geoposicionamiento</option>
 					<option value="3">Foto</option>
@@ -89,7 +92,7 @@
 			<div class="modal-body">
 				<h3>Ingrese la respuesta</h3>
 				<div id="optionContainer" class="row">
-					<input class="col-12 form-control" type="text" id="option_text" value="" name="option_text">
+					<input class="col-sm-12 form-control" type="text" id="option_text" value="" name="option_text">
 
 				</div>
 				<!-- aca va el contenido -->
@@ -104,39 +107,22 @@
 	</div>
 
 
-	<div class="row" style="margin-top: 65px; margin-left: 16px;">
-		<div class="col-6">
-			
-				<label for="workflowName">Workflow name</label>
-		</div>
-
-		
-
-		
-	</div>
-
-
-	<div class="row" style="margin-top: 20px; margin-left: 16px;">
-		<div class="col-6">
-			
+	<div class="row">
+		<div class="col-sm-12">
+			<label for="workflowName">Workflow name</label>
 			<input type="text" class="form-control" id="workflowName" placeholder="Enter name">
 		</div>
-
-		<div class="col-6">
-			<button type="button" class="btn btn-primary" id="save">Guardar</button>
-		</div>
-
-		
 	</div>
-	<div class="row" style="margin-top: 20px;margin-left: 16px;">
-		<div class="col-8">
+	<div class="row">
+		<button type="button" class="btn btn-primary" id="save">Guardar</button>
+		<div class="col-sm-8">
 
-			<div id="mynetwork"><div class="vis-network" tabindex="900" style="position: relative; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 50%; height: 50%;"><canvas width="1200" height="1200" style="position: relative; touch-action: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 50%; height: 50%;"></canvas></div></div>
+			<div id="mynetwork"><div class="vis-network" tabindex="900" style="position: relative; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;"><canvas width="1200" height="1200" style="position: relative; touch-action: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 100%; height: 100%;"></canvas></div></div>
 
 
 
 		</div>
-		<div class="col-4">
+		<div class="col-sm-4">
 			<div class="icon-bar" id="icon-bar">
 				<i class="fa fa-plus" onclick="addStep()"></i> 
 				<i class="fa fa-deviantart" onclick="setFatherStep()"></i> 
@@ -154,8 +140,8 @@
 		</div>
 
 	</div>
-	<div class="row" style="margin-top: 20px; margin-left: 16px;">
-		<div class="col-6">
+	<div class="row">
+		<div class="col-sm-12">
 			<p id="selectedStep"> </p>
 		</div>
 	</div>
@@ -681,7 +667,7 @@ function goToSpects(type) {
 		clickedStep.nodeType.spect.data_type;
 
 
-		spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><input class="col-12 form-control" type="text" value="'+text+'" name="text_to_show" id="text_to_show"><hr><h3>Ingrese el texto de muestra</h3><input class="col-12 form-control" type="text" id="example_text" value="'+example_text+'"  name="example_text"><hr><h3>Ingrese el largo maximo del texto</h3><input class="col-12 form-control" type="number" min="1" id="long_text" value="'+long_text+'"  name="long_text"><hr><h3>Ingrese el tipo de dato</h3><select class="col-12 form-control" name="data_type" id="data_type"><option value="text">Texto</option><option value="other">Otro</option><option value="decimal">Decimal</option></select><hr><h3>Ingrese si es opcional</h3><select class="col-12 form-control" name="optional" id="optional"><option value="true">Si</option><option value="false">No</option></select>';
+		spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><input class="col-sm-12 form-control" type="text" value="'+text+'" name="text_to_show" id="text_to_show"><hr><h3>Ingrese el texto de muestra</h3><input class="col-sm-12 form-control" type="text" id="example_text" value="'+example_text+'"  name="example_text"><hr><h3>Ingrese el largo maximo del texto</h3><input class="col-sm-12 form-control" type="number" min="1" id="long_text" value="'+long_text+'"  name="long_text"><hr><h3>Ingrese el tipo de dato</h3><select class="col-sm-12 form-control" name="data_type" id="data_type"><option value="text">Texto</option><option value="other">Otro</option><option value="decimal">Decimal</option></select><hr><h3>Ingrese si es opcional</h3><select class="col-sm-12 form-control" name="optional" id="optional"><option value="true">Si</option><option value="false">No</option></select>';
 		if (clickedStep.nodeType.spect.data_type){
 			document.getElementById('data_type').value = clickedStep.nodeType.spect.data_type;
 		}
@@ -698,19 +684,19 @@ function goToSpects(type) {
 			var options = ""; 
 			if(clickedStep.nodeType.spect.options){
 				for (var i = 0; i < clickedStep.nodeType.spect.options.length ; i++) {
-					options = options + '<hr><div class="row"> <div class="col-8"><input class="col-12 form-control" value="'+clickedStep.nodeType.spect.options[i]+'" type="text" name="option_text"></div><div class="col-4"></div></div>';
+					options = options + '<hr><div class="row"> <div class="col-sm-8"><input class="col-sm-12 form-control" value="'+clickedStep.nodeType.spect.options[i]+'" type="text" name="option_text"></div><div class="col-sm-4"></div></div>';
 				}
 				
 			} 
 
-			spectContainer.innerHTML = '<div><h3>Ingrese el texto a mostrar</h3><hr><input class="col-12 form-control" type="text" name="text_to_show" value="'+text+'" id="text_to_show"></div><div class="option_container"><h3>Opciones</h3>'+options+'</div><p onclick="addOption()">Click aqui para agregar una opcion ...</p>';
+			spectContainer.innerHTML = '<div><h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" name="text_to_show" value="'+text+'" id="text_to_show"></div><div class="option_container"><h3>Opciones</h3>'+options+'</div><p onclick="addOption()">Click aqui para agregar una opcion ...</p>';
 		} else {
 			var text = "";
 			if (clickedStep.nodeType.spect){
 				text = (clickedStep.nodeType.spect.text_to_show) ? clickedStep.nodeType.spect.text_to_show : "";
 			}
 
-			spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><hr><input class="col-12 form-control" type="text" id="text_to_show" value="'+text+'" name="text_to_show">';
+			spectContainer.innerHTML = '<h3>Ingrese el texto a mostrar</h3><hr><input class="col-sm-12 form-control" type="text" id="text_to_show" value="'+text+'" name="text_to_show">';
 		} 
 	}
 	modal.style.display = "none";
@@ -833,7 +819,7 @@ function addStep() {
 	}
 
 	function addOption() {
-		$( ".option_container" ).append('<hr><div class="row"> <div class="col-8"><input class="col-12 form-control" type="text" name="option_text"></div><div class="col-4"></div></div>');
+		$( ".option_container" ).append('<hr><div class="row"> <div class="col-sm-8"><input class="col-sm-12 form-control" type="text" name="option_text"></div><div class="col-sm-4"></div></div>');
 	}
 
 	function getEdgeById(edgeId){
@@ -1083,4 +1069,4 @@ function edgeClicked(edgeId){
 
 
 
- {% endblock %}
+    </html>

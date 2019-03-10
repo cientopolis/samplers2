@@ -67,28 +67,28 @@
           <div class="navbar-wrapper2 m-l-50">
            {% if not social.facebook.associated or not social.gmail.associated %}
               <p>Asociar cuenta</p>
+          {% else %}
+              <p>Desvincular cuenta</p>
            {% endif %}
            {% if not social.facebook.associated %}
-            <a href="{% url 'social:begin' 'facebook' %}" class="btn-face m-b-7">
-            <i class="fa fa-facebook-official"></i>
-            </a>
+            <a href="{% url 'social:begin' 'facebook' %}" class="btn-google m-b-5 m-l-10">
+            <img src="{% static "images/icons/icon-face.png" %}" alt="GOOGLE">
+            </a>            
           {% endif %}
           {% if not social.gmail.associated %}
-          <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn-google m-b-7 m-l-10">
+          <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn-google m-b-5 m-l-10">
             <img src="{% static "images/icons/icon-google.png" %}" alt="GOOGLE">
           </a>
           {% endif %}
           {% if social.facebook.associated %}
-            <form action="{% url 'social:disconnect_individual' 'facebook' social.facebook.id %}" method="POST">
-                {% csrf_token %}
-                <button type="submit">Disconnect Facebook</button>
-            </form>
+          <a href="#" id="fb_disconnect" data-value="{{social.facebook.id}}" class="btn-google m-b-5 m-l-10">
+            <img src="{% static "images/icons/icon-noface2.png" %}" alt="GOOGLE">
+          </a>
           {% endif %}
           {% if social.gmail.associated %}
-            <form action="{% url 'social:disconnect_individual' 'google-oauth2' social.gmail.id %}" method="POST">
-                {% csrf_token %}
-                <button type="submit">Disconnect Gmail</button>
-            </form>
+          <a href="#" id="gmail_disconnect" data-value="{{social.gmail.id}}" class="btn-google m-b-5 m-l-10">
+            <img src="{% static "images/icons/icon-nogoogle2.png" %}" alt="GOOGLE">
+          </a>
           {% endif %}
           </div>
         </div>
@@ -109,16 +109,39 @@
 
    <script type="text/javascript">
 
-    $('#fb_disconect').click( function(e) {
-     var action = 'http://localhost:8000/oauth/disconnect/facebook/'
-        $.ajax({
+    $('#fb_disconnect').click( function(e) {
+      userId = $(this).data("value");
+      var url = "{% url 'social:disconnect' 'facebook' %}";
+      url = url + userId +"/";
+      $.ajax({
         type: 'POST',
-        url: action,
+        url: url,
+         data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
         success: function(data, status) {
-            console.log(data)
+            location.reload();
           }
 
-            })
+          })
+
+     } );
+
+    $('#gmail_disconnect').click( function(e) {
+      userId = $(this).data("value");
+      var url = "{% url 'social:disconnect' 'google-oauth2' %}";
+      url = url + userId +"/";
+      $.ajax({
+        type: 'POST',
+        url: url,
+         data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function(data, status) {
+            location.reload();
+          }
+
+          })
 
      } );
 
