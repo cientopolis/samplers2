@@ -6,7 +6,6 @@ from webpage.models import Profile, Project
 from django.forms import ModelForm
 from webpage.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import send_mail
 import pdb
 import smtplib
 from email.mime.text import MIMEText as text
@@ -42,22 +41,6 @@ class InviteScientistForm(forms.Form):
     email = forms.EmailField(max_length=30,required=True,widget= forms.TextInput(attrs={'class':'input100','name':'email','placeholder': ('name@email.com')}))
     message = forms.CharField(
         required=False, help_text='Opcional',widget= forms.TextInput(attrs={'class':'input100','name':'message'}))
-
-def send_email(message,subject,sender,receiver):
-        #to = 'alexrl_lp@hotmail.com'
-        #gmail_user = 'alextripero@gmail.com'
-        #gmail_pwd = '****'
-        #smtpserver = smtplib.SMTP("smtp.gmail.com",587)
-        #smtpserver.ehlo()
-        #smtpserver.starttls()
-        #smtpserver.ehlo
-        #smtpserver.login(gmail_user, gmail_pwd)
-        #header = 'To:' + to + '\n' + 'From: ' + gmail_user + '\n' + 'Subject:testing \n'
-        #msg = header + '\n this is test msg from mkyong.com \n\n'
-        #smtpserver.sendmail(gmail_user, to, msg)
-        #print ('done!')
-        #smtpserver.close()
-        send_mail(subject,message,sender,receiver,fail_silently=False)
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget= forms.TextInput(attrs={'class':'input100','name':'username'}))

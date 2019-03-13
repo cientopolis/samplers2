@@ -31,6 +31,8 @@ from itertools import chain
 import csv
 from django.core.exceptions import ObjectDoesNotExist
 import logging
+from django.core.mail import send_mail
+
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -180,6 +182,7 @@ def inviteScientist(request, id=None):
             form = InviteScientistForm(request.POST)
             if form.is_valid():
                 email = form.cleaned_data.get('email')
+                message = form.cleaned_data.get('message')
                 try:
                     user = User.objects.get(email = email)
                     if ParticipantsGroup.objects.filter(project=project,profile = user.profile).exists():
@@ -189,31 +192,35 @@ def inviteScientist(request, id=None):
                         pg = ParticipantsGroup.objects.create(project = project, profile = user.profile)
                         pg.save()
                         messages.success(request,'Científico invitado exitosamente')
+                        message = build_message(request,True,project,message)
+                        send_email(message,'Invitacion Samplers2', 'cientopolis@cientopolis.com', [email])
                         logger.info("Scientist with email : %s was invited succesfull",email)
                         return redirect('home')
                 except ObjectDoesNotExist:
                     logger.info("User with email %s doesnt exist", email)
-                    #send_email('Invitacion', 'Forma parte de Centopolis! Dirigete a la url y registrate :)', 'cientopolis@cientopolis.com', ['alextripero@gmail.com'])
+                    message = build_message(request,False,project,message)
+                    send_email(message,'Invitacion Samplers2', 'cientopolis@cientopolis.com', [email])
                     form.add_error("email", "No existe un usuario con ese email. Se mandará un email para invitarlo a unirse")
 
     else:
         form = InviteScientistForm()
     return render(request, 'webpage/inviteScientistForm.html', {'form': form})
 
+def build_message(request,exist_user,project,message):
+    user_email = request.user.email
+    user_username = request.user.username
+    institucion_message = ""
+    if request.user.profile.institucion != "":
+        institucion_message = 'e institucion: '+ request.user.profile.institucion
+    intro_message = 'El cientifico con email:'+ user_email + ' y nombre de usuario:'+ user_username + institucion_message +' te ha invitado a unirse al proyecto:' + project.name
+    if exist_user:
+        message = intro_message + '. El mensaje que te envio fue el siguiente:' + message
+    else :
+        message = intro_message + '. Forma parte de Samplers2! Dirigete a la url y registrate :)'
+    pdb.set_trace()
+    return message
+
 def send_email(message,subject,sender,receiver):
-        #to = 'alexrl_lp@hotmail.com'
-        #gmail_user = 'alextripero@gmail.com'
-        #gmail_pwd = '****'
-        #smtpserver = smtplib.SMTP("smtp.gmail.com",587)
-        #smtpserver.ehlo()
-        #smtpserver.starttls()
-        #smtpserver.ehlo
-        #smtpserver.login(gmail_user, gmail_pwd)
-        #header = 'To:' + to + '\n' + 'From: ' + gmail_user + '\n' + 'Subject:testing \n'
-        #msg = header + '\n this is test msg from mkyong.com \n\n'
-        #smtpserver.sendmail(gmail_user, to, msg)
-        #print ('done!')
-        #smtpserver.close()
         send_mail(subject,message,sender,receiver,fail_silently=False)
 
 #View encargado de mostrar los resultados del workflow
