@@ -20,7 +20,7 @@ class WebpageExceptionMiddleware(SocialAuthExceptionMiddleware):
 			logger.error("User must register first")
 			return redirect('/webpage/signup')
 		if type(exception) == AuthAlreadyAssociated:
-			messages.error(request, "Esta cuenta ya se encuentra asociada")
+			messages.error(request, "Esta cuenta ya se encuentra asociada a otro usuario")
 			logger.error("This account is already associated")
 			return redirect('/webpage/')
 		else:

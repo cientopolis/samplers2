@@ -57,13 +57,7 @@
             <a class="navbar-brand2">Hola {{ user.username }} !</a>
           </div>
           <div id="message">
-          {% if messages %}
-            <ul class="messages">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
+          
          </div>
           <div class="navbar-wrapper2 m-l-50">
            {% if not social.facebook.associated or not social.gmail.associated %}
@@ -192,6 +186,8 @@
     });
    });
 
+ 
+
     var restoreModalOnClose = function(){
     var error_fields = $('.errorlist')
       $.each(error_fields, function(index, value){
@@ -199,6 +195,13 @@
     })
 
     };
+
+    {% if messages %}
+            $('#myDialog').modal('show')
+    {% endif %}
+
+   
+  
 
    </script>
 
