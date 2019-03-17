@@ -37,7 +37,6 @@
 					<option value="2">Geoposicionamiento</option>
 					<option value="3">Foto</option>
 					<option value="4">Informacion</option>
-					<option value="5">Pregunta</option>
 					<option value="6">Audio</option>
 					<option value="7">Hora</option>
 					<option value="8">Fecha</option>
@@ -591,7 +590,7 @@
 				clickedStep.addChildStep(multipleStep);
 				wf.addStep(multipleStep);
 			} else {
-				alert("No puede agregar otro hijo");
+				toastr.error("No puede agregar otro hijo");
 			}
 
 			draw();
@@ -627,7 +626,7 @@
 
 			clickedStep = null;
 		} else {
-			alert("No puede borrar todos los nodos");
+			toastr.error("No puede borrar todos los nodos");
 		}
 
 		draw();
@@ -760,7 +759,7 @@ function addStep() {
 				clickedStep.addChildStep(infoStep);
 				wf.addStep(infoStep);
 			} else {
-				alert("No puede agregar otro hijo");
+				toastr.error("No puede agregar otro hijo");
 			}
 
 			draw();
@@ -773,7 +772,7 @@ function addStep() {
 				childStep.addChildStep(fatherStep);
 
 			} else {
-				alert("No puede agregar otro hijo");
+				toastr.error("No puede agregar otro hijo");
 			}
 
 			draw();
@@ -1000,10 +999,10 @@ function edgeClicked(edgeId){
 		    contentType: 'application/json',
 		    data:  params ,
 		    success: function(r) {
-		    	alert("Su workflow fue creado exitosamente");
+		    	toastr.success("Su workflow ha sido creado exitosamente")
 		    },
 		    error: function(r) {
-		    	alert("Algo salio mal, intente mas tarde");
+		    	toastr.error("Algo salio mal, intente mas tarde");
 		    }
 		});
 	    
@@ -1067,11 +1066,11 @@ function edgeClicked(edgeId){
     				doRequest(path, JSON.stringify({"steps" : wf.getJsonToServer(),"name": workflowName,"project": dataView.project}), method);
 
 				} else {
-					alert("Ingrese un nombre");
+					toastr.error("Ingrese un nombre");
 				}
 		
 				} else {
-					alert(errors);
+					toastr.error(errors);
 				}
 
 		        });

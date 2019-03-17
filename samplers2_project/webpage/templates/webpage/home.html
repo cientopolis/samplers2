@@ -52,7 +52,11 @@
                     {% endif %}
                     </li>
                     <li><i class="material-icons text-danger">delete_forever</i>
+                    {% if project.owner == user.username %}
                     <a href="{% url 'webpage:deleteProject' project.id %}"> Eliminar proyecto</a></li>
+                    {% else %}
+                        -
+                    {% endif %}
                     </ul>
                     
                   </div>

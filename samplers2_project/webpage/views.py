@@ -200,7 +200,7 @@ def inviteScientist(request, id=None):
                 except ObjectDoesNotExist:
                     logger.info("User with email %s doesnt exist", email)
                     message = build_message(request,False,project,message)
-                    send_email(message,'Invitacion Samplers2', 'cientopolis@cientopolis.com', [email])
+                    #send_email(message,'Invitacion Samplers2', 'cientopolis@cientopolis.com', [email])
                     form.add_error("email", "No existe un usuario con ese email. Se mandará un email para invitarlo a unirse")
 
     else:
@@ -484,7 +484,7 @@ class WorkflowResult(APIView):
             logger.info("Workflow has user_id: %s", user_id)
         workflow_result.save()
         steps = data['steps']
-        logger.info("The workflow result has [%s] steps",steps.count())
+        logger.info("The workflow result has [%s] steps",len(steps))
         for step in steps: 
             step_type = step['type']
             step_data = step['data']
@@ -561,7 +561,7 @@ class WorkflowResult(APIView):
                 date_step_result = DateStepResult()
                 date_step_result.workflow_result = workflow_result
                 date_step_result.step_id = step_data['stepId']
-                date_step_result.selected_date = dateutil.parser.parse(step_data['selected_time'])
+                date_step_result.selected_date = dateutil.parser.parse(step_data['selected_date'])
                 date_step_result.save()
             if 'RouteStepResult' in step_type:
                 route_step_result = RouteStepResult()
