@@ -91,7 +91,7 @@ def deleteProject(request, id=None):
     project.deleted = True
     project.save()
     logger.info("Project with id: %s deleted succesfull",id)
-    messages.success(request,"Eliminacion proyecto exitoso")
+    messages.success(request,"Proyecto eliminado exitosamente")
     return redirect('home')
 
 #View encargado de servir o guardar un registro de forma manual
@@ -129,7 +129,7 @@ def createProject(request, id=None):
         pg.is_owner = True
         pg.save()
         logger.info("Project created succesfull: %s",project)
-        messages.success(request, "Creacion proyecto exitoso")
+        messages.success(request, "Proyecto creado exitosamente")
         return redirect('home')
     context = {'isCreation':True}
     context['form'] = form
@@ -164,6 +164,7 @@ def editProject(request, id=None):
     form = ProjectForm(request.POST or None, instance=project)
     if form.is_valid():
         project = form.save()
+        messages.success(request,"Proyecto editado exitosamente")
         return redirect('home')
     context = {'isCreation':False}
     context['form'] = form
@@ -193,7 +194,7 @@ def inviteScientist(request, id=None):
                         pg.save()
                         messages.success(request,'Científico invitado exitosamente')
                         message = build_message(request,True,project,message)
-                        send_email(message,'Invitacion Samplers2', 'cientopolis@cientopolis.com', [email])
+                        #send_email(message,'Invitacion Samplers2', 'cientopolis@cientopolis.com', [email])
                         logger.info("Scientist with email : %s was invited succesfull",email)
                         return redirect('home')
                 except ObjectDoesNotExist:
@@ -217,7 +218,6 @@ def build_message(request,exist_user,project,message):
         message = intro_message + '. El mensaje que te envio fue el siguiente:' + message
     else :
         message = intro_message + '. Forma parte de Samplers2! Dirigete a la url y registrate :)'
-    pdb.set_trace()
     return message
 
 def send_email(message,subject,sender,receiver):

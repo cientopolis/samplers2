@@ -6,6 +6,7 @@
 
   <link rel="stylesheet" href="{% static "css/material-dashboard.css?v=2.1.1" %}"/>
    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >  
+
 </head>
 
 <body>
@@ -49,6 +50,7 @@
         </ul>
       </div>
     </div>
+
     <div class="main-panel">
       <!-- Navbar -->
       <nav class="navbar2 navbar-expand-lg2 navbar-transparent2 navbar-absolute2 fixed-top2 ">
@@ -56,9 +58,6 @@
           <div class="navbar-wrapper2">
             <a class="navbar-brand2">Hola {{ user.username }} !</a>
           </div>
-          <div id="message">
-          
-         </div>
           <div class="navbar-wrapper2 m-l-50">
            {% if not social.facebook.associated or not social.gmail.associated %}
               <p>Asociar cuenta</p>
@@ -176,10 +175,9 @@
                 $('.modal-dialog').html(modal_html);
                 $("#project_id").val(projectId);
                 e.preventDefault();
-            }else{
-                var message = ($(data).find('#message')).html()
-                $("#message").html(message)         
+            }else{    
                 $('#myModal').modal('hide')
+                toastr.success("Científico invitado exitosamente")
               }
 
         }
@@ -196,11 +194,18 @@
 
     };
 
-    {% if messages %}
-            $('#myDialog').modal('show')
-    {% endif %}
+  toastr.options = {
+    
+  "positionClass": "toast-top-center",
+  "preventDuplicates": true,
+  "timeOut": "1000"
+  }
 
-   
+    {% if messages %}
+      {% for message in messages %} 
+        toastr.{{ message.tags }}("{{ message }}");
+      {% endfor %} 
+    {% endif %}  
   
 
    </script>
